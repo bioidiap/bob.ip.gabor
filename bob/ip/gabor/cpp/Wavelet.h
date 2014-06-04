@@ -1,3 +1,13 @@
+/**
+ * @author Manuel Guenther <manuel.guenther@idiap.ch>
+ * @date Wed Jun  4 17:44:24 CEST 2014
+ *
+ * @brief Header file for the C++ implementations of the Gabor wavelet
+ *
+ * Copyright (C) 2011-2014 Idiap Research Institute, Martigny, Switzerland
+ */
+
+
 #ifndef BOB_IP_GABOR_WAVELET_H
 #define BOB_IP_GABOR_WAVELET_H
 

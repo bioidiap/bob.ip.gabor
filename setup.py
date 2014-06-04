@@ -36,7 +36,7 @@ setup(
       'bob.blitz',
       'bob.io.base',
       'bob.io.image',
-#      'bob.ip.base',
+      'bob.ip.color',
       'bob.sp'
     ],
 
@@ -58,9 +58,11 @@ setup(
         [
           "bob/ip/gabor/cpp/Wavelet.cpp",
           "bob/ip/gabor/cpp/Transform.cpp",
+          "bob/ip/gabor/cpp/Jet.cpp",
 
           "bob/ip/gabor/wavelet.cpp",
           "bob/ip/gabor/transform.cpp",
+          "bob/ip/gabor/jet.cpp",
           "bob/ip/gabor/main.cpp",
         ],
         packages = packages,

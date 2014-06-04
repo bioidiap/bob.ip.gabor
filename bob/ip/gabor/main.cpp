@@ -1,6 +1,6 @@
 /**
- * @author Andre Anjos <andre.anjos@idiap.ch>
- * @date Fri  4 Apr 15:02:59 2014 CEST
+ * @author Manuel Guenther <manuel.guenther@idiap.ch>
+ * @date Tue Jun  3 17:44:24 CEST 2014
  *
  * @brief Bindings to bob::ip color converters
  */
@@ -39,6 +39,7 @@ static PyObject* create_module (void) {
 
   if (!init_BobIpGaborWavelet(module)) return NULL;
   if (!init_BobIpGaborWaveletTransform(module)) return NULL;
+  if (!init_BobIpGaborJet(module)) return NULL;
 
   /* imports dependencies */
   if (import_bob_blitz() < 0) {

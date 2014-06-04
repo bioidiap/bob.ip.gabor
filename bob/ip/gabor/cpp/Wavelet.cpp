@@ -1,3 +1,12 @@
+/**
+ * @author Manuel Guenther <manuel.guenther@idiap.ch>
+ * @date Wed Jun  4 17:44:24 CEST 2014
+ *
+ * @brief C++ implementations of the Gabor wavelet transform
+ *
+ * Copyright (C) 2011-2014 Idiap Research Institute, Martigny, Switzerland
+ */
+
 #include "Wavelet.h"
 
 static inline double sqr(double x){return x*x;}

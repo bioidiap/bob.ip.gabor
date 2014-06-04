@@ -1,3 +1,10 @@
+/**
+ * @author Manuel Guenther <manuel.guenther@idiap.ch>
+ * @date Tue Jun  3 17:44:24 CEST 2014
+ *
+ * @brief Bindings to bob::ip color converters
+ */
+
 #ifndef BOB_IP_GABOR_BINDINGS
 #define BOB_IP_GABOR_BINDINGS_H
 
@@ -10,6 +17,7 @@
 
 #include "cpp/Wavelet.h"
 #include "cpp/Transform.h"
+#include "cpp/Jet.h"
 
 // Gabor wavelet
 typedef struct {
@@ -31,6 +39,17 @@ typedef struct {
 extern PyTypeObject PyBobIpGaborWaveletTransformType;
 
 bool init_BobIpGaborWaveletTransform(PyObject* module);
+
+
+// Gabor jet
+typedef struct {
+  PyObject_HEAD
+  boost::shared_ptr<bob::ip::gabor::Jet> cxx;
+} PyBobIpGaborJetObject;
+
+extern PyTypeObject PyBobIpGaborJetType;
+
+bool init_BobIpGaborJet(PyObject* module);
 
 
 #endif // BOB_IP_GABOR_BINDINGS

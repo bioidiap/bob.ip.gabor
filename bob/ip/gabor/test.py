@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
-# Andre Anjos <andre.anjos@idiap.ch>
-# Mon  7 Apr 09:25:43 2014 CEST
+# Manuel Guenther <manuel.guenther@idiap.ch>
+# Wed Jun  4 21:22:35 CEST 2014
 #
 # Copyright (C) 2011-2014 Idiap Research Institute, Martigny, Switzerland
 
@@ -17,7 +17,9 @@ import bob.io.base
 import bob.io.image
 import bob.sp
 import bob.ip.gabor
-#import bob.ip.base
+import bob.ip.color
+
+import bob.io.base.test_utils
 
 def test_wavelet():
   # check that the wavelet in frequency domain is just a Gaussian moved to
@@ -105,8 +107,7 @@ def test_transform():
     assert numpy.allclose(w.wavelet, wavelets[i].wavelet)
 
   # load test image
-#  image = bob.ip.base.rgb_to_gray(bob.io.base.load(bob.io.base.test_utils.datafile("testimage.jpg")))
-  image = bob.io.base.load(bob.io.base.test_utils.datafile("testimage.jpg", 'bob.ip.gabor'))[0]
+  image = bob.ip.color.rgb_to_gray(bob.io.base.load(bob.io.base.test_utils.datafile("testimage.jpg", 'bob.ip.gabor')))
 
   trafo_image = gwt(image)
   assert trafo_image.shape[0] == gwt.number_of_wavelets
@@ -114,7 +115,35 @@ def test_transform():
   assert trafo_image.dtype == numpy.complex128
 
 
+def test_jet():
+  gwt = bob.ip.gabor.Transform()
+
+  # load test image
+  image = bob.ip.color.rgb_to_gray(bob.io.base.load(bob.io.base.test_utils.datafile("testimage.jpg", 'bob.ip.gabor')))
+
+  trafo_image = gwt(image)
+
+  def get():
+    jet = bob.ip.gabor.Jet(trafo_image=trafo_image, position=(-1,-1), normalize=True)
+  nose.tools.assert_raises(RuntimeError, get)
+  def get2():
+    jet = bob.ip.gabor.Jet(trafo_image=trafo_image)
+  nose.tools.assert_raises(TypeError, get2)
+  def cmplx():
+    jet = bob.ip.gabor.Jet(complex=trafo_image, position=(5,5), normalize=True)
+  nose.tools.assert_raises(TypeError, cmplx)
+
+  # extract two Gabor jets
+  jet1 = bob.ip.gabor.Jet(trafo_image=trafo_image, position=(5,5), normalize=True)
+  jet2 = bob.ip.gabor.Jet(complex=trafo_image[:,5,5], normalize=False)
+
+  assert len(jet1.abs) == gwt.number_of_wavelets
+  assert abs(jet1.normalize() - 1.) < 1e-8
+  assert not numpy.allclose(jet1.abs, jet2.abs)
+  assert numpy.allclose(jet1.phase, jet2.phase)
+
+
 if __name__ == '__main__':
-  test_transform()
+  test_jet()
 
 

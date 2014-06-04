@@ -1,3 +1,15 @@
+/**
+ * @author Manuel Guenther <manuel.guenther@idiap.ch>
+ * @date Wed Jun  4 17:44:24 CEST 2014
+ *
+ * @brief Header file for the C++ implementations of the Gabor wavelet transform
+ *
+ * Copyright (C) 2011-2014 Idiap Research Institute, Martigny, Switzerland
+ */
+
+
+#ifndef BOB_IP_GABOR_TRANSFORM_H
+#define BOB_IP_GABOR_TRANSFORM_H
 
 #include <bob/io/HDF5File.h>
 #include <bob/sp/FFT2D.h>
@@ -74,25 +86,6 @@ namespace bob {
             transform_inner(bob::core::array::cast<std::complex<double> >(gray_image), trafo_image);
           }
 
-
-#if 0
-          //! \brief performs Gabor wavelet transform and creates 4D image
-          //! (absolute part and phase part)
-          void computeJetImage(
-            const blitz::Array<std::complex<double>,2>& gray_image,
-            blitz::Array<double,4>& jet_image,
-            bool do_normalize = true
-          );
-
-          //! \brief performs Gabor wavelet transform and creates 3D image
-          //! (absolute parts of the responses only)
-          void computeJetImage(
-            const blitz::Array<std::complex<double>,2>& gray_image,
-            blitz::Array<double,3>& jet_image,
-            bool do_normalize = true
-          );
-#endif
-
           //! \brief saves the parameters of this Gabor wavelet family to file
           void save(bob::io::HDF5File& file) const;
 
@@ -131,17 +124,10 @@ namespace bob {
           double m_epsilon;
       }; // class Transform
 
-#if 0
-      //! Normalizes a Gabor jet (vector of absolute values) to unit length
-      void normalizeGaborJet(blitz::Array<double,1>& gabor_jet);
-
-      //! Normalizes a Gabor jet (vector of absolute and phase values) to unit length
-      void normalizeGaborJet(blitz::Array<double,2>& gabor_jet);
-#endif
-
     } // namepsace gabor
 
   } // namespace ip
 
 } // namespace bob
 
+#endif // BOB_IP_GABOR_TRANSFORM_H

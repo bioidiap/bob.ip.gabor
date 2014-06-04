@@ -1,3 +1,12 @@
+/**
+ * @author Manuel Guenther <manuel.guenther@idiap.ch>
+ * @date Wed Jun  4 17:44:24 CEST 2014
+ *
+ * @brief C++ implementations of the Gabor wavelet transform
+ *
+ * Copyright (C) 2011-2014 Idiap Research Institute, Martigny, Switzerland
+ */
+
 #include "Transform.h"
 
 /**
@@ -172,7 +181,7 @@ void bob::ip::gabor::Transform::transform_inner(
 )
 {
   // check that the shape is correct
-  bob::core::array::assertSameShape(trafo_image, blitz::shape(m_wavelets.size(), gray_image.extent(0), gray_image.extent(1)));
+  bob::core::array::assertSameShape(trafo_image, blitz::shape(m_wavelet_frequencies.size(), gray_image.extent(0), gray_image.extent(1)));
 
   // first, check if we need to reset the kernels
   generateWavelets(gray_image.extent(0), gray_image.extent(1));
@@ -191,99 +200,6 @@ void bob::ip::gabor::Transform::transform_inner(
   } // for j
 }
 
-#if 0
-
-/**
- * Computes the Gabor jets including absolute values and phases for the given image (in spatial domain).
- * @param gray_image  The source image in spatial domain
- * @param jet_image   The resulting Gabor jet image, including absolute values and phases for each pixel
- * @param do_normalize Shall the Gabor jets be normalized?
- */
-void bob::ip::gabor::Transform::computeJetImage(
-  const blitz::Array<std::complex<double>,2>& gray_image,
-  blitz::Array<double,4>& jet_image,
-  bool do_normalize
-)
-{
-  // first, check if we need to reset the kernels
-  generateKernels(blitz::TinyVector<unsigned,2>(gray_image.extent(0),gray_image.extent(1)));
-
-  // perform Fourier transformation to image
-  m_fft(gray_image, m_frequency_image);
-
-  // check that the shape is correct
-  bob::core::array::assertSameShape(jet_image, blitz::shape(gray_image.extent(0), gray_image.extent(1), 2, m_kernel_frequencies.size()));
-
-  // now, let each kernel compute the transformation result
-  for (int j = 0; j < (int)m_gabor_kernels.size(); ++j){
-    // get a reference to the current layer of the trafo image
-    m_gabor_kernels[j].transform(m_frequency_image, m_temp_array2);
-    // perform ifft of transformed image
-    m_ifft(m_temp_array2, m_temp_array);
-    // convert into absolute and phase part
-    blitz::Array<double,2> abs_part(jet_image(blitz::Range::all(), blitz::Range::all(), 0, j));
-    abs_part = blitz::abs(m_temp_array);
-    blitz::Array<double,2> phase_part(jet_image(blitz::Range::all(), blitz::Range::all(), 1, j));
-    phase_part = blitz::arg(m_temp_array);
-  } // for j
-
-  if (do_normalize){
-    // iterate the positions
-    for (int y = jet_image.extent(0); y--;){
-      for (int x = jet_image.extent(1); x--;){
-        // normalize jet
-        blitz::Array<double,2> jet(jet_image(y,x,blitz::Range::all(),blitz::Range::all()));
-        bob::ip::normalizeGaborJet(jet);
-      }
-    }
-  }
-}
-
-/**
- * Computes the Gabor jets including absolute values only for the given image (in spatial domain).
- * @param gray_image  The source image in spatial domain
- * @param jet_image   The resulting Gabor jet image, including only absolute values for each pixel
- * @param do_normalize Shall the Gabor jets be normalized?
- */
-void bob::ip::gabor::Transform::computeJetImage(
-  const blitz::Array<std::complex<double>,2>& gray_image,
-  blitz::Array<double,3>& jet_image,
-  bool do_normalize
-)
-{
-  // first, check if we need to reset the kernels
-  generateKernels(blitz::TinyVector<int,2>(gray_image.extent(0),gray_image.extent(1)));
-
-  // perform Fourier transformation to image
-  m_fft(gray_image, m_frequency_image);
-
-  // check that the shape is correct
-  bob::core::array::assertSameShape(jet_image, blitz::shape(gray_image.extent(0), gray_image.extent(1), m_kernel_frequencies.size()));
-
-  // now, let each kernel compute the transformation result
-  for (int j = 0; j < (int)m_gabor_kernels.size(); ++j){
-    // get a reference to the current layer of the trafo image
-    m_gabor_kernels[j].transform(m_frequency_image, m_temp_array2);
-    // perform ifft of transformed image
-    m_ifft(m_temp_array2, m_temp_array);
-    // convert into absolute part
-    blitz::Array<double,2> abs_part(jet_image(blitz::Range::all(), blitz::Range::all(), j));
-    abs_part = blitz::abs(m_temp_array);
-  } // for j
-
-  if (do_normalize){
-    // iterate the positions
-    for (int y = jet_image.extent(0); y--;){
-      for (int x = jet_image.extent(1); x--;){
-        // normalize jet
-        blitz::Array<double,1> jet(jet_image(y,x,blitz::Range::all()));
-        bob::ip::normalizeGaborJet(jet);
-      }
-    }
-  }
-}
-
-#endif
 
 void bob::ip::gabor::Transform::save(bob::io::HDF5File& file) const{
   file.set("Sigma", m_sigma);
@@ -309,28 +225,3 @@ void bob::ip::gabor::Transform::load(bob::io::HDF5File& file){
   computeWaveletFrequencies();
 }
 
-#if 0
-
-/**
- * Normalizes the given Gabor jet (absolute values only) to unit length.
- * @param gabor_jet The Gabor jet to be normalized.
- */
-void bob::ip::normalizeGaborJet(blitz::Array<double,1>& gabor_jet){
-  double norm = sqrt(std::inner_product(gabor_jet.begin(), gabor_jet.end(), gabor_jet.begin(), 0.));
-  // normalize the absolute parts of the jets
-  gabor_jet /= norm;
-}
-
-
-/**
- * Normalizes the given Gabor jet to unit length.
- * @param gabor_jet The Gabor jet to be normalized, including the phase values (which will not be altered).
- */
-void bob::ip::normalizeGaborJet(blitz::Array<double,2>& gabor_jet){
-  blitz::Array<double,1> abs_jet = gabor_jet(0, blitz::Range::all());
-  double norm = sqrt(std::inner_product(abs_jet.begin(), abs_jet.end(), abs_jet.begin(), 0.));
-  // normalize the absolute parts of the jets
-  abs_jet /= norm;
-}
-
-#endif

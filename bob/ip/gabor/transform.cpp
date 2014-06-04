@@ -1,8 +1,8 @@
 /**
  * @author Manuel Guenther <manuel.guenther@idiap.ch>
- * @date Tue Jun  3 16:59:16 CEST 2014
+ * @date Wed Jun  4 17:44:24 CEST 2014
  *
- * @brief Bindings for a Gabor wavelet
+ * @brief Bindings for a Gabor wavelet transform
  *
  * Copyright (C) 2011-2014 Idiap Research Institute, Martigny, Switzerland
  */
@@ -334,7 +334,6 @@ static PyObject* PyBobIpGaborWaveletTransform_transform(PyBobIpGaborWaveletTrans
     return 0;
   }
 
-  //protects acquired resources through this scope
   auto input_ = make_safe(input);
   auto output_ = make_xsafe(output);
 
@@ -370,7 +369,6 @@ static PyObject* PyBobIpGaborWaveletTransform_transform(PyBobIpGaborWaveletTrans
     output_ = make_safe(output);
   }
 
-  /** all basic checks are done, can call the machine now **/
   try {
     switch (input->type_num){
       case NPY_UINT8:
@@ -449,7 +447,7 @@ static PyObject* PyBobIpGaborWaveletTransform_generateWavelets(PyBobIpGaborWavel
 
 static auto load_doc = bob::extension::FunctionDoc(
   "load",
-  "Loads the confparametrization of the Gabor wavelet transform from the given HDF5 file",
+  "Loads the parametrization of the Gabor wavelet transform from the given HDF5 file",
   0,
   true
 )
