@@ -12,3 +12,5 @@ This section includes information for using the pure Python API of
 
 .. automodule:: bob.ip.gabor
 
+
+.. [Guenther2011] *Manuel Guenther*. **Statistical Gabor graph based techniques for the detection, recognition, classification and visualization of human faces**, PhD thesis, Technical University of Ilmenau, 2011

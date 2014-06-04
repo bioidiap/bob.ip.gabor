@@ -33,8 +33,6 @@ namespace bob {
           Wavelet& operator=(const Wavelet& other);
           //! Equality operator
           bool operator==(const Wavelet& other) const;
-          //! Non-equality operator
-          bool operator!=(const Wavelet& other) const;
 
           //! Get the image represenation of the Gabor wavelet in frequency domain
           blitz::Array<double,2> waveletImage() const;

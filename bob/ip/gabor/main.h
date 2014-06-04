@@ -9,7 +9,9 @@
 #include <bob.io.base/api.h>
 
 #include "cpp/Wavelet.h"
+#include "cpp/Transform.h"
 
+// Gabor wavelet
 typedef struct {
   PyObject_HEAD
   boost::shared_ptr<bob::ip::gabor::Wavelet> cxx;
@@ -18,5 +20,17 @@ typedef struct {
 extern PyTypeObject PyBobIpGaborWaveletType;
 
 bool init_BobIpGaborWavelet(PyObject* module);
+
+
+// Gabor wavelet transform
+typedef struct {
+  PyObject_HEAD
+  boost::shared_ptr<bob::ip::gabor::Transform> cxx;
+} PyBobIpGaborWaveletTransformObject;
+
+extern PyTypeObject PyBobIpGaborWaveletTransformType;
+
+bool init_BobIpGaborWaveletTransform(PyObject* module);
+
 
 #endif // BOB_IP_GABOR_BINDINGS

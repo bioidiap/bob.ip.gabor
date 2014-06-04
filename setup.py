@@ -13,7 +13,7 @@ package_dir = os.path.dirname(os.path.realpath(__file__))
 package_dir = os.path.join(package_dir, 'bob', 'ip', 'gabor')
 include_dirs = [package_dir, bob.io.base.get_include()]
 
-packages = ['boost', 'bob-io >= 1.2.2']
+packages = ['bob-io >= 1.2.2', 'bob-sp >= 1.2.2', 'bob-ip >= 1.2.2', 'boost']
 version = '2.0.0a0'
 
 setup(
@@ -34,7 +34,10 @@ setup(
     install_requires=[
       'setuptools',
       'bob.blitz',
-      'bob.io.base'
+      'bob.io.base',
+      'bob.io.image',
+#      'bob.ip.base',
+      'bob.sp'
     ],
 
     namespace_packages=[
@@ -54,12 +57,14 @@ setup(
       Extension("bob.ip.gabor._library",
         [
           "bob/ip/gabor/cpp/Wavelet.cpp",
+          "bob/ip/gabor/cpp/Transform.cpp",
 
           "bob/ip/gabor/wavelet.cpp",
+          "bob/ip/gabor/transform.cpp",
           "bob/ip/gabor/main.cpp",
         ],
         packages = packages,
-        boost_modules = ['system'],
+        boost_modules = ['python', 'system'],
         include_dirs = include_dirs,
         version = version,
       ),

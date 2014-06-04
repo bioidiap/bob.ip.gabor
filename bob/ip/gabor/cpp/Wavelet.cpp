@@ -115,26 +115,6 @@ bob::ip::gabor::Wavelet::operator ==
   return true;
 }
 
-bool
-bob::ip::gabor::Wavelet::operator !=
-(
-  const bob::ip::gabor::Wavelet& other
-) const
-{
-  if (m_x_resolution != other.m_x_resolution || m_y_resolution != other.m_y_resolution)
-    return true;
-  if (m_wavelet_pixel.size() != other.m_wavelet_pixel.size())
-    return true;
-
-  auto it1 = m_wavelet_pixel.begin(), it2 = other.m_wavelet_pixel.begin(), it1end = m_wavelet_pixel.end();
-  for (; it1 != it1end; ++it1, ++it2)
-    if (it1->first[0] != it2->first[0] || it1->first[1] != it2->first[1] || std::abs(it1->second - it2->second) > 1e-8)
-      return true;
-
-  // identical.
-  return false;
-}
-
 /**
  * Performs the convolution of the given image with this Gabor wavelet.
  * Please note that both the inpus as well as the output image are in frequency domain.

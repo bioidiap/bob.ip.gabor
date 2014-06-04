@@ -38,6 +38,7 @@ static PyObject* create_module (void) {
   if (PyModule_AddStringConstant(module, "__version__", BOB_EXT_MODULE_VERSION) < 0) return NULL;
 
   if (!init_BobIpGaborWavelet(module)) return NULL;
+  if (!init_BobIpGaborWaveletTransform(module)) return NULL;
 
   /* imports dependencies */
   if (import_bob_blitz() < 0) {
