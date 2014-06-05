@@ -105,6 +105,33 @@ int PyBobIpGaborWaveletTransform_Check(PyObject* o) {
   return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborWaveletTransformType));
 }
 
+static PyObject* PyBobIpGaborWaveletTransform_RichCompare(PyBobIpGaborWaveletTransformObject* self, PyObject* other, int op) {
+
+  if (!PyBobIpGaborWaveletTransform_Check(other)) {
+    PyErr_Format(PyExc_TypeError, "cannot compare `%s' with `%s'", Py_TYPE(self)->tp_name, Py_TYPE(other)->tp_name);
+    return 0;
+  }
+  auto other_ = reinterpret_cast<PyBobIpGaborWaveletTransformObject*>(other);
+  try{
+    switch (op) {
+      case Py_EQ:
+        if (*self->cxx==*other_->cxx) Py_RETURN_TRUE; else Py_RETURN_FALSE;
+      case Py_NE:
+        if (*self->cxx==*other_->cxx) Py_RETURN_FALSE; else Py_RETURN_TRUE;
+      default:
+        Py_INCREF(Py_NotImplemented);
+        return Py_NotImplemented;
+    }
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "%s cannot transform input: unknown exception caught", Py_TYPE(self)->tp_name);
+  }
+  return 0;
+}
+
 
 /******************************************************************/
 /************ Variables Section ***********************************/
@@ -574,6 +601,7 @@ bool init_BobIpGaborWaveletTransform(PyObject* module)
   PyBobIpGaborWaveletTransformType.tp_methods = PyBobIpGaborWaveletTransform_methods;
   PyBobIpGaborWaveletTransformType.tp_getset = PyBobIpGaborWaveletTransform_getseters;
   PyBobIpGaborWaveletTransformType.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborWaveletTransform_transform);
+  PyBobIpGaborWaveletTransformType.tp_richcompare = reinterpret_cast<richcmpfunc>(PyBobIpGaborWaveletTransform_RichCompare);
 
   // check that everyting is fine
   if (PyType_Ready(&PyBobIpGaborWaveletTransformType) < 0)

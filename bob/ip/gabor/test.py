@@ -21,6 +21,8 @@ import bob.ip.color
 
 import bob.io.base.test_utils
 
+regenerate_references = False
+
 def test_wavelet():
   # check that the wavelet in frequency domain is just a Gaussian moved to
   k = [math.pi/2.] * 2
@@ -114,6 +116,17 @@ def test_transform():
   assert trafo_image.shape[1:3] == image.shape
   assert trafo_image.dtype == numpy.complex128
 
+  # load the GWT from HDF5
+  gwt_file = bob.io.base.test_utils.datafile("gwt.hdf5", 'bob.ip.gabor')
+  if regenerate_references:
+    gwt.save(bob.io.base.HDF5File(gwt_file, 'w'))
+  reference_gwt = bob.ip.gabor.Transform(bob.io.base.HDF5File(gwt_file))
+  assert gwt == reference_gwt
+  reference_trafo_image = numpy.ndarray(trafo_image.shape, numpy.complex128)
+  reference_gwt(image, reference_trafo_image)
+  assert numpy.allclose(trafo_image, reference_trafo_image)
+
+
 
 def test_jet():
   gwt = bob.ip.gabor.Transform()
@@ -141,6 +154,13 @@ def test_jet():
   assert abs(jet1.normalize() - 1.) < 1e-8
   assert not numpy.allclose(jet1.abs, jet2.abs)
   assert numpy.allclose(jet1.phase, jet2.phase)
+
+  # check the first (10,10) pixel of the Gabor wavelet transform to be the same as last time
+  jet_file = bob.io.base.test_utils.datafile("testjet.hdf5", 'bob.ip.gabor')
+  if regenerate_references:
+    jet2.save(bob.io.base.HDF5File(jet_file, 'w'))
+  reference_jet = bob.ip.gabor.Jet(bob.io.base.HDF5File(jet_file))
+  assert numpy.allclose(jet2.jet, reference_jet.jet)
 
 
 if __name__ == '__main__':

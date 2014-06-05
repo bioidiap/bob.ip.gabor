@@ -29,6 +29,8 @@ extern PyTypeObject PyBobIpGaborWaveletType;
 
 bool init_BobIpGaborWavelet(PyObject* module);
 
+int PyBobIpGaborWavelet_Check(PyObject* o);
+
 
 // Gabor wavelet transform
 typedef struct {
@@ -40,6 +42,8 @@ extern PyTypeObject PyBobIpGaborWaveletTransformType;
 
 bool init_BobIpGaborWaveletTransform(PyObject* module);
 
+int PyBobIpGaborWaveletTransform_Check(PyObject* o);
+
 
 // Gabor jet
 typedef struct {
@@ -50,6 +54,8 @@ typedef struct {
 extern PyTypeObject PyBobIpGaborJetType;
 
 bool init_BobIpGaborJet(PyObject* module);
+
+int PyBobIpGaborJet_Check(PyObject* o);
 
 
 #endif // BOB_IP_GABOR_BINDINGS
