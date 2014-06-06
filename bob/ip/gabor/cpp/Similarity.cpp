@@ -29,13 +29,16 @@ bob::ip::gabor::Similarity::SimilarityType bob::ip::gabor::Similarity::name_to_t
   throw std::runtime_error("The given similarity name '" + type + "' does not name an appropriate similarity function type.");
 }
 
-bob::ip::gabor::Similarity::Similarity(SimilarityType type, const Transform& gwt)
+bob::ip::gabor::Similarity::Similarity(SimilarityType type, boost::shared_ptr<Transform> gwt)
 :
   m_type(type),
-  m_gwt(gwt)
+  m_gwt(gwt),
+  m_disparity(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN())
 {
   // initialize, when required
   if (m_type >= DISPARITY){
+    if (!m_gwt)
+      throw std::runtime_error("The given similarity function type '" + type_to_name(m_type) + "' required to specify the Gabor wavelet transform!");
     init();
   }
 }
@@ -49,10 +52,9 @@ bob::ip::gabor::Similarity::Similarity(bob::io::HDF5File& file)
 static double sqr(double x){return x*x;}
 
 void bob::ip::gabor::Similarity::init(){
-  m_disparity = 0.;
-  m_confidences.resize(m_gwt.numberOfWavelets());
+  m_confidences.resize(m_gwt->numberOfWavelets());
   m_confidences = 0.;
-  m_phase_differences.resize(m_gwt.numberOfWavelets());
+  m_phase_differences.resize(m_gwt->numberOfWavelets());
   m_phase_differences = 0.;
 }
 
@@ -82,7 +84,7 @@ double bob::ip::gabor::Similarity::similarity(const Jet& jet1, const Jet& jet2) 
     // compute disparity
     disparity(jet1, jet2);
 
-    const std::vector<blitz::TinyVector<double,2> >& kernels = m_gwt.waveletFrequencies();
+    const std::vector<blitz::TinyVector<double,2> >& kernels = m_gwt->waveletFrequencies();
 
     switch (m_type){
       case DISPARITY:{
@@ -156,7 +158,7 @@ void bob::ip::gabor::Similarity::shift_phase(const Jet& jet, const Jet& referenc
   disparity(jet, reference);
 
   // compute phase shift for each jet entry based on disparity vector
-  const std::vector<blitz::TinyVector<double,2>>& kernels = m_gwt.waveletFrequencies();
+  const std::vector<blitz::TinyVector<double,2>>& kernels = m_gwt->waveletFrequencies();
   auto& data = shifted.jet();
   // copy data from original jet
   data = jet.jet();
@@ -176,8 +178,8 @@ void bob::ip::gabor::Similarity::compute_confidences(const Jet& jet1, const Jet&
     throw std::runtime_error((boost::format("The size of the Gabor jet (%d) and the number of wavelets in the Gabor wavelet transform (%d) differ!") % a1.extent(0) % m_confidences.extent(0)).str());
   }
   for (int j = 0; j < m_confidences.extent(0); ++j){
-    m_confidences[j] = a1(j) * a2(j);
-    m_phase_differences[j] = adjustPhase(p1(j) - p2(j));
+    m_confidences(j) = a1(j) * a2(j);
+    m_phase_differences(j) = adjustPhase(p1(j) - p2(j));
   }
 }
 
@@ -187,10 +189,10 @@ void bob::ip::gabor::Similarity::compute_disparity() const{
   // initialize the disparity with 0
   m_disparity = 0.;
 
-  const std::vector<blitz::TinyVector<double,2> >& kernels = m_gwt.waveletFrequencies();
+  const std::vector<blitz::TinyVector<double,2> >& kernels = m_gwt->waveletFrequencies();
   // iterate backwards through the vector to start with the lowest frequency wavelets
-  for (int j = m_confidences.extent(0)-1, level = m_gwt.numberOfScales()-1; level >= 0; --level){
-    for (int direction = m_gwt.numberOfDirections()-1; direction >= 0; --direction, --j){
+  for (int j = m_confidences.extent(0)-1, level = m_gwt->numberOfScales()-1; level >= 0; --level){
+    for (int direction = m_gwt->numberOfDirections()-1; direction >= 0; --direction, --j){
       double
           kjx = kernels[j][1],
           kjy = kernels[j][0],
@@ -224,7 +226,7 @@ void bob::ip::gabor::Similarity::save(bob::io::HDF5File& file) const{
   if (m_type >= DISPARITY){
     file.createGroup("Transform");
     file.cd("Transform");
-    m_gwt.save(file);
+    m_gwt->save(file);
     file.cd("..");
   }
 }
@@ -236,7 +238,7 @@ void bob::ip::gabor::Similarity::load(bob::io::HDF5File& file){
 
   if (m_type >= DISPARITY){
     file.cd("Transform");
-    m_gwt.load(file);
+    m_gwt.reset(new Transform(file));
     file.cd("..");
 
     init();

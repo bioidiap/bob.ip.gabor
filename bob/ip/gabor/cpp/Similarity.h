@@ -40,7 +40,7 @@ namespace bob {
           static SimilarityType name_to_type(const std::string& type);
 
           //! Constructor for the Gabor jet similarity
-          Similarity(SimilarityType type, const Transform& gwt = Transform());
+          Similarity(SimilarityType type, boost::shared_ptr<Transform> gwt = boost::shared_ptr<Transform>());
 
           //! \brief reads the parameters of this Gabor jet similarity from file
           Similarity(bob::io::HDF5File& file);
@@ -53,6 +53,9 @@ namespace bob {
 
           //! returns the disparity vector estimated during the last call of similarity; only valid for disparity types
           blitz::TinyVector<double,2> disparity() const {return m_disparity;}
+
+          //! returns the Gabor wavelet transform that is attached to this class
+          boost::shared_ptr<Transform> transform() const {return m_gwt;}
 
           //! returns the disparity vector estimated during the last call of similarity; only valid for disparity types
           void shift_phase(const Jet& jet, const Jet& reference, Jet& shifted) const;
@@ -70,7 +73,7 @@ namespace bob {
           SimilarityType m_type;
 
           // members required by disparity functions
-          Transform m_gwt;
+          boost::shared_ptr<Transform> m_gwt;
 
           // initializes the internal memory to be used for disparity-like Gabor jet similarities
           void init();

@@ -40,6 +40,7 @@ static PyObject* create_module (void) {
   if (!init_BobIpGaborWavelet(module)) return NULL;
   if (!init_BobIpGaborWaveletTransform(module)) return NULL;
   if (!init_BobIpGaborJet(module)) return NULL;
+  if (!init_BobIpGaborJetSimilarity(module)) return NULL;
 
   /* imports dependencies */
   if (import_bob_blitz() < 0) {

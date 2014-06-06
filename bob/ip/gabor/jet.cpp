@@ -77,7 +77,6 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
 
       self->cxx.reset(new bob::ip::gabor::Jet(*hdf5->f));
     } else {
-      Py_ssize_t nargs = (args ? PyTuple_Size(args) : 0) + (kwargs ? PyDict_Size(kwargs) : 0);
       PyObject* k2 = Py_BuildValue("s", kwlist2[1]);
       PyObject* k3 = Py_BuildValue("s", kwlist2[2]);
       auto k2_ = make_safe(k2), k3_ = make_safe(k3);

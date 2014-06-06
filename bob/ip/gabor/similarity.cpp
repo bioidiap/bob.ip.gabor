@@ -81,11 +81,9 @@ static int PyBobIpGaborJetSimilarity_init(PyBobIpGaborJetSimilarityObject* self,
       Similarity_doc.print_usage();
       return -1;
     }
-    auto _ = make_xsafe(gwt);
-//    Py_XINCREF(gwt);
     try{
       if (gwt)
-        self->cxx.reset(new bob::ip::gabor::Similarity(bob::ip::gabor::Similarity::name_to_type(name), *gwt->cxx));
+        self->cxx.reset(new bob::ip::gabor::Similarity(bob::ip::gabor::Similarity::name_to_type(name), gwt->cxx));
       else
         self->cxx.reset(new bob::ip::gabor::Similarity(bob::ip::gabor::Similarity::name_to_type(name)));
     }
@@ -123,6 +121,17 @@ PyObject* PyBobIpGaborJetSimilarity_type(PyBobIpGaborJetSimilarityObject* self, 
   return Py_BuildValue("s", self->cxx->type().c_str());
 }
 
+static auto transform_doc = bob::extension::VariableDoc(
+  "transform",
+  ":py:class:`bob.ip.gabor.Transform` or ``None``",
+  "The Gabor wavelet transform used in the similarity class; can be ``None`` for similarity functions that do not compute disparities"
+);
+PyObject* PyBobIpGaborJetSimilarity_transform(PyBobIpGaborJetSimilarityObject* self, void*){
+  PyBobIpGaborWaveletTransformObject* transform = (PyBobIpGaborWaveletTransformObject*)PyBobIpGaborWaveletTransformType.tp_alloc(&PyBobIpGaborWaveletTransformType, 0);
+  transform->cxx = self->cxx->transform();
+  return Py_BuildValue("N", transform);
+}
+
 static auto lastDisparity_doc = bob::extension::VariableDoc(
   "last_disparity",
   "(float, float)",
@@ -140,6 +149,13 @@ static PyGetSetDef PyBobIpGaborJetSimilarity_getseters[] = {
     (getter)PyBobIpGaborJetSimilarity_type,
     0,
     type_doc.doc(),
+    0
+  },
+  {
+    transform_doc.name(),
+    (getter)PyBobIpGaborJetSimilarity_transform,
+    0,
+    transform_doc.doc(),
     0
   },
   {
@@ -186,10 +202,6 @@ static PyObject* PyBobIpGaborJetSimilarity_similarity(PyBobIpGaborJetSimilarityO
     return 0;
   }
 
-  auto j1_ = make_safe(jet1), j2_ = make_safe(jet2);
-//  Py_INCREF(jet1);
-//  Py_INCREF(jet2);
-
   try {
     double sim = self->cxx->similarity(*jet1->cxx, *jet2->cxx);
     return Py_BuildValue("d", sim);
@@ -231,10 +243,6 @@ static PyObject* PyBobIpGaborJetSimilarity_disparity(PyBobIpGaborJetSimilarityOb
     similarity_doc.print_usage();
     return 0;
   }
-
-  auto j1_ = make_safe(jet1), j2_ = make_safe(jet2);
-//  Py_INCREF(jet1);
-//  Py_INCREF(jet2);
 
   try {
     const auto& disp = self->cxx->disparity(*jet1->cxx, *jet2->cxx);

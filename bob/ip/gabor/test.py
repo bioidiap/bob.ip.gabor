@@ -163,7 +163,33 @@ def test_jet():
   assert numpy.allclose(jet2.jet, reference_jet.jet)
 
 
+def test_similarity():
+  # here we need the same GWT parameters as used to generate the Gabor jet!
+  gwt = bob.ip.gabor.Transform()
+  jet = bob.ip.gabor.Jet(bob.io.base.HDF5File(bob.io.base.test_utils.datafile("testjet.hdf5", 'bob.ip.gabor')))
+  jet.normalize()
+
+  for i, type in enumerate(('ScalarProduct', 'Canberra', 'Disparity', 'PhaseDiff', 'PhaseDiffPlusCanberra')):
+    sim = bob.ip.gabor.Similarity(type=type, transform=gwt)
+    assert (sim.similarity(jet,jet) - 1.) < 1e-8
+    disp = sim.last_disparity
+    if i < 2:
+      assert math.isnan(disp[0])
+      assert math.isnan(disp[1])
+    else:
+      assert abs(disp[0]) < 1e-8
+      assert abs(disp[1]) < 1e-8
+      assert (sim.disparity(jet,jet) == disp)
+
+  # load similarity from file
+  sim_file = bob.io.base.test_utils.datafile("testsim.hdf5", 'bob.ip.gabor')
+  if regenerate_references:
+    sim.save(bob.io.base.HDF5File(sim_file, 'w'))
+  reference_sim = bob.ip.gabor.Similarity(bob.io.base.HDF5File(sim_file))
+  assert reference_sim.transform == gwt
+
+
 if __name__ == '__main__':
-  test_jet()
+  test_similarity()
 
 

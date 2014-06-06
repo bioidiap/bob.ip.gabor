@@ -59,10 +59,12 @@ setup(
           "bob/ip/gabor/cpp/Wavelet.cpp",
           "bob/ip/gabor/cpp/Transform.cpp",
           "bob/ip/gabor/cpp/Jet.cpp",
+          "bob/ip/gabor/cpp/Similarity.cpp",
 
           "bob/ip/gabor/wavelet.cpp",
           "bob/ip/gabor/transform.cpp",
           "bob/ip/gabor/jet.cpp",
+          "bob/ip/gabor/similarity.cpp",
           "bob/ip/gabor/main.cpp",
         ],
         packages = packages,
