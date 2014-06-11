@@ -69,6 +69,34 @@ bob::ip::gabor::Jet& bob::ip::gabor::Jet::operator = (
   return *this;
 }
 
+void bob::ip::gabor::Jet::init(
+  const blitz::Array<std::complex<double>,1>& data,
+  bool normalize
+){
+  m_jet.resize(2, data.extent(0));
+  m_jet(0, blitz::Range::all()) = blitz::abs(data);
+  m_jet(1, blitz::Range::all()) = blitz::arg(data);
+
+  if (normalize)
+    this->normalize();
+}
+
+void bob::ip::gabor::Jet::init(
+  const blitz::Array<std::complex<double>,3>& trafo_image,
+  const blitz::TinyVector<int,2>& position,
+  bool normalize
+){
+  if (position[0] < 0 || position[0] >= trafo_image.extent(1) ||
+      position[1] < 0 || position[1] >= trafo_image.extent(2)
+  ){
+    throw std::runtime_error((boost::format("Jet: position (%d, %d) to extract Gabor jet out of range [0, %d[, [0, %d[") % position[0] % position[1] % trafo_image.extent(1) % trafo_image.extent(2)).str());
+  }
+
+  blitz::Array<std::complex<double>,1> data = trafo_image(blitz::Range::all(), position[0], position[1]);
+  init(data, normalize);
+}
+
+
 bool bob::ip::gabor::Jet::operator == (
   const Jet& other
 ) const {

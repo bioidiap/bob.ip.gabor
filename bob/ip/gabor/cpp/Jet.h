@@ -53,6 +53,19 @@ namespace bob {
           //! Assignment operator
           Jet& operator=(const Jet& other);
 
+          //! Assignment from data
+          void init(
+            const blitz::Array<std::complex<double>,1>& data,
+            bool normalize = true
+          );
+
+          //! assignment from trafo image data
+          void init(
+            const blitz::Array<std::complex<double>,3>& trafo_image,
+            const blitz::TinyVector<int,2>& position,
+            bool normalize = true
+          );
+
           //! Equality operator
           bool operator==(const Jet& other) const;
 
