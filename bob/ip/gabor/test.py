@@ -136,12 +136,17 @@ def test_jet():
 
   trafo_image = gwt(image)
 
+
+  # get an empty jet of size 5
+  jet = bob.ip.gabor.Jet(5)
+  assert numpy.all(jet.jet == numpy.zeros((2,5)))
+
   def get():
     jet = bob.ip.gabor.Jet(trafo_image=trafo_image, position=(-1,-1), normalize=True)
   nose.tools.assert_raises(RuntimeError, get)
   def get2():
     jet = bob.ip.gabor.Jet(trafo_image=trafo_image)
-  nose.tools.assert_raises(TypeError, get2)
+  nose.tools.assert_raises(RuntimeError, get2)
   def cmplx():
     jet = bob.ip.gabor.Jet(complex=trafo_image, position=(5,5), normalize=True)
   nose.tools.assert_raises(TypeError, cmplx)
@@ -161,6 +166,67 @@ def test_jet():
     jet2.save(bob.io.base.HDF5File(jet_file, 'w'))
   reference_jet = bob.ip.gabor.Jet(bob.io.base.HDF5File(jet_file))
   assert numpy.allclose(jet2.jet, reference_jet.jet)
+
+  # test jet averaging
+  d = numpy.conjugate(jet1.complex)
+  conjugated = bob.ip.gabor.Jet(d)
+  averaged = bob.ip.gabor.Jet([jet1, conjugated], True)
+  # assert that the phases are either 0 or PI
+  for p in averaged.phase:
+    assert abs(p) < 1e-8 or abs(abs(p)-math.pi) < 1e-8
+
+
+
+
+def test_graph():
+  # create grid graph
+  graph = bob.ip.gabor.Graph(first=(10,10), last=(105,60), step=(20,10))
+  assert graph.number_of_nodes == 30
+  assert graph.nodes[0] == (10,10)
+  assert graph.nodes[-1] == (90,60)
+  # set graph nodes
+  graph.nodes = [(0,0), (1,1)]
+  assert graph.number_of_nodes == 2
+  assert graph.nodes[0] == (0,0)
+  assert graph.nodes[1] == (1,1)
+
+  # create graph
+  graph = bob.ip.gabor.Graph((177,148), (191,142), between=3, above=1, along=1, below=4)
+  assert graph.number_of_nodes == 42
+  assert (177,148) in graph.nodes
+  assert (191,142) in graph.nodes
+
+  # test IO
+  graph_file = bob.io.base.test_utils.datafile("testgraph.hdf5", 'bob.ip.gabor')
+  if regenerate_references:
+    graph.save(bob.io.base.HDF5File(graph_file, 'w'))
+  reference_graph = bob.ip.gabor.Graph(bob.io.base.HDF5File(graph_file))
+  assert graph == reference_graph
+
+  # test extraction from image
+  image = bob.ip.color.rgb_to_gray(bob.io.base.load(bob.io.base.test_utils.datafile("testimage.jpg", 'bob.ip.gabor')))
+  gwt = bob.ip.gabor.Transform()
+  trafo_image = gwt(image)
+
+  def empty():
+    graph.extract(trafo_image, [])
+  nose.tools.assert_raises(RuntimeError, empty)
+
+  def wrong():
+    graph.extract(trafo_image, [(1,2)]*graph.number_of_nodes)
+  nose.tools.assert_raises(RuntimeError, wrong)
+
+  jets = [bob.ip.gabor.Jet() for i in range(graph.number_of_nodes)]
+  graph.extract(trafo_image, jets)
+  jets_file = bob.io.base.test_utils.datafile("testjets.hdf5", 'bob.ip.gabor')
+  if regenerate_references:
+    bob.ip.gabor.save_jets(jets, bob.io.base.HDF5File(jets_file, 'w'))
+  reference_jets = bob.ip.gabor.load_jets(bob.io.base.HDF5File(jets_file))
+
+  assert len(jets) == len(reference_jets)
+  for i in range(len(jets)):
+    assert numpy.allclose(jets[i].jet, reference_jets[i].jet)
+
 
 
 def test_similarity():
@@ -190,6 +256,6 @@ def test_similarity():
 
 
 if __name__ == '__main__':
-  test_similarity()
+  test_graph()
 
 

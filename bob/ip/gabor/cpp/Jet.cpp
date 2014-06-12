@@ -10,6 +10,13 @@
 
 #include "Jet.h"
 
+bob::ip::gabor::Jet::Jet(
+  int length
+):
+  m_jet(2, length)
+{
+  m_jet = 0.;
+}
 
 bob::ip::gabor::Jet::Jet(
   const blitz::Array<std::complex<double>,3>& trafo_image,
@@ -44,6 +51,16 @@ bob::ip::gabor::Jet::Jet(
   if (normalize)
     this->normalize();
 }
+
+
+bob::ip::gabor::Jet::Jet(
+  const std::vector<boost::shared_ptr<bob::ip::gabor::Jet>>& jets,
+  bool normalize
+)
+{
+  average(jets, normalize);
+}
+
 
 bob::ip::gabor::Jet::Jet(
   bob::io::HDF5File& f
@@ -105,6 +122,24 @@ bool bob::ip::gabor::Jet::operator == (
 
 const blitz::Array<std::complex<double>,1> bob::ip::gabor::Jet::complex() const {
   return blitz::Array<std::complex<double>,1>(blitz::polar(this->abs(), this->phase()));
+}
+
+
+void bob::ip::gabor::Jet::average(const std::vector<boost::shared_ptr<bob::ip::gabor::Jet>>& jets, bool normalize){
+  if (jets.empty()){
+    throw std::runtime_error("At least one Gabor jet is required to compute the average from.");
+  }
+  // initialize with 0
+  blitz::Array<std::complex<double>,1> mean(jets[0]->jet().extent(1));
+  mean = 0.;
+
+  for (auto it = jets.begin(); it != jets.end(); ++it){
+    mean += (*it)->complex();
+  }
+  mean /= (double)jets.size();
+
+  // set the complex values, and normalize if wanted
+  init(mean, normalize);
 }
 
 void bob::ip::gabor::Jet::save(bob::io::HDF5File& f) const{

@@ -19,8 +19,8 @@
  * @param below    Number of nodes to place below the eyes (excluding the eye nodes themselves)
  */
 bob::ip::gabor::Graph::Graph(
-  blitz::TinyVector<int,2> lefteye,
   blitz::TinyVector<int,2> righteye,
+  blitz::TinyVector<int,2> lefteye,
   int between,
   int along,
   int above,
@@ -28,8 +28,8 @@ bob::ip::gabor::Graph::Graph(
 )
 {
   // shortcuts for eye positions
-  int lex = lefteye[1], ley = lefteye[0];
   int rex = righteye[1], rey = righteye[0];
+  int lex = lefteye[1], ley = lefteye[0];
   // compute grid parameters
   double stepx = double(lex - rex) / double(between+1);
   double stepy = double(ley - rey) / double(between+1);
@@ -76,6 +76,19 @@ bob::ip::gabor::Graph::Graph(
     }
   }
 }
+
+bob::ip::gabor::Graph::Graph(
+  const std::vector<blitz::TinyVector<int,2>>& nodes
+):m_nodes(nodes)
+{
+}
+
+bob::ip::gabor::Graph::Graph(
+  bob::io::HDF5File& hdf5
+){
+  load(hdf5);
+}
+
 
 /**
  * Generates this machine as a copy of the other one

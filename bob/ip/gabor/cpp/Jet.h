@@ -31,6 +31,11 @@ namespace bob {
 
         public:
 
+          //! creates an empty Gabor jet of the given length
+          Jet(
+            int length = 0
+          );
+
           //! Extracts the Gabor jet from a trafo image at the given position
           Jet(
             const blitz::Array<std::complex<double>,3>& trafo_image,
@@ -41,6 +46,12 @@ namespace bob {
           //! creates a Gabor jet from a vector of complex
           Jet(
             const blitz::Array<std::complex<double>,1>& data,
+            bool normalize = true
+          );
+
+          //! creates a Gabor jet by averaging other jets
+          Jet(
+            const std::vector<boost::shared_ptr<bob::ip::gabor::Jet>>& jets,
             bool normalize = true
           );
 
@@ -66,6 +77,12 @@ namespace bob {
             bool normalize = true
           );
 
+          //! average the given vector of Jets and store it in *this
+          void average(
+            const std::vector<boost::shared_ptr<bob::ip::gabor::Jet>>& jets,
+            bool normalize = true
+          );
+
           //! Equality operator
           bool operator==(const Jet& other) const;
 
@@ -86,6 +103,9 @@ namespace bob {
 
           //! The vector of complex values
           const blitz::Array<std::complex<double>,1> complex() const;
+
+          //! The length of the Gabor jet
+          int length() const{return m_jet.extent(1);}
 
           //! \brief saves the parameters of this Gabor wavelet family to file
           void save(bob::io::HDF5File& file) const;

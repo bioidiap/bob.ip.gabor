@@ -1,6 +1,7 @@
 from ._library import *
 from . import version
 from .version import module as __version__
+from .auxiliar import load_jets, save_jets
 
 def get_config():
   """Returns a string containing the configuration information.

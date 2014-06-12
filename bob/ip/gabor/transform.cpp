@@ -79,7 +79,7 @@ static int PyBobIpGaborWaveletTransform_init(PyBobIpGaborWaveletTransformObject*
   } else {
     int scales = 5, directions = 8;
     double sigma = 2.*M_PI, k_max = M_PI/2., k_fac = sqrt(2.), pow_k = 0., eps=1e-10;
-    PyObject* dc;
+    PyObject* dc = 0;
     if (
       !PyArg_ParseTupleAndKeywords(
         args, kwargs,
@@ -92,7 +92,7 @@ static int PyBobIpGaborWaveletTransform_init(PyBobIpGaborWaveletTransformObject*
       Transform_doc.print_usage();
       return -1;
     }
-    self->cxx.reset(new bob::ip::gabor::Transform(scales, directions, sigma, k_max, k_fac, pow_k, PyObject_IsTrue(dc), eps));
+    self->cxx.reset(new bob::ip::gabor::Transform(scales, directions, sigma, k_max, k_fac, pow_k, !dc || PyObject_IsTrue(dc), eps));
   }
   return 0;
 }
@@ -127,7 +127,7 @@ static PyObject* PyBobIpGaborWaveletTransform_RichCompare(PyBobIpGaborWaveletTra
     PyErr_SetString(PyExc_RuntimeError, e.what());
   }
   catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot transform input: unknown exception caught", Py_TYPE(self)->tp_name);
+    PyErr_Format(PyExc_RuntimeError, "%s cannot compare Transform objects: unknown exception caught", Py_TYPE(self)->tp_name);
   }
   return 0;
 }

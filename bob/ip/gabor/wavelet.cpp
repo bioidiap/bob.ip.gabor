@@ -52,7 +52,7 @@ static int PyBobIpGaborWavelet_init(PyBobIpGaborWaveletObject* self, PyObject* a
   blitz::TinyVector<int,2> r(-1,-1);
   blitz::TinyVector<double,2> k;
   double sigma = 2.*M_PI, pow_k = 0., eps=1e-10;
-  PyObject* dc;
+  PyObject* dc = 0;
 
   if (
     !PyArg_ParseTupleAndKeywords(
@@ -67,7 +67,7 @@ static int PyBobIpGaborWavelet_init(PyBobIpGaborWaveletObject* self, PyObject* a
     return -1;
   }
 
-  self->cxx.reset(new bob::ip::gabor::Wavelet(r, k, sigma, pow_k, PyObject_IsTrue(dc), eps));
+  self->cxx.reset(new bob::ip::gabor::Wavelet(r, k, sigma, pow_k, !dc || PyObject_IsTrue(dc), eps));
 
   return 0;
 

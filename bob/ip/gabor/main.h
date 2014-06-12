@@ -18,6 +18,7 @@
 #include "cpp/Wavelet.h"
 #include "cpp/Transform.h"
 #include "cpp/Jet.h"
+#include "cpp/Graph.h"
 #include "cpp/Similarity.h"
 
 // Gabor wavelet
@@ -57,6 +58,19 @@ extern PyTypeObject PyBobIpGaborJetType;
 bool init_BobIpGaborJet(PyObject* module);
 
 int PyBobIpGaborJet_Check(PyObject* o);
+
+
+// Gabor graph
+typedef struct {
+  PyObject_HEAD
+  boost::shared_ptr<bob::ip::gabor::Graph> cxx;
+} PyBobIpGaborGraphObject;
+
+extern PyTypeObject PyBobIpGaborGraphType;
+
+bool init_BobIpGaborGraph(PyObject* module);
+
+int PyBobIpGaborGraph_Check(PyObject* o);
 
 
 // Gabor jet similarity

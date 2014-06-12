@@ -31,8 +31,8 @@ namespace bob {
 
           //! creates a face grid graph using two reference positions, namely, the eyes
           Graph(
-            blitz::TinyVector<int,2> lefteye,
             blitz::TinyVector<int,2> righteye,
+            blitz::TinyVector<int,2> lefteye,
             int between,
             int along,
             int above,
@@ -51,6 +51,11 @@ namespace bob {
             const std::vector<blitz::TinyVector<int,2>>& nodes
           );
 
+          //! creates a graph from file
+          Graph(
+            bob::io::HDF5File& hdf5
+          );
+
           //! Copy constructor
           Graph(const Graph& other);
 
@@ -62,6 +67,9 @@ namespace bob {
 
           //! returns the number of nodes of this graph
           int numberOfNodes() const {return m_nodes.size();}
+
+          //! sets the node positions
+          void nodes(const std::vector<blitz::TinyVector<int,2>>& nodes) {m_nodes = nodes;}
 
           //! Returns the generated node positions (in the usual order (y,x))
           const std::vector<blitz::TinyVector<int,2>>& nodes() const {return m_nodes;}

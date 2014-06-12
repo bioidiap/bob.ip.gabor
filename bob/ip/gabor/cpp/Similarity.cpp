@@ -69,7 +69,7 @@ double bob::ip::gabor::Similarity::similarity(const Jet& jet1, const Jet& jet2) 
         // Canberra similarity
         double sim = 0.;
         const auto& a1 = jet1.abs(),& a2 = jet2.abs();
-        int size = a1.extent(0);
+        int size = jet1.length();
         for (int j = 0; j < size; ++j){
           sim += 1. - std::abs(a1(j) - a2(j)) / (a1(j) + a2(j));
         }
@@ -102,7 +102,7 @@ double bob::ip::gabor::Similarity::similarity(const Jet& jet1, const Jet& jet2) 
         for (int j = 0; j < m_phase_differences.extent(0); ++j){
           sum += cos(m_phase_differences(j) - m_disparity[0] * kernels[j][0] - m_disparity[1] * kernels[j][1]);
         }
-        return sum / jet1.jet().extent(1);
+        return sum / jet1.length();
       } // PHASE_DIFF
 
       case PHASE_DIFF_PLUS_CANBERRA:{
@@ -115,7 +115,7 @@ double bob::ip::gabor::Similarity::similarity(const Jet& jet1, const Jet& jet2) 
           // add Canberra term
           sum += 1. - std::abs(a1(j) - a2(j)) / (a1(j) + a2(j));
         }
-        return sum / (2. * jet1.jet().extent(1));
+        return sum / (2. * jet1.length());
       }
 
       default:
@@ -172,11 +172,11 @@ void bob::ip::gabor::Similarity::compute_confidences(const Jet& jet1, const Jet&
   if (m_type < DISPARITY){
     throw std::runtime_error("The disparity computation is not supported for similarity type " + type());
   }
+  if (jet1.length() != m_confidences.extent(0)){
+    throw std::runtime_error((boost::format("The size of the Gabor jet (%d) and the number of wavelets in the Gabor wavelet transform (%d) differ!") % jet1.length() % m_confidences.extent(0)).str());
+  }
   // first, fill confidence and phase difference vectors
   const auto& a1 = jet1.abs(),& a2 = jet2.abs(),& p1 = jet1.phase(),& p2 = jet2.phase();
-  if (a1.extent(0) != m_confidences.extent(0)){
-    throw std::runtime_error((boost::format("The size of the Gabor jet (%d) and the number of wavelets in the Gabor wavelet transform (%d) differ!") % a1.extent(0) % m_confidences.extent(0)).str());
-  }
   for (int j = 0; j < m_confidences.extent(0); ++j){
     m_confidences(j) = a1(j) * a2(j);
     m_phase_differences(j) = adjustPhase(p1(j) - p2(j));

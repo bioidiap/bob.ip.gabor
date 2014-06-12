@@ -4,15 +4,13 @@
 ..
 .. Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
 
-=================================
- Bob's Color Conversion Routines
-=================================
+==============================
+ Bob's Gabor wavelet routines
+==============================
 
 .. todolist::
 
-This module contains base functionality from Bob bound to Python, available in
-the C++ counter-part ``bob::ip``. It includes utilities for drawing lines and
-boxes in images.
+This module contains the C++ source code and the Python bindings for classes that handle the Gabor wavelet transform and Gabor jet similarities.
 
 Documentation
 -------------

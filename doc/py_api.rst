@@ -10,6 +10,20 @@ This section includes information for using the pure Python API of
 ``bob.ip.gabor``.
 
 
+List of Classes and Functions
+-----------------------------
+
+.. autosummary::
+   bob.ip.gabor.Wavelet
+   bob.ip.gabor.Transform
+   bob.ip.gabor.Jet
+   bob.ip.gabor.Graph
+   bob.ip.gabor.load_jets
+   bob.ip.gabor.save_jets
+
+Detailed Information
+--------------------
+
 .. automodule:: bob.ip.gabor
 
 
