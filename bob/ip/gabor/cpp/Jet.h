@@ -70,8 +70,8 @@ namespace bob {
             bool normalize = true
           );
 
-          //! assignment from trafo image data
-          void init(
+          //! extract from trafo image
+          void extract(
             const blitz::Array<std::complex<double>,3>& trafo_image,
             const blitz::TinyVector<int,2>& position,
             bool normalize = true

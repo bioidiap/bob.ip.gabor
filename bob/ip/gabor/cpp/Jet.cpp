@@ -98,7 +98,7 @@ void bob::ip::gabor::Jet::init(
     this->normalize();
 }
 
-void bob::ip::gabor::Jet::init(
+void bob::ip::gabor::Jet::extract(
   const blitz::Array<std::complex<double>,3>& trafo_image,
   const blitz::TinyVector<int,2>& position,
   bool normalize

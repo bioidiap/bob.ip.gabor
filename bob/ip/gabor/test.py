@@ -154,11 +154,19 @@ def test_jet():
   # extract two Gabor jets
   jet1 = bob.ip.gabor.Jet(trafo_image=trafo_image, position=(5,5), normalize=True)
   jet2 = bob.ip.gabor.Jet(complex=trafo_image[:,5,5], normalize=False)
+  jet3 = bob.ip.gabor.Jet()
+  jet3.init(complex=trafo_image[:,5,5], normalize=True)
+  jet4 = bob.ip.gabor.Jet()
+  jet4.extract(trafo_image=trafo_image, position=(5,5), normalize=True)
 
   assert len(jet1.abs) == gwt.number_of_wavelets
   assert abs(jet1.normalize() - 1.) < 1e-8
   assert not numpy.allclose(jet1.abs, jet2.abs)
   assert numpy.allclose(jet1.phase, jet2.phase)
+  assert jet3.length == gwt.number_of_wavelets
+  assert jet4.length == gwt.number_of_wavelets
+  assert numpy.allclose(jet1.jet, jet3.jet)
+  assert numpy.allclose(jet1.jet, jet4.jet)
 
   # check the first (10,10) pixel of the Gabor wavelet transform to be the same as last time
   jet_file = bob.io.base.test_utils.datafile("testjet.hdf5", 'bob.ip.gabor')
@@ -174,7 +182,6 @@ def test_jet():
   # assert that the phases are either 0 or PI
   for p in averaged.phase:
     assert abs(p) < 1e-8 or abs(abs(p)-math.pi) < 1e-8
-
 
 
 

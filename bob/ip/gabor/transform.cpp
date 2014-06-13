@@ -78,7 +78,7 @@ static int PyBobIpGaborWaveletTransform_init(PyBobIpGaborWaveletTransformObject*
     self->cxx.reset(new bob::ip::gabor::Transform(*hdf5->f));
   } else {
     int scales = 5, directions = 8;
-    double sigma = 2.*M_PI, k_max = M_PI/2., k_fac = sqrt(2.), pow_k = 0., eps=1e-10;
+    double sigma = 2.*M_PI, k_max = M_PI/2., k_fac = sqrt(.5), pow_k = 0., eps=1e-10;
     PyObject* dc = 0;
     if (
       !PyArg_ParseTupleAndKeywords(

@@ -36,7 +36,7 @@ static auto Similarity_doc = bob::extension::ClassDoc(
   )
   .add_prototype("type, [transform]", "")
   .add_prototype("hdf5", "")
-  .add_parameter("type", "str", "The type of the Gabor jet similarity function; might be one of ('ScalarProduct', 'Canberra', 'Disparity', 'PhaseDiff', 'PhaseDiffPlusCanberra')")
+  .add_parameter("type", "str", "The type of the Gabor jet similarity function; might be one of (``'ScalarProduct'``, ``'Canberra'``, ``'Disparity'``, ``'PhaseDiff'``, ``'PhaseDiffPlusCanberra'``)")
   .add_parameter("transform", ":py:class:`bob.ip.gabor.Transform`", "The Gabor wavelet transform class that was used to generate the Gabor jets; only required for disparity-based similarity functions ('Disparity', 'PhaseDiff', 'PhaseDiffPlusCanberra')")
   .add_parameter("hdf5", ":py:class:`bob.io.base.HD5Ffile`", "An HDF5 file open for reading to load the parametrization of the Gabor wavelet similarity from")
 );

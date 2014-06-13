@@ -165,7 +165,7 @@ void bob::ip::gabor::Graph::extract(
   auto nit = m_nodes.begin();
   for (; nit != m_nodes.end(); ++jit, ++nit){
     if (*jit){
-      (*jit)->init(trafo_image, *nit, normalize);
+      (*jit)->extract(trafo_image, *nit, normalize);
     } else {
       jit->reset(new Jet(trafo_image, *nit, normalize));
     }

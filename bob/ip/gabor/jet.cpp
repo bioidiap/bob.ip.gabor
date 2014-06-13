@@ -234,7 +234,7 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
           Jet_doc.print_usage();
           return -1;
         }
-        self->cxx.reset(new bob::ip::gabor::Jet(*PyBlitzArrayCxx_AsBlitz<std::complex<double>,3>(data), pos, PyObject_IsTrue(norm)));
+        self->cxx.reset(new bob::ip::gabor::Jet(*PyBlitzArrayCxx_AsBlitz<std::complex<double>,3>(data), pos, !norm || PyObject_IsTrue(norm)));
         return 0;
       }
       default:
@@ -304,6 +304,15 @@ PyObject* PyBobIpGaborJet_complex(PyBobIpGaborJetObject* self, void*){
   return PyBlitzArrayCxx_AsConstNumpy(self->cxx->complex());
 }
 
+static auto length_doc = bob::extension::VariableDoc(
+  "length",
+  "int",
+  "The number of elements in the Gabor jet"
+);
+PyObject* PyBobIpGaborJet_length(PyBobIpGaborJetObject* self, void*){
+  return Py_BuildValue("i", self->cxx->length());
+}
+
 
 static PyGetSetDef PyBobIpGaborJet_getseters[] = {
   {
@@ -332,6 +341,13 @@ static PyGetSetDef PyBobIpGaborJet_getseters[] = {
     (getter)PyBobIpGaborJet_complex,
     0,
     complex_doc.doc(),
+    0
+  },
+  {
+    length_doc.name(),
+    (getter)PyBobIpGaborJet_length,
+    0,
+    length_doc.doc(),
     0
   },
   {0}  /* Sentinel */
@@ -375,6 +391,89 @@ static PyObject* PyBobIpGaborJet_normalize(PyBobIpGaborJetObject* self, PyObject
     return 0;
   }
 }
+
+static auto init_doc = bob::extension::FunctionDoc(
+  "init",
+  "Initializes the Gabor jet with the given complex-valued data",
+  0,
+  true
+)
+.add_prototype("complex, [normalize]")
+.add_parameter("complex", "array_like(complex,1D)", "The vector of complex data to initialize the Gabor jet with")
+.add_parameter("normalize", "bool", "[default: True] Should the newly generated Gabor jet be normalized to unit Euclidean length?")
+;
+static PyObject* PyBobIpGaborJet_init_(PyBobIpGaborJetObject* self, PyObject* args, PyObject* kwargs) {
+
+  static char* kwlist[] = {c("complex"), c("normalize"), 0};
+
+  try{
+    PyBlitzArrayObject* data;
+    PyObject* norm = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&|O!", kwlist, &PyBlitzArray_Converter, &data, &PyBool_Type, &norm)){
+      init_doc.print_usage();
+      return 0;
+    }
+    auto _ = make_safe(data);
+    if (data->type_num != NPY_COMPLEX128 || data->ndim != 1) {
+      PyErr_Format(PyExc_TypeError, "`%s' only supports 128-bit complex 1D arrays for property `complex'", Py_TYPE(self)->tp_name);
+      init_doc.print_usage();
+      return 0;
+    }
+    self->cxx->init(*PyBlitzArrayCxx_AsBlitz<std::complex<double>,1>(data), !norm || PyObject_IsTrue(norm));
+    Py_RETURN_NONE;
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "%s cannot initialize Gabor jet: unknown exception caught", Py_TYPE(self)->tp_name);
+    return 0;
+  }
+}
+
+static auto extract_doc = bob::extension::FunctionDoc(
+  "extract",
+  "Initializes the Gabor jet with the given complex-valued data extracted from the given trafo image at the given position",
+  0,
+  true
+)
+.add_prototype("trafo_image, position, [normalize]")
+.add_parameter("trafo_image", "array_like(complex, 3D)", "The result of the Gabor wavelet transform, i.e., of :py:func:`bob.ip.gabor.Transform.transform`")
+.add_parameter("position", "(int, int)", "The position, where the Gabor jet should be extracted")
+.add_parameter("normalize", "bool", "[default: True] Should the newly generated Gabor jet be normalized to unit Euclidean length?")
+;
+static PyObject* PyBobIpGaborJet_extract(PyBobIpGaborJetObject* self, PyObject* args, PyObject* kwargs) {
+
+  static char* kwlist[] = {c("trafo_image"), c("position"), c("normalize"), 0};
+
+  try{
+    PyBlitzArrayObject* data;
+    PyObject* norm = 0;
+    blitz::TinyVector<int,2> pos;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&(ii)|O!", kwlist, &PyBlitzArray_Converter, &data, &pos[0], &pos[1], &PyBool_Type, &norm)){
+      extract_doc.print_usage();
+      return 0;
+    }
+    auto _ = make_safe(data);
+    if (data->type_num != NPY_COMPLEX128 || data->ndim != 3) {
+      PyErr_Format(PyExc_TypeError, "`%s' only supports 128-bit complex 3D arrays for property `trafo_image'", Py_TYPE(self)->tp_name);
+      extract_doc.print_usage();
+      return 0;
+    }
+    self->cxx->extract(*PyBlitzArrayCxx_AsBlitz<std::complex<double>,3>(data), pos, !norm || PyObject_IsTrue(norm));
+    Py_RETURN_NONE;
+  }
+  catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "%s cannot extract Gabor jet: unknown exception caught", Py_TYPE(self)->tp_name);
+    return 0;
+  }
+}
+
 
 static auto load_doc = bob::extension::FunctionDoc(
   "load",
@@ -456,6 +555,18 @@ static PyMethodDef PyBobIpGaborJet_methods[] = {
     (PyCFunction)PyBobIpGaborJet_normalize,
     METH_VARARGS|METH_KEYWORDS,
     normalize_doc.doc()
+  },
+  {
+    init_doc.name(),
+    (PyCFunction)PyBobIpGaborJet_init_,
+    METH_VARARGS|METH_KEYWORDS,
+    init_doc.doc()
+  },
+  {
+    extract_doc.name(),
+    (PyCFunction)PyBobIpGaborJet_extract,
+    METH_VARARGS|METH_KEYWORDS,
+    extract_doc.doc()
   },
   {
     load_doc.name(),
