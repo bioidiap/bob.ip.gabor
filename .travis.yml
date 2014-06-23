@@ -8,7 +8,7 @@ matrix:
     - secure: ZgUPtwmsOIGnb4aevKHxm2YqTRsKKt+2MAcsgqhG8ClD4OOEUV7nyo2tVZt3RcoURjZGoCaLfWYI4MkzfwD/m1GjA1BcEi5DeLUEYvEIv3N69+eTldZBHCONL3heLbrmNHBLP0tyxHV9eSd2B1qsknn4ndyGXJm6Llu9J8Frv8E=
   - python: 3.2
     env:
-    - NUMPYSPEC===1.7.1
+    - NUMPYSPEC===1.8.0
   - python: 3.3
     env:
     - NUMPYSPEC===1.8.0
@@ -17,6 +17,7 @@ before_install:
 - sudo add-apt-repository -y ppa:biometrics/bob.preview
 - sudo apt-get update -qq
 - sudo apt-get install -qq --force-yes bob-dev libjpeg8-dev libnetpbm10-dev libpng12-dev libtiff4-dev libgif-dev
+- sudo apt-get install -qq --force-yes dvipng texlive-latex-base texlive-latex-extra
 - if [ -n "${NUMPYSPEC}" ]; then sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran; fi
 - if [ -n "${NUMPYSPEC}" ]; then pip install --upgrade pip setuptools; fi
 - if [ -n "${NUMPYSPEC}" ]; then pip install --find-links http://wheels.astropy.org/ --find-links http://wheels2.astropy.org/ --use-wheel numpy$NUMPYSPEC sphinx nose matplotlib; fi
