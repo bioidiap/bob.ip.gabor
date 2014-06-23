@@ -17,6 +17,9 @@
 
 static inline char* c(const char* o){return const_cast<char*>(o);}
 
+#if PY_VERSION_HEX >= 0x03000000
+#define PyInt_Check PyLong_Check
+#endif
 
 /******************************************************************/
 /************ Constructor Section *********************************/
@@ -88,7 +91,7 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
         } else {
           // called via dict
           PyObject* k[] = {Py_BuildValue("s", kwlist0[0]), Py_BuildValue("s", kwlist1[0]), Py_BuildValue("s", kwlist2[0]), Py_BuildValue("s", kwlist3[0])};
-          boost::shared_ptr<PyObject> k_[] = {make_safe(k[0]), make_safe(k[1]), make_safe(k[2]), make_safe(k[3])};
+          auto k0_ = make_safe(k[0]), k1_ = make_safe(k[1]), k2_ = make_safe(k[2]), k3_ = make_safe(k[3]);
           if (PyDict_Contains(kwargs, k[0])) which = 0;
           else if (PyDict_Contains(kwargs, k[1])) which = 1;
           else if (PyDict_Contains(kwargs, k[2])) which = 2;
@@ -120,7 +123,7 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
               }
             } else { // args != 2
               PyObject* k[] = {Py_BuildValue("s", kwlist3[1]), Py_BuildValue("s", kwlist4[1])};
-              boost::shared_ptr<PyObject> k_[] = {make_safe(k[0]), make_safe(k[1])};
+              auto k0_ = make_safe(k[0]), k1_ = make_safe(k[1]);
               if (PyDict_Contains(kwargs, k[0])) which = 3;
               else if (PyDict_Contains(kwargs, k[1])) which = 4;
               else{
@@ -136,7 +139,7 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
           }
         } else { // only dict
           PyObject* k[] = {Py_BuildValue("s", kwlist2[0]), Py_BuildValue("s", kwlist3[0]), Py_BuildValue("s", kwlist4[0]), Py_BuildValue("s", kwlist3[1]), Py_BuildValue("s", kwlist4[1])};
-          boost::shared_ptr<PyObject> k_[] = {make_safe(k[0]), make_safe(k[1]), make_safe(k[2]), make_safe(k[3]), make_safe(k[4])};
+          auto k0_ = make_safe(k[0]), k1_ = make_safe(k[1]), k2_ = make_safe(k[2]), k3_ = make_safe(k[3]), k4_ = make_safe(k[4]);
           if (PyDict_Contains(kwargs, k[0]) && PyDict_Contains(kwargs, k[3])) which = 2;
           else if (PyDict_Contains(kwargs, k[1]) && PyDict_Contains(kwargs, k[3])) which = 3;
           else if (PyDict_Contains(kwargs, k[2]) && PyDict_Contains(kwargs, k[4])) which = 4;
