@@ -14,7 +14,7 @@ package_dir = os.path.join(package_dir, 'bob', 'ip', 'gabor')
 include_dirs = [package_dir, bob.io.base.get_include()]
 
 packages = ['bob-io >= 1.2.2', 'bob-sp >= 1.2.2', 'bob-ip >= 1.2.2', 'boost']
-version = '2.0.0a0'
+version = '2.0.0a1'
 
 setup(
 
