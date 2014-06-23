@@ -5,8 +5,8 @@
  * @brief Bindings to bob::ip color converters
  */
 
-#ifndef BOB_IP_GABOR_BINDINGS
-#define BOB_IP_GABOR_BINDINGS_H
+#ifndef BOB_IP_GABOR_MAIN_H
+#define BOB_IP_GABOR_MAIN_H
 
 #include <Python.h>
 
@@ -86,4 +86,4 @@ bool init_BobIpGaborJetSimilarity(PyObject* module);
 int PyBobIpGaborJetSimilarity_Check(PyObject* o);
 
 
-#endif // BOB_IP_GABOR_BINDINGS
+#endif // BOB_IP_GABOR_MAIN_H
