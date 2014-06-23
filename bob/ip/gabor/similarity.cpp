@@ -266,7 +266,7 @@ static auto load_doc = bob::extension::FunctionDoc(
   true
 )
 .add_prototype("hdf5")
-.add_parameter("hdf5", "xbob.io.HDF5File", "An HDF5 file opened for reading")
+.add_parameter("hdf5", ":py:class:`bob.io.base.HDF5File`", "An HDF5 file opened for reading")
 ;
 
 static PyObject* PyBobIpGaborJetSimilarity_load(PyBobIpGaborJetSimilarityObject* self, PyObject* args, PyObject* kwargs) {
