@@ -33,6 +33,7 @@ setup(
 
     install_requires=[
       'setuptools',
+      'matplotlib',
       'bob.blitz',
       'bob.io.base',
       'bob.io.image',
