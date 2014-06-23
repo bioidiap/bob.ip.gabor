@@ -10,6 +10,8 @@
 
 #include "Jet.h"
 
+#include <numeric>
+
 bob::ip::gabor::Jet::Jet(
   int length
 ):
