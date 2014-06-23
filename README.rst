@@ -2,16 +2,16 @@
 .. Andre Anjos <andre.anjos@idiap.ch>
 .. Thu 30 Jan 08:46:53 2014 CET
 
-.. image:: https://travis-ci.org/bioidiap/xbob.ip.gabor.svg?branch=master
-   :target: https://travis-ci.org/bioidiap/xbob.ip.gabor
-.. image:: https://coveralls.io/repos/bioidiap/xbob.ip.gabor/badge.png
-   :target: https://coveralls.io/r/bioidiap/xbob.ip.gabor
-.. image:: http://img.shields.io/github/tag/bioidiap/xbob.ip.gabor.png
-   :target: https://github.com/bioidiap/xbob.ip.gabor
-.. image:: http://img.shields.io/pypi/v/xbob.ip.gabor.png
-   :target: https://pypi.python.org/pypi/xbob.ip.gabor
-.. image:: http://img.shields.io/pypi/dm/xbob.ip.gabor.png
-   :target: https://pypi.python.org/pypi/xbob.ip.gabor
+.. image:: https://travis-ci.org/bioidiap/bob.ip.gabor.svg?branch=master
+   :target: https://travis-ci.org/bioidiap/bob.ip.gabor
+.. image:: https://coveralls.io/repos/bioidiap/bob.ip.gabor/badge.png
+   :target: https://coveralls.io/r/bioidiap/bob.ip.gabor
+.. image:: http://img.shields.io/github/tag/bioidiap/bob.ip.gabor.png
+   :target: https://github.com/bioidiap/bob.ip.gabor
+.. image:: http://img.shields.io/pypi/v/bob.ip.gabor.png
+   :target: https://pypi.python.org/pypi/bob.ip.gabor
+.. image:: http://img.shields.io/pypi/dm/bob.ip.gabor.png
+   :target: https://pypi.python.org/pypi/bob.ip.gabor
 
 ==================================
  Python bindings for bob.ip.gabor
@@ -38,7 +38,7 @@ Testing
 
 You can run a set of tests using the nose test runner::
 
-  $ nosetests -sv xbob.ip.gabor
+  $ nosetests -sv bob.ip.gabor
 
 .. warning::
 
@@ -52,7 +52,7 @@ You can run our documentation tests using sphinx itself::
 
 You can test overall test coverage with::
 
-  $ nosetests --with-coverage --cover-package=xbob.ip.gabor
+  $ nosetests --with-coverage --cover-package=bob.ip.gabor
 
 The ``coverage`` egg must be installed for this to work properly.
 
