@@ -14,11 +14,12 @@ trafo_image = gwt(image)
 pos = (177, 131)
 eye_jet = bob.ip.gabor.Jet(trafo_image, pos)
 
+print (image.shape)
 # compute similarity field over the whole image
 cos_sim = bob.ip.gabor.Similarity("ScalarProduct")
 disp_sim = bob.ip.gabor.Similarity("Disparity", gwt)
-cos_image = numpy.ndarray(((image.shape[0]+2)//4, (image.shape[1]+2)//4))
-disp_image = numpy.ndarray(((image.shape[0]+2)//4, (image.shape[1]+2)//4))
+cos_image = numpy.zeros(((image.shape[0]+1)//4, (image.shape[1]+1)//4))
+disp_image = numpy.zeros(((image.shape[0]+1)//4, (image.shape[1]+1)//4))
 # .. re-use the same Gabor jet object to avoid memory allocation
 image_jet = bob.ip.gabor.Jet()
 for y in range(2, image.shape[0], 4):
