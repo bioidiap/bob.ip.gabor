@@ -2,8 +2,10 @@
 .. Andre Anjos <andre.anjos@idiap.ch>
 .. Thu 30 Jan 08:46:53 2014 CET
 
-.. image:: https://travis-ci.org/bioidiap/bob.ip.gabor.svg?branch=master
+.. image:: http://travis-ci.org/bioidiap/bob.ip.gabor.svg?branch=master
    :target: https://travis-ci.org/bioidiap/bob.ip.gabor
+.. image:: http://img.shields.io/badge/docs-latest-orange.png
+   :target: https://www.idiap.ch/software/bob/docs/latest/bioidiap/bob.ip.gabor/master/index.html
 .. image:: https://coveralls.io/repos/bioidiap/bob.ip.gabor/badge.png
    :target: https://coveralls.io/r/bioidiap/bob.ip.gabor
 .. image:: http://img.shields.io/github/tag/bioidiap/bob.ip.gabor.png
@@ -13,11 +15,11 @@
 .. image:: http://img.shields.io/pypi/dm/bob.ip.gabor.png
    :target: https://pypi.python.org/pypi/bob.ip.gabor
 
-==================================
- Python bindings for bob.ip.gabor
-==================================
+===============================================
+ C++ code and Python bindings for bob.ip.gabor
+===============================================
 
-This package contains a set of Pythonic bindings for Bob's Image Processing tools concerning Gabor wavelets and the Gabor wavelet transform.
+This package contains a set of C++ code and their according Python bindings for Bob's Image Processing tools concerning Gabor wavelets and the Gabor wavelet transform.
 
 Installation
 ------------
@@ -27,7 +29,9 @@ Install it through normal means, via PyPI or use ``zc.buildout`` to bootstrap th
 Documentation
 -------------
 
-You can generate the documentation for this package, after installation, using Sphinx::
+The latest version of the documentation can be found `here <https://www.idiap.ch/software/bob/docs/latest/bioidiap/bob.ip.gabor/master/index.html>`_.
+
+Otherwise, you can generate the documentation for this package yourself, after installation, using Sphinx::
 
   $ sphinx-build -b html doc sphinx
 
@@ -38,7 +42,7 @@ Testing
 
 You can run a set of tests using the nose test runner::
 
-  $ nosetests -sv bob.ip.gabor
+  $ nosetests -sv
 
 .. warning::
 
