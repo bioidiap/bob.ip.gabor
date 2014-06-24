@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
-# Andre Anjos <andre.anjos@idiap.ch>
-# Thu 30 Jan 08:45:49 2014 CET
+# Manuel Guenther <manuel.guenther@idiap.ch>
+# Tue Jun 24 09:32:21 CEST 2014
 
 from setuptools import setup, find_packages, dist
 dist.Distribution(dict(setup_requires=['bob.blitz', 'bob.io.base']))
@@ -20,11 +20,11 @@ setup(
 
     name='bob.ip.gabor',
     version=version,
-    description='Line and Box drawing utilities',
+    description='C++ code and Python bindings for Bob\'s Gabor wavelet analysis tools',
     url='http://github.com/bioidiap/bob.ip.gabor',
     license='BSD',
-    author='Andre Anjos',
-    author_email='andre.anjos@idiap.ch',
+    author='Manuel Guenther',
+    author_email='manuel.guenther@idiap.ch',
 
     long_description=open('README.rst').read(),
 
