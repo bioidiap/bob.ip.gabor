@@ -11,11 +11,11 @@
 #ifndef BOB_IP_GABOR_JET_H
 #define BOB_IP_GABOR_JET_H
 
-#include <bob/io/HDF5File.h>
-#include <bob/sp/FFT2D.h>
-#include <bob/core/cast.h>
+#include <bob.io.base/HDF5File.h>
+#include <bob.sp/FFT2D.h>
+#include <bob.core/cast.h>
 
-#include "Transform.h"
+#include <bob.ip.gabor/Transform.h>
 
 
 namespace bob {
@@ -59,7 +59,7 @@ namespace bob {
           Jet(const Jet& other);
 
           //! Constructor from HDF5File
-          Jet(bob::io::HDF5File& file);
+          Jet(bob::io::base::HDF5File& file);
 
           //! Assignment operator
           Jet& operator=(const Jet& other);
@@ -108,10 +108,10 @@ namespace bob {
           int length() const{return m_jet.extent(1);}
 
           //! \brief saves the parameters of this Gabor wavelet family to file
-          void save(bob::io::HDF5File& file) const;
+          void save(bob::io::base::HDF5File& file) const;
 
           //! \brief reads the parameters of this Gabor wavelet family from file
-          void load(bob::io::HDF5File& file);
+          void load(bob::io::base::HDF5File& file);
 
         private:
 

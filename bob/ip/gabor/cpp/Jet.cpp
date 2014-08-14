@@ -8,7 +8,7 @@
  */
 
 
-#include "Jet.h"
+#include <bob.ip.gabor/Jet.h>
 
 #include <numeric>
 
@@ -65,7 +65,7 @@ bob::ip::gabor::Jet::Jet(
 
 
 bob::ip::gabor::Jet::Jet(
-  bob::io::HDF5File& f
+  bob::io::base::HDF5File& f
 )
 {
   load(f);
@@ -144,11 +144,11 @@ void bob::ip::gabor::Jet::average(const std::vector<boost::shared_ptr<bob::ip::g
   init(mean, normalize);
 }
 
-void bob::ip::gabor::Jet::save(bob::io::HDF5File& f) const{
+void bob::ip::gabor::Jet::save(bob::io::base::HDF5File& f) const{
   f.setArray("Jet", m_jet);
 }
 
-void bob::ip::gabor::Jet::load(bob::io::HDF5File& f){
+void bob::ip::gabor::Jet::load(bob::io::base::HDF5File& f){
   m_jet.reference(f.readArray<double,2>("Jet"));
 }
 

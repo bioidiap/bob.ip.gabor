@@ -11,11 +11,11 @@
 #ifndef BOB_IP_GABOR_TRANSFORM_H
 #define BOB_IP_GABOR_TRANSFORM_H
 
-#include <bob/io/HDF5File.h>
-#include <bob/sp/FFT2D.h>
-#include <bob/core/cast.h>
+#include <bob.io.base/HDF5File.h>
+#include <bob.sp/FFT2D.h>
+#include <bob.core/cast.h>
 
-#include "Wavelet.h"
+#include <bob.ip.gabor/Wavelet.h>
 
 
 namespace bob {
@@ -52,7 +52,7 @@ namespace bob {
           Transform(const Transform& other);
 
           //! Constructor from HDF5File
-          Transform(bob::io::HDF5File& file);
+          Transform(bob::io::base::HDF5File& file);
 
           //! Assignment operator
           Transform& operator=(const Transform& other);
@@ -87,10 +87,10 @@ namespace bob {
           }
 
           //! \brief saves the parameters of this Gabor wavelet family to file
-          void save(bob::io::HDF5File& file) const;
+          void save(bob::io::base::HDF5File& file) const;
 
           //! \brief reads the parameters of this Gabor wavelet family from file
-          void load(bob::io::HDF5File& file);
+          void load(bob::io::base::HDF5File& file);
 
         private:
 

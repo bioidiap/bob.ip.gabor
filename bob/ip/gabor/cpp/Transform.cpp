@@ -7,7 +7,7 @@
  * Copyright (C) 2011-2014 Idiap Research Institute, Martigny, Switzerland
  */
 
-#include "Transform.h"
+#include <bob.ip.gabor/Transform.h>
 
 /**
  * Initializes a discrete family of Gabor wavelets
@@ -66,7 +66,7 @@ bob::ip::gabor::Transform::Transform(
 }
 
 bob::ip::gabor::Transform::Transform(
-  bob::io::HDF5File& file
+  bob::io::base::HDF5File& file
 )
 {
   load(file);
@@ -201,7 +201,7 @@ void bob::ip::gabor::Transform::transform_inner(
 }
 
 
-void bob::ip::gabor::Transform::save(bob::io::HDF5File& file) const{
+void bob::ip::gabor::Transform::save(bob::io::base::HDF5File& file) const{
   file.set("Sigma", m_sigma);
   file.set("PowOfK", m_pow_of_k);
   file.set("KMax", m_k_max);
@@ -212,7 +212,7 @@ void bob::ip::gabor::Transform::save(bob::io::HDF5File& file) const{
   file.set("Epsilon", m_epsilon);
 }
 
-void bob::ip::gabor::Transform::load(bob::io::HDF5File& file){
+void bob::ip::gabor::Transform::load(bob::io::base::HDF5File& file){
   m_sigma = file.read<double>("Sigma");
   m_pow_of_k = file.read<double>("PowOfK");
   m_k_max = file.read<double>("KMax");

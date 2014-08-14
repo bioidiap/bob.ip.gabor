@@ -11,8 +11,7 @@
 #ifndef BOB_IP_GABOR_WAVELET_H
 #define BOB_IP_GABOR_WAVELET_H
 
-#include <bob/core/array.h>
-#include <bob/core/assert.h>
+#include <bob.core/assert.h>
 #include <vector>
 
 namespace bob {

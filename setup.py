@@ -4,16 +4,13 @@
 # Tue Jun 24 09:32:21 CEST 2014
 
 from setuptools import setup, find_packages, dist
-dist.Distribution(dict(setup_requires=['bob.blitz', 'bob.io.base']))
-from bob.blitz.extension import Extension
-import bob.io.base
+dist.Distribution(dict(setup_requires=['bob.blitz', 'bob.core', 'bob.io.base', 'bob.sp']))
+from bob.blitz.extension import Extension, Library, build_ext
 
 import os
 package_dir = os.path.dirname(os.path.realpath(__file__))
-package_dir = os.path.join(package_dir, 'bob', 'ip', 'gabor')
-include_dirs = [package_dir, bob.io.base.get_include()]
+target_dir = os.path.join(package_dir, 'bob', 'ip', 'gabor')
 
-packages = ['bob-io >= 1.2.2', 'bob-sp >= 1.2.2', 'bob-ip >= 1.2.2', 'boost']
 version = '2.0.0a1'
 
 setup(
@@ -51,18 +48,26 @@ setup(
         [
           "bob/ip/gabor/version.cpp",
         ],
-        packages = packages,
-        include_dirs = include_dirs,
         version = version,
+        bob_packages = ['bob.core', 'bob.io.base', 'bob.sp'],
       ),
-      Extension("bob.ip.gabor._library",
+
+      Library("bob_ip_gabor",
         [
           "bob/ip/gabor/cpp/Wavelet.cpp",
           "bob/ip/gabor/cpp/Transform.cpp",
           "bob/ip/gabor/cpp/Jet.cpp",
           "bob/ip/gabor/cpp/Graph.cpp",
           "bob/ip/gabor/cpp/Similarity.cpp",
+        ],
+        package_directory = package_dir,
+        target_directory = target_dir,
+        version = version,
+        bob_packages = ['bob.core', 'bob.io.base', 'bob.sp'],
+      ),
 
+      Extension("bob.ip.gabor._library",
+        [
           "bob/ip/gabor/wavelet.cpp",
           "bob/ip/gabor/transform.cpp",
           "bob/ip/gabor/jet.cpp",
@@ -70,12 +75,15 @@ setup(
           "bob/ip/gabor/similarity.cpp",
           "bob/ip/gabor/main.cpp",
         ],
-        packages = packages,
-        boost_modules = ['python', 'system'],
-        include_dirs = include_dirs,
+        bob_packages = ['bob.core', 'bob.io.base', 'bob.sp'],
         version = version,
+        libraries = ['bob_ip_gabor'],
       ),
     ],
+
+    cmdclass = {
+      'build_ext': build_ext
+    },
 
     classifiers = [
       'Development Status :: 3 - Alpha',

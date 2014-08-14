@@ -7,7 +7,7 @@
  * Copyright (C) 2011-2014 Idiap Research Institute, Martigny, Switzerland
  */
 
-#include "Wavelet.h"
+#include <bob.ip.gabor/Wavelet.h>
 
 static inline double sqr(double x){return x*x;}
 

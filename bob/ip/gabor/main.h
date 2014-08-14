@@ -8,18 +8,16 @@
 #ifndef BOB_IP_GABOR_MAIN_H
 #define BOB_IP_GABOR_MAIN_H
 
-#include <Python.h>
-
 #include <bob.blitz/capi.h>
 #include <bob.blitz/cleanup.h>
 #include <bob.extension/documentation.h>
 #include <bob.io.base/api.h>
 
-#include "cpp/Wavelet.h"
-#include "cpp/Transform.h"
-#include "cpp/Jet.h"
-#include "cpp/Graph.h"
-#include "cpp/Similarity.h"
+#include <bob.ip.gabor/Wavelet.h>
+#include <bob.ip.gabor/Transform.h>
+#include <bob.ip.gabor/Jet.h>
+#include <bob.ip.gabor/Graph.h>
+#include <bob.ip.gabor/Similarity.h>
 
 // Gabor wavelet
 typedef struct {

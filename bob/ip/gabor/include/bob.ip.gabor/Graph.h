@@ -11,11 +11,11 @@
 #ifndef BOB_IP_GABOR_GRAPH_H
 #define BOB_IP_GABOR_GRAPH_H
 
-#include <bob/io/HDF5File.h>
-#include <bob/sp/FFT2D.h>
-#include <bob/core/cast.h>
+#include <bob.io.base/HDF5File.h>
+#include <bob.sp/FFT2D.h>
+#include <bob.core/cast.h>
 
-#include "Jet.h"
+#include <bob.ip.gabor/Jet.h>
 
 
 namespace bob {
@@ -53,7 +53,7 @@ namespace bob {
 
           //! creates a graph from file
           Graph(
-            bob::io::HDF5File& hdf5
+            bob::io::base::HDF5File& hdf5
           );
 
           //! Copy constructor
@@ -83,10 +83,10 @@ namespace bob {
           ) const;
 
           //! saves this graph to file
-          void save(bob::io::HDF5File& file) const;
+          void save(bob::io::base::HDF5File& file) const;
 
           //! loads this graph from file
-          void load(bob::io::HDF5File& file);
+          void load(bob::io::base::HDF5File& file);
 
         private:
           void checkNodes(int height, int width) const;

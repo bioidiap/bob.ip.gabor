@@ -11,11 +11,11 @@
 #ifndef BOB_IP_GABOR_SIMILARITY_H
 #define BOB_IP_GABOR_SIMILARITY_H
 
-#include <bob/io/HDF5File.h>
-#include <bob/sp/FFT2D.h>
-#include <bob/core/cast.h>
+#include <bob.io.base/HDF5File.h>
+#include <bob.sp/FFT2D.h>
+#include <bob.core/cast.h>
 
-#include "Jet.h"
+#include <bob.ip.gabor/Jet.h>
 
 namespace bob {
   namespace ip {
@@ -43,7 +43,7 @@ namespace bob {
           Similarity(SimilarityType type, boost::shared_ptr<Transform> gwt = boost::shared_ptr<Transform>());
 
           //! \brief reads the parameters of this Gabor jet similarity from file
-          Similarity(bob::io::HDF5File& file);
+          Similarity(bob::io::base::HDF5File& file);
 
           //! The similarity between two Gabor jets, including absolute values and phases
           double similarity(const Jet& jet1, const Jet& jet2) const;
@@ -61,10 +61,10 @@ namespace bob {
           void shift_phase(const Jet& jet, const Jet& reference, Jet& shifted) const;
 
           //! \brief saves the parameters of this Gabor jet similarity to file
-          void save(bob::io::HDF5File& file) const;
+          void save(bob::io::base::HDF5File& file) const;
 
           //! \brief reads the parameters of this Gabor jet similarity from file
-          void load(bob::io::HDF5File& file);
+          void load(bob::io::base::HDF5File& file);
 
           const std::string& type () const {return type_to_name(m_type);}
 

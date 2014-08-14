@@ -7,7 +7,7 @@
  * Copyright (C) 2011-2014 Idiap Research Institute, Martigny, Switzerland
  */
 
-#include "Similarity.h"
+#include <bob.ip.gabor/Similarity.h>
 
 
 static const std::map<bob::ip::gabor::Similarity::SimilarityType, std::string> type_map = {
@@ -43,7 +43,7 @@ bob::ip::gabor::Similarity::Similarity(SimilarityType type, boost::shared_ptr<Tr
   }
 }
 
-bob::ip::gabor::Similarity::Similarity(bob::io::HDF5File& file)
+bob::ip::gabor::Similarity::Similarity(bob::io::base::HDF5File& file)
 {
   // load configuration from file
   load(file);
@@ -220,7 +220,7 @@ void bob::ip::gabor::Similarity::compute_disparity() const{
 }
 
 
-void bob::ip::gabor::Similarity::save(bob::io::HDF5File& file) const{
+void bob::ip::gabor::Similarity::save(bob::io::base::HDF5File& file) const{
 
   file.set("Type", type_to_name(m_type));
   if (m_type >= DISPARITY){
@@ -232,7 +232,7 @@ void bob::ip::gabor::Similarity::save(bob::io::HDF5File& file) const{
 }
 
 
-void bob::ip::gabor::Similarity::load(bob::io::HDF5File& file){
+void bob::ip::gabor::Similarity::load(bob::io::base::HDF5File& file){
   // read value
   m_type = name_to_type(file.read<std::string>("Type"));
 

@@ -7,7 +7,7 @@
  * Copyright (C) 2011-2014 Idiap Research Institute, Martigny, Switzerland
  */
 
-#include "Graph.h"
+#include <bob.ip.gabor/Graph.h>
 
 /**
  * Generates grid graphs which will be placed according to the given eye positions
@@ -84,7 +84,7 @@ bob::ip::gabor::Graph::Graph(
 }
 
 bob::ip::gabor::Graph::Graph(
-  bob::io::HDF5File& hdf5
+  bob::io::base::HDF5File& hdf5
 ){
   load(hdf5);
 }
@@ -172,7 +172,7 @@ void bob::ip::gabor::Graph::extract(
   }
 }
 
-void bob::ip::gabor::Graph::save(bob::io::HDF5File& file) const{
+void bob::ip::gabor::Graph::save(bob::io::base::HDF5File& file) const{
   blitz::Array<int,2> n(m_nodes.size(), 2);
   int i = 0;
   for (auto it = m_nodes.begin(); it != m_nodes.end(); ++it, ++i)
@@ -180,7 +180,7 @@ void bob::ip::gabor::Graph::save(bob::io::HDF5File& file) const{
   file.setArray("NodePositions", n);
 }
 
-void bob::ip::gabor::Graph::load(bob::io::HDF5File& file){
+void bob::ip::gabor::Graph::load(bob::io::base::HDF5File& file){
   blitz::Array<int,2> n(file.readArray<int,2>("NodePositions"));
   m_nodes.resize(n.extent(0));
   int i = 0;
