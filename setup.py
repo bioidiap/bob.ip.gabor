@@ -3,13 +3,11 @@
 # Manuel Guenther <manuel.guenther@idiap.ch>
 # Tue Jun 24 09:32:21 CEST 2014
 
-from setuptools import setup, find_packages, dist
-dist.Distribution(dict(setup_requires=['bob.blitz', 'bob.core', 'bob.io.base', 'bob.sp']))
-from bob.blitz.extension import Extension, Library, build_ext
+bob_packages = ['bob.core', 'bob.io.base', 'bob.sp']
 
-import os
-package_dir = os.path.dirname(os.path.realpath(__file__))
-target_dir = os.path.join(package_dir, 'bob', 'ip', 'gabor')
+from setuptools import setup, find_packages, dist
+dist.Distribution(dict(setup_requires=['bob.blitz'] + bob_packages))
+from bob.blitz.extension import Extension, Library, build_ext
 
 version = '2.0.0a1'
 
@@ -32,10 +30,11 @@ setup(
       'setuptools',
       'matplotlib',
       'bob.blitz',
+      'bob.core',
       'bob.io.base',
+      'bob.sp',
       'bob.io.image',
       'bob.ip.color',
-      'bob.sp'
     ],
 
     namespace_packages=[
@@ -49,10 +48,10 @@ setup(
           "bob/ip/gabor/version.cpp",
         ],
         version = version,
-        bob_packages = ['bob.core', 'bob.io.base', 'bob.sp'],
+        bob_packages = bob_packages,
       ),
 
-      Library("bob_ip_gabor",
+      Library("bob.ip.gabor.bob_ip_gabor",
         [
           "bob/ip/gabor/cpp/Wavelet.cpp",
           "bob/ip/gabor/cpp/Transform.cpp",
@@ -60,10 +59,8 @@ setup(
           "bob/ip/gabor/cpp/Graph.cpp",
           "bob/ip/gabor/cpp/Similarity.cpp",
         ],
-        package_directory = package_dir,
-        target_directory = target_dir,
         version = version,
-        bob_packages = ['bob.core', 'bob.io.base', 'bob.sp'],
+        bob_packages = bob_packages,
       ),
 
       Extension("bob.ip.gabor._library",
@@ -75,9 +72,8 @@ setup(
           "bob/ip/gabor/similarity.cpp",
           "bob/ip/gabor/main.cpp",
         ],
-        bob_packages = ['bob.core', 'bob.io.base', 'bob.sp'],
+        bob_packages = bob_packages,
         version = version,
-        libraries = ['bob_ip_gabor'],
       ),
     ],
 
