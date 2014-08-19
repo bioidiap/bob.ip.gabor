@@ -9,6 +9,9 @@ from setuptools import setup, find_packages, dist
 dist.Distribution(dict(setup_requires=['bob.blitz'] + bob_packages))
 from bob.blitz.extension import Extension, Library, build_ext
 
+packages = ['boost']
+boost_modules = ['system']
+
 version = '2.0.0a1'
 
 setup(
@@ -49,6 +52,8 @@ setup(
         ],
         version = version,
         bob_packages = bob_packages,
+        packages = packages,
+        boost_modules = boost_modules,
       ),
 
       Library("bob.ip.gabor.bob_ip_gabor",
@@ -61,6 +66,8 @@ setup(
         ],
         version = version,
         bob_packages = bob_packages,
+        packages = packages,
+        boost_modules = boost_modules,
       ),
 
       Extension("bob.ip.gabor._library",
@@ -74,6 +81,8 @@ setup(
         ],
         bob_packages = bob_packages,
         version = version,
+        packages = packages,
+        boost_modules = boost_modules,
       ),
     ],
 
