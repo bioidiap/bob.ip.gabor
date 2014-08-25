@@ -14,10 +14,8 @@ import math, cmath
 import tempfile
 
 import bob.io.base
-import bob.io.image
 import bob.sp
 import bob.ip.gabor
-import bob.ip.color
 
 import bob.io.base.test_utils
 
@@ -109,7 +107,7 @@ def test_transform():
     assert numpy.allclose(w.wavelet, wavelets[i].wavelet)
 
   # load test image
-  image = bob.ip.color.rgb_to_gray(bob.io.base.load(bob.io.base.test_utils.datafile("testimage.jpg", 'bob.ip.gabor')))
+  image = bob.io.base.load(bob.io.base.test_utils.datafile("testimage.hdf5", 'bob.ip.gabor'))
 
   trafo_image = gwt(image)
   assert trafo_image.shape[0] == gwt.number_of_wavelets
@@ -132,7 +130,7 @@ def test_jet():
   gwt = bob.ip.gabor.Transform()
 
   # load test image
-  image = bob.ip.color.rgb_to_gray(bob.io.base.load(bob.io.base.test_utils.datafile("testimage.jpg", 'bob.ip.gabor')))
+  image = bob.io.base.load(bob.io.base.test_utils.datafile("testimage.hdf5", 'bob.ip.gabor'))
 
   trafo_image = gwt(image)
 
@@ -211,7 +209,7 @@ def test_graph():
   assert graph == reference_graph
 
   # test extraction from image
-  image = bob.ip.color.rgb_to_gray(bob.io.base.load(bob.io.base.test_utils.datafile("testimage.jpg", 'bob.ip.gabor')))
+  image = bob.io.base.load(bob.io.base.test_utils.datafile("testimage.hdf5", 'bob.ip.gabor'))
   gwt = bob.ip.gabor.Transform()
   trafo_image = gwt(image)
 

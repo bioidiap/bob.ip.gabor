@@ -36,8 +36,6 @@ setup(
       'bob.core',
       'bob.io.base',
       'bob.sp',
-      'bob.io.image',
-      'bob.ip.color',
     ],
 
     namespace_packages=[

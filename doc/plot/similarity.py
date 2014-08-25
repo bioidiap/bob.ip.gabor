@@ -1,12 +1,10 @@
 import numpy
 import bob.io.base
-import bob.io.image
 import bob.io.base.test_utils
-import bob.ip.color
 import bob.ip.gabor
 
 # load test image
-image = bob.ip.color.rgb_to_gray(bob.io.base.load(bob.io.base.test_utils.datafile("testimage.jpg", 'bob.ip.gabor')))
+image = bob.io.base.load(bob.io.base.test_utils.datafile("testimage.hdf5", 'bob.ip.gabor'))
 # perform Gabor wavelet transform on image
 gwt = bob.ip.gabor.Transform()
 trafo_image = gwt(image)

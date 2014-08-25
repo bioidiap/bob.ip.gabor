@@ -13,9 +13,7 @@
   import math
   import bob.sp
   import bob.io.base
-  import bob.io.image
   import bob.io.base.test_utils
-  import bob.ip.color
   import bob.ip.gabor
 
 
@@ -115,7 +113,7 @@ To extract the texture from the right eye landmark from a facial image, one can 
 
 .. doctest::
 
-  >>> image = bob.ip.color.rgb_to_gray(bob.io.base.load(bob.io.base.test_utils.datafile("testimage.jpg", 'bob.ip.gabor')))
+  >>> image = bob.io.base.load(bob.io.base.test_utils.datafile("testimage.hdf5", 'bob.ip.gabor'))
   >>> gwt = bob.ip.gabor.Transform()
   >>> trafo_image = gwt(image)
   >>> eye_jet = bob.ip.gabor.Jet(trafo_image, (177, 131))
