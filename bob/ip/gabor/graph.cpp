@@ -56,7 +56,7 @@ static int PyBobIpGaborGraph_init(PyBobIpGaborGraphObject* self, PyObject* args,
   char* kwlist1[] = {c("hdf5"), NULL};
   char* kwlist2[] = {c("nodes"), NULL};
   char* kwlist3[] = {c("first"), c("last"), c("step"), NULL};
-  char* kwlist4[] = {c("lefteye"), c("righteye"), c("between"), c("along"), c("above"), c("below"), NULL};
+  char* kwlist4[] = {c("righteye"), c("lefteye"), c("between"), c("along"), c("above"), c("below"), NULL};
 
   // get the number of command line arguments
   Py_ssize_t nargs = (args?PyTuple_Size(args):0) + (kwargs?PyDict_Size(kwargs):0);

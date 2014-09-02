@@ -141,7 +141,7 @@ void bob::ip::gabor::Graph::checkNodes(int height, int width) const{
   for (auto it = m_nodes.begin(); it != m_nodes.end(); ++it){
     if ((*it)[0] < 0 || (*it)[0] >= height ||
         (*it)[1] < 0 || (*it)[1] >= width)
-      throw std::runtime_error((boost::format("The position (%i,%i) is out of the image boundaries %i x %i") % height % width % (*it)[0] % (*it)[1]).str());
+      throw std::runtime_error((boost::format("The position (%i,%i) is out of the image boundaries %i x %i") % (*it)[0] % (*it)[1] % height % width).str());
   }
 }
 

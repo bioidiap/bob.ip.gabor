@@ -154,10 +154,10 @@ void bob::ip::gabor::Jet::load(bob::io::base::HDF5File& f){
 
 double bob::ip::gabor::Jet::normalize(){
   blitz::Array<double,1> abs_jet = this->abs();
-  double norm = sqrt(std::inner_product(abs_jet.begin(), abs_jet.end(), abs_jet.begin(), 0.));
+  double norm = std::inner_product(abs_jet.begin(), abs_jet.end(), abs_jet.begin(), 0.);
   // normalize the absolute parts of the jets
   if (std::abs(norm - 1.) > 1e-8)
-    abs_jet /= norm;
+    abs_jet /= sqrt(norm);
   return norm;
 }
 
