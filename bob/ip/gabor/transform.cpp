@@ -241,7 +241,7 @@ PyObject* PyBobIpGaborWaveletTransform_wavelets(PyBobIpGaborWaveletTransformObje
   for (Py_ssize_t i = 0; i < (Py_ssize_t)wavelets.size(); ++i){
     PyBobIpGaborWaveletObject* wavelet = (PyBobIpGaborWaveletObject*)PyBobIpGaborWaveletType.tp_alloc(&PyBobIpGaborWaveletType, 0);
     wavelet->cxx = wavelets[i];
-    PyList_SET_ITEM(list, i, Py_BuildValue("O", wavelet));
+    PyList_SET_ITEM(list, i, Py_BuildValue("N", wavelet));
   }
   return list;
 }

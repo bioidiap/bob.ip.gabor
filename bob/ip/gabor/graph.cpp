@@ -324,7 +324,7 @@ static PyObject* PyBobIpGaborGraph_extract(PyBobIpGaborGraphObject* self, PyObje
     for (Py_ssize_t i = 0; i < PyList_Size(jets); ++i){
       PyBobIpGaborJetObject* jet = reinterpret_cast<PyBobIpGaborJetObject*>(PyBobIpGaborJetType.tp_alloc(&PyBobIpGaborJetType, 0));
       jet->cxx.reset(new bob::ip::gabor::Jet(jet_len));
-      PyList_SET_ITEM(jets, i, Py_BuildValue("O",jet));
+      PyList_SET_ITEM(jets, i, Py_BuildValue("N",jet));
     }
   }
 
