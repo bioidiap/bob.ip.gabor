@@ -260,6 +260,42 @@ def test_similarity():
   assert reference_sim.transform == gwt
 
 
+def test_disparity():
+  # generate Gabor jet
+  gwt = bob.ip.gabor.Transform()
+  jet_data = numpy.zeros(gwt.number_of_wavelets, numpy.complex)
+  for i in range(0, gwt.number_of_wavelets, 4):
+    jet_data[i] = cmath.rect(1, math.pi/4.)
+  jet = bob.ip.gabor.Jet(complex = jet_data)
+
+  # generate shifted jet that should have an exact disparity
+  shifted_jet = bob.ip.gabor.Jet(jet)
+  shifted_jet.jet[1,0] += math.pi/2.;
+  shifted_jet.jet[1,8] += math.pi/(2.*math.sqrt(2.));
+  shifted_jet.jet[1,16] += math.pi/4.;
+  shifted_jet.jet[1,24] += math.pi/(4*math.sqrt(2.));
+  shifted_jet.jet[1,32] += math.pi/8.;
+
+  # shift jet towards reference jet
+  sim = bob.ip.gabor.Similarity("Disparity", gwt)
+  normalized_jet = sim.shift_phase(shifted_jet, jet);
+
+  # get disparity vector used in this computation
+  disp = sim.last_disparity
+  assert numpy.allclose(disp, (0.,1.))
+
+  # check that the directions that we have set are correct
+  # (the other directions are modified as well, but computing those values is more difficult)
+  for i in range(0, gwt.number_of_wavelets, 4):
+    assert abs(normalized_jet.phase[i] - test_jet.phase[i]) < 1e-8
+
+  # assert that the new disparity is 0
+  new_disp = sim.disparity(normalized_jet, jet)
+  assert abs(new_disp[0]) < 1e-8
+  assert abs(new_disp[1]) < 1e-8
+
+
+
 if __name__ == '__main__':
   test_graph()
 

@@ -25,7 +25,7 @@ typedef struct {
   boost::shared_ptr<bob::ip::gabor::Wavelet> cxx;
 } PyBobIpGaborWaveletObject;
 
-extern PyTypeObject PyBobIpGaborWaveletType;
+extern PyTypeObject PyBobIpGaborWavelet_Type;
 
 bool init_BobIpGaborWavelet(PyObject* module);
 
@@ -38,7 +38,7 @@ typedef struct {
   boost::shared_ptr<bob::ip::gabor::Transform> cxx;
 } PyBobIpGaborWaveletTransformObject;
 
-extern PyTypeObject PyBobIpGaborWaveletTransformType;
+extern PyTypeObject PyBobIpGaborWaveletTransform_Type;
 
 bool init_BobIpGaborWaveletTransform(PyObject* module);
 
@@ -51,7 +51,7 @@ typedef struct {
   boost::shared_ptr<bob::ip::gabor::Jet> cxx;
 } PyBobIpGaborJetObject;
 
-extern PyTypeObject PyBobIpGaborJetType;
+extern PyTypeObject PyBobIpGaborJet_Type;
 
 bool init_BobIpGaborJet(PyObject* module);
 
@@ -64,7 +64,7 @@ typedef struct {
   boost::shared_ptr<bob::ip::gabor::Graph> cxx;
 } PyBobIpGaborGraphObject;
 
-extern PyTypeObject PyBobIpGaborGraphType;
+extern PyTypeObject PyBobIpGaborGraph_Type;
 
 bool init_BobIpGaborGraph(PyObject* module);
 
@@ -77,7 +77,7 @@ typedef struct {
   boost::shared_ptr<bob::ip::gabor::Similarity> cxx;
 } PyBobIpGaborJetSimilarityObject;
 
-extern PyTypeObject PyBobIpGaborJetSimilarityType;
+extern PyTypeObject PyBobIpGaborJetSimilarity_Type;
 
 bool init_BobIpGaborJetSimilarity(PyObject* module);
 

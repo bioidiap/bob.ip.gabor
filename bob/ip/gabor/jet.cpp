@@ -46,13 +46,15 @@ static auto Jet_doc = bob::extension::ClassDoc(
   .add_prototype("complex, [normalize]", "")
   .add_prototype("to_average, [normalize]", "")
   .add_prototype("hdf5", "")
+  .add_prototype("jet")
   .add_parameter("length", "int", "[default: 0] Creates an empty Gabor jet of the given length")
   .add_parameter("trafo_image", "array_like(complex, 3D)", "The result of the Gabor wavelet transform, i.e., of :py:func:`bob.ip.gabor.Transform.transform`")
   .add_parameter("position", "(int, int)", "The position, where the Gabor jet should be extracted")
   .add_parameter("complex", "array_like(complex, 3D)", "The complex-valued representation of a Gabor jet")
   .add_parameter("to_average", "[:py:class:`bob.ip.gabor.Jet`]", "Computes the average of the given Gabor jets, see :py:func:`average` for details")
   .add_parameter("normalize", "bool", "[default: True] Should the newly generated Gabor jet be normalized to unit Euclidean length?")
-  .add_parameter("hdf5", ":py:class:`bob.io.base.HD5Ffile`", "An HDF5 file open for reading to load the Gabor jet from")
+  .add_parameter("hdf5", ":py:class:`bob.io.base.HD5File`", "An HDF5 file open for reading to load the Gabor jet from")
+  .add_parameter("jet", ":py:class:`bob.ip.gabor.Jet`", "The Gabor jet to copy-construct")
 );
 
 static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyObject* kwargs) {
@@ -62,8 +64,10 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
   char* kwlist2[] = {c("to_average"), c("normalize"), NULL};
   char* kwlist3[] = {c("complex"), c("normalize"), NULL};
   char* kwlist4[] = {c("trafo_image"), c("position"), c("normalize"), NULL};
+  char* kwlist5[] = {c("jet"), NULL};
 
   Py_ssize_t nargs = (args?PyTuple_Size(args):0) + (kwargs?PyDict_Size(kwargs):0);
+
 
   int which = -1;
 
@@ -83,6 +87,7 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
           else if (PyBobIoHDF5File_Check(v)) which = 1;
           else if (PyList_Check(v) || PyTuple_Check(v) || PyIter_Check(v)) which = 2;
           else if (PyBlitzArray_Check(v) || PyArray_Check(v)) which = 3;
+          else if (PyBobIpGaborJet_Check(v)) which = 5;
           else{
             Jet_doc.print_usage();
             PyErr_Format(PyExc_RuntimeError, "`%s' constructor with called unknown first parameter", Py_TYPE(self)->tp_name);
@@ -90,12 +95,13 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
           }
         } else {
           // called via dict
-          PyObject* k[] = {Py_BuildValue("s", kwlist0[0]), Py_BuildValue("s", kwlist1[0]), Py_BuildValue("s", kwlist2[0]), Py_BuildValue("s", kwlist3[0])};
+          PyObject* k[] = {Py_BuildValue("s", kwlist0[0]), Py_BuildValue("s", kwlist1[0]), Py_BuildValue("s", kwlist2[0]), Py_BuildValue("s", kwlist3[0]), Py_BuildValue("s", kwlist5[0])};
           auto k0_ = make_safe(k[0]), k1_ = make_safe(k[1]), k2_ = make_safe(k[2]), k3_ = make_safe(k[3]);
           if (PyDict_Contains(kwargs, k[0])) which = 0;
           else if (PyDict_Contains(kwargs, k[1])) which = 1;
           else if (PyDict_Contains(kwargs, k[2])) which = 2;
           else if (PyDict_Contains(kwargs, k[3])) which = 3;
+          else if (PyDict_Contains(kwargs, k[4])) which = 5;
           else{
             Jet_doc.print_usage();
             PyErr_Format(PyExc_RuntimeError, "`%s' constructor called with unknown first parameter", Py_TYPE(self)->tp_name);
@@ -240,6 +246,16 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
         self->cxx.reset(new bob::ip::gabor::Jet(*PyBlitzArrayCxx_AsBlitz<std::complex<double>,3>(data), pos, !norm || PyObject_IsTrue(norm)));
         return 0;
       }
+      case 5:{
+        // copy-construct
+        PyBobIpGaborJetObject* jet;
+        if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!", kwlist1, &PyBobIpGaborJet_Type, &jet)){
+          Jet_doc.print_usage();
+          return -1;
+        }
+        self->cxx.reset(new bob::ip::gabor::Jet(*jet->cxx));
+        return 0;
+      }
       default:
         PyErr_Format(PyExc_TypeError, "`%s' unknown error during construction", Py_TYPE(self)->tp_name);
         Jet_doc.print_usage();
@@ -261,7 +277,7 @@ static void PyBobIpGaborJet_delete(PyBobIpGaborJetObject* self) {
 }
 
 int PyBobIpGaborJet_Check(PyObject* o) {
-  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborJetType));
+  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborJet_Type));
 }
 
 
@@ -272,7 +288,8 @@ int PyBobIpGaborJet_Check(PyObject* o) {
 static auto abs_doc = bob::extension::VariableDoc(
   "abs",
   "array(float,1D)",
-  "The list of absolute values of the Gabor jet"
+  "The list of absolute values of the Gabor jet\n\n"
+  ".. note:: These values cannot be modified. Use :py:attr:`jet` instead."
 );
 PyObject* PyBobIpGaborJet_abs(PyBobIpGaborJetObject* self, void*){
   return PyBlitzArrayCxx_AsConstNumpy(self->cxx->abs());
@@ -281,7 +298,8 @@ PyObject* PyBobIpGaborJet_abs(PyBobIpGaborJetObject* self, void*){
 static auto phase_doc = bob::extension::VariableDoc(
   "phase",
   "array(float,1D)",
-  "The list of phase values of the Gabor jet"
+  "The list of phase values of the Gabor jet\n\n"
+  ".. note:: These values cannot be modified. Use :py:attr:`jet` instead."
 );
 PyObject* PyBobIpGaborJet_phase(PyBobIpGaborJetObject* self, void*){
   return PyBlitzArrayCxx_AsConstNumpy(self->cxx->phase());
@@ -291,10 +309,11 @@ static auto jet_doc = bob::extension::VariableDoc(
   "jet",
   "array(float,2D)",
   "The absolute and phase values of the Gabor jet",
-  "The absolute values are stored in the first row ``jet[0,:]``, while the phase values are stored in the second row ``jet[1,:]``"
+  "The absolute values are stored in the first row ``jet[0,:]``, while the phase values are stored in the second row ``jet[1,:]``\n\n"
+  ".. note:: Use this function to modify the Gabor jet, if required."
 );
 PyObject* PyBobIpGaborJet_jet(PyBobIpGaborJetObject* self, void*){
-  return PyBlitzArrayCxx_AsConstNumpy(self->cxx->jet());
+  return PyBlitzArrayCxx_AsNumpy(self->cxx->jet());
 }
 
 static auto complex_doc = bob::extension::VariableDoc(
@@ -592,7 +611,7 @@ static PyMethodDef PyBobIpGaborJet_methods[] = {
 /******************************************************************/
 
 // Define the Gabor wavelet type struct; will be initialized later
-PyTypeObject PyBobIpGaborJetType = {
+PyTypeObject PyBobIpGaborJet_Type = {
   PyVarObject_HEAD_INIT(0,0)
   0
 };
@@ -601,24 +620,24 @@ bool init_BobIpGaborJet(PyObject* module)
 {
 
   // initialize the Gabor wavelet type struct
-  PyBobIpGaborJetType.tp_name = Jet_doc.name();
-  PyBobIpGaborJetType.tp_basicsize = sizeof(PyBobIpGaborJetObject);
-  PyBobIpGaborJetType.tp_flags = Py_TPFLAGS_DEFAULT;
-  PyBobIpGaborJetType.tp_doc = Jet_doc.doc();
+  PyBobIpGaborJet_Type.tp_name = Jet_doc.name();
+  PyBobIpGaborJet_Type.tp_basicsize = sizeof(PyBobIpGaborJetObject);
+  PyBobIpGaborJet_Type.tp_flags = Py_TPFLAGS_DEFAULT;
+  PyBobIpGaborJet_Type.tp_doc = Jet_doc.doc();
 
   // set the functions
-  PyBobIpGaborJetType.tp_new = PyType_GenericNew;
-  PyBobIpGaborJetType.tp_init = reinterpret_cast<initproc>(PyBobIpGaborJet_init);
-  PyBobIpGaborJetType.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborJet_delete);
-  PyBobIpGaborJetType.tp_methods = PyBobIpGaborJet_methods;
-  PyBobIpGaborJetType.tp_getset = PyBobIpGaborJet_getseters;
+  PyBobIpGaborJet_Type.tp_new = PyType_GenericNew;
+  PyBobIpGaborJet_Type.tp_init = reinterpret_cast<initproc>(PyBobIpGaborJet_init);
+  PyBobIpGaborJet_Type.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborJet_delete);
+  PyBobIpGaborJet_Type.tp_methods = PyBobIpGaborJet_methods;
+  PyBobIpGaborJet_Type.tp_getset = PyBobIpGaborJet_getseters;
 
   // check that everyting is fine
-  if (PyType_Ready(&PyBobIpGaborJetType) < 0)
+  if (PyType_Ready(&PyBobIpGaborJet_Type) < 0)
     return false;
 
   // add the type to the module
-  Py_INCREF(&PyBobIpGaborJetType);
-  return PyModule_AddObject(module, "Jet", (PyObject*)&PyBobIpGaborJetType) >= 0;
+  Py_INCREF(&PyBobIpGaborJet_Type);
+  return PyModule_AddObject(module, "Jet", (PyObject*)&PyBobIpGaborJet_Type) >= 0;
 }
 

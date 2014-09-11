@@ -102,7 +102,7 @@ static void PyBobIpGaborWaveletTransform_delete(PyBobIpGaborWaveletTransformObje
 }
 
 int PyBobIpGaborWaveletTransform_Check(PyObject* o) {
-  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborWaveletTransformType));
+  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborWaveletTransform_Type));
 }
 
 static PyObject* PyBobIpGaborWaveletTransform_RichCompare(PyBobIpGaborWaveletTransformObject* self, PyObject* other, int op) {
@@ -239,7 +239,7 @@ PyObject* PyBobIpGaborWaveletTransform_wavelets(PyBobIpGaborWaveletTransformObje
   // populate a list
   PyObject* list = PyList_New(wavelets.size());
   for (Py_ssize_t i = 0; i < (Py_ssize_t)wavelets.size(); ++i){
-    PyBobIpGaborWaveletObject* wavelet = (PyBobIpGaborWaveletObject*)PyBobIpGaborWaveletType.tp_alloc(&PyBobIpGaborWaveletType, 0);
+    PyBobIpGaborWaveletObject* wavelet = (PyBobIpGaborWaveletObject*)PyBobIpGaborWavelet_Type.tp_alloc(&PyBobIpGaborWavelet_Type, 0);
     wavelet->cxx = wavelets[i];
     PyList_SET_ITEM(list, i, Py_BuildValue("N", wavelet));
   }
@@ -580,7 +580,7 @@ static PyMethodDef PyBobIpGaborWaveletTransform_methods[] = {
 /******************************************************************/
 
 // Define the Gabor wavelet type struct; will be initialized later
-PyTypeObject PyBobIpGaborWaveletTransformType = {
+PyTypeObject PyBobIpGaborWaveletTransform_Type = {
   PyVarObject_HEAD_INIT(0,0)
   0
 };
@@ -589,26 +589,26 @@ bool init_BobIpGaborWaveletTransform(PyObject* module)
 {
 
   // initialize the Gabor wavelet type struct
-  PyBobIpGaborWaveletTransformType.tp_name = Transform_doc.name();
-  PyBobIpGaborWaveletTransformType.tp_basicsize = sizeof(PyBobIpGaborWaveletTransformObject);
-  PyBobIpGaborWaveletTransformType.tp_flags = Py_TPFLAGS_DEFAULT;
-  PyBobIpGaborWaveletTransformType.tp_doc = Transform_doc.doc();
+  PyBobIpGaborWaveletTransform_Type.tp_name = Transform_doc.name();
+  PyBobIpGaborWaveletTransform_Type.tp_basicsize = sizeof(PyBobIpGaborWaveletTransformObject);
+  PyBobIpGaborWaveletTransform_Type.tp_flags = Py_TPFLAGS_DEFAULT;
+  PyBobIpGaborWaveletTransform_Type.tp_doc = Transform_doc.doc();
 
   // set the functions
-  PyBobIpGaborWaveletTransformType.tp_new = PyType_GenericNew;
-  PyBobIpGaborWaveletTransformType.tp_init = reinterpret_cast<initproc>(PyBobIpGaborWaveletTransform_init);
-  PyBobIpGaborWaveletTransformType.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborWaveletTransform_delete);
-  PyBobIpGaborWaveletTransformType.tp_methods = PyBobIpGaborWaveletTransform_methods;
-  PyBobIpGaborWaveletTransformType.tp_getset = PyBobIpGaborWaveletTransform_getseters;
-  PyBobIpGaborWaveletTransformType.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborWaveletTransform_transform);
-  PyBobIpGaborWaveletTransformType.tp_richcompare = reinterpret_cast<richcmpfunc>(PyBobIpGaborWaveletTransform_RichCompare);
+  PyBobIpGaborWaveletTransform_Type.tp_new = PyType_GenericNew;
+  PyBobIpGaborWaveletTransform_Type.tp_init = reinterpret_cast<initproc>(PyBobIpGaborWaveletTransform_init);
+  PyBobIpGaborWaveletTransform_Type.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborWaveletTransform_delete);
+  PyBobIpGaborWaveletTransform_Type.tp_methods = PyBobIpGaborWaveletTransform_methods;
+  PyBobIpGaborWaveletTransform_Type.tp_getset = PyBobIpGaborWaveletTransform_getseters;
+  PyBobIpGaborWaveletTransform_Type.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborWaveletTransform_transform);
+  PyBobIpGaborWaveletTransform_Type.tp_richcompare = reinterpret_cast<richcmpfunc>(PyBobIpGaborWaveletTransform_RichCompare);
 
   // check that everyting is fine
-  if (PyType_Ready(&PyBobIpGaborWaveletTransformType) < 0)
+  if (PyType_Ready(&PyBobIpGaborWaveletTransform_Type) < 0)
     return false;
 
   // add the type to the module
-  Py_INCREF(&PyBobIpGaborWaveletTransformType);
-  return PyModule_AddObject(module, "Transform", (PyObject*)&PyBobIpGaborWaveletTransformType) >= 0;
+  Py_INCREF(&PyBobIpGaborWaveletTransform_Type);
+  return PyModule_AddObject(module, "Transform", (PyObject*)&PyBobIpGaborWaveletTransform_Type) >= 0;
 }
 

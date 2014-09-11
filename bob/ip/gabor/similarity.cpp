@@ -75,7 +75,7 @@ static int PyBobIpGaborJetSimilarity_init(PyBobIpGaborJetSimilarityObject* self,
         args, kwargs,
         "s|O!", kwlist2,
         &name,
-        &PyBobIpGaborWaveletTransformType, &gwt
+        &PyBobIpGaborWaveletTransform_Type, &gwt
       )
     ){
       Similarity_doc.print_usage();
@@ -104,7 +104,7 @@ static void PyBobIpGaborJetSimilarity_delete(PyBobIpGaborJetSimilarityObject* se
 }
 
 int PyBobIpGaborJetSimilarity_Check(PyObject* o) {
-  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborJetSimilarityType));
+  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborJetSimilarity_Type));
 }
 
 
@@ -127,7 +127,7 @@ static auto transform_doc = bob::extension::VariableDoc(
   "The Gabor wavelet transform used in the similarity class; can be ``None`` for similarity functions that do not compute disparities"
 );
 PyObject* PyBobIpGaborJetSimilarity_transform(PyBobIpGaborJetSimilarityObject* self, void*){
-  PyBobIpGaborWaveletTransformObject* transform = (PyBobIpGaborWaveletTransformObject*)PyBobIpGaborWaveletTransformType.tp_alloc(&PyBobIpGaborWaveletTransformType, 0);
+  PyBobIpGaborWaveletTransformObject* transform = (PyBobIpGaborWaveletTransformObject*)PyBobIpGaborWaveletTransform_Type.tp_alloc(&PyBobIpGaborWaveletTransform_Type, 0);
   transform->cxx = self->cxx->transform();
   return Py_BuildValue("N", transform);
 }
@@ -194,8 +194,8 @@ static PyObject* PyBobIpGaborJetSimilarity_similarity(PyBobIpGaborJetSimilarityO
 
   if (
     !PyArg_ParseTupleAndKeywords(args, kwargs, "O!O!", kwlist,
-      &PyBobIpGaborJetType, &jet1,
-      &PyBobIpGaborJetType, &jet2
+      &PyBobIpGaborJet_Type, &jet1,
+      &PyBobIpGaborJet_Type, &jet2
     )
   ){
     similarity_doc.print_usage();
@@ -236,8 +236,8 @@ static PyObject* PyBobIpGaborJetSimilarity_disparity(PyBobIpGaborJetSimilarityOb
 
   if (
     !PyArg_ParseTupleAndKeywords(args, kwargs, "O!O!", kwlist,
-      &PyBobIpGaborJetType, &jet1,
-      &PyBobIpGaborJetType, &jet2
+      &PyBobIpGaborJet_Type, &jet1,
+      &PyBobIpGaborJet_Type, &jet2
     )
   ){
     similarity_doc.print_usage();
@@ -249,6 +249,57 @@ static PyObject* PyBobIpGaborJetSimilarity_disparity(PyBobIpGaborJetSimilarityOb
     return Py_BuildValue("(dd)", disp[0], disp[1]);
   }
   catch (std::exception& e) {
+    PyErr_SetString(PyExc_RuntimeError, e.what());
+    return 0;
+  }
+  catch (...) {
+    PyErr_Format(PyExc_RuntimeError, "%s cannot compute Gabor jet similarity: unknown exception caught", Py_TYPE(self)->tp_name);
+    return 0;
+  }
+}
+
+
+static auto shift_phase_doc = bob::extension::FunctionDoc(
+  "shift_phase",
+  "This function returns a copy of the Gabor jet, for which the Gabor phases are shifted towards the reference Gabor jet",
+  "It uses the disparity estimation to compute the avarage disparity between the two Gabor jets. "
+  "Afterwards, the phases of the given ``jet`` are adapted such that the disparity to the ``reference`` jet is equaled out.",
+  true
+)
+.add_prototype("jet, reference", "shifted")
+.add_parameter("jet", ":py:class:`bob.ip.gabor.Jet`", "The Gabor jets, whose phases should be shifted")
+.add_parameter("reference", ":py:class:`bob.ip.gabor.Jet`", "The Gabor jets, towards which the phases should be shifted")
+.add_return("shifted", ":py:class:`bob.ip.gabor.Jet`", "A copy of ``jet``, where the phases are shifted towards ``reference``")
+;
+
+static PyObject* PyBobIpGaborJetSimilarity_shift_phase(PyBobIpGaborJetSimilarityObject* self, PyObject* args, PyObject* kwargs) {
+  try {
+
+  static char* kwlist[] = {c("jet"), c("reference"), 0};
+
+  PyBobIpGaborJetObject* jet = 0,* reference = 0;;
+
+  if (
+    !PyArg_ParseTupleAndKeywords(args, kwargs, "O!O!", kwlist,
+      &PyBobIpGaborJet_Type, &jet,
+      &PyBobIpGaborJet_Type, &reference
+    )
+  ){
+    shift_phase_doc.print_usage();
+    return 0;
+  }
+
+  // create new jet
+  PyBobIpGaborJetObject* shifted = reinterpret_cast<PyBobIpGaborJetObject*>(PyBobIpGaborJet_Type.tp_alloc(&PyBobIpGaborJet_Type, 0));
+  shifted->cxx.reset(new bob::ip::gabor::Jet(jet->cxx->length()));
+
+  // shift it
+  self->cxx->shift_phase(*jet->cxx, *reference->cxx, *shifted->cxx);
+
+  // return it
+  return Py_BuildValue("N", shifted);
+
+  }catch (std::exception& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
     return 0;
   }
@@ -347,6 +398,12 @@ static PyMethodDef PyBobIpGaborJetSimilarity_methods[] = {
     disparity_doc.doc()
   },
   {
+    shift_phase_doc.name(),
+    (PyCFunction)PyBobIpGaborJetSimilarity_shift_phase,
+    METH_VARARGS|METH_KEYWORDS,
+    shift_phase_doc.doc()
+  },
+  {
     load_doc.name(),
     (PyCFunction)PyBobIpGaborJetSimilarity_load,
     METH_VARARGS|METH_KEYWORDS,
@@ -367,7 +424,7 @@ static PyMethodDef PyBobIpGaborJetSimilarity_methods[] = {
 /******************************************************************/
 
 // Define the Gabor wavelet type struct; will be initialized later
-PyTypeObject PyBobIpGaborJetSimilarityType = {
+PyTypeObject PyBobIpGaborJetSimilarity_Type = {
   PyVarObject_HEAD_INIT(0,0)
   0
 };
@@ -376,25 +433,25 @@ bool init_BobIpGaborJetSimilarity(PyObject* module)
 {
 
   // initialize the Gabor wavelet type struct
-  PyBobIpGaborJetSimilarityType.tp_name = Similarity_doc.name();
-  PyBobIpGaborJetSimilarityType.tp_basicsize = sizeof(PyBobIpGaborJetSimilarityObject);
-  PyBobIpGaborJetSimilarityType.tp_flags = Py_TPFLAGS_DEFAULT;
-  PyBobIpGaborJetSimilarityType.tp_doc = Similarity_doc.doc();
+  PyBobIpGaborJetSimilarity_Type.tp_name = Similarity_doc.name();
+  PyBobIpGaborJetSimilarity_Type.tp_basicsize = sizeof(PyBobIpGaborJetSimilarityObject);
+  PyBobIpGaborJetSimilarity_Type.tp_flags = Py_TPFLAGS_DEFAULT;
+  PyBobIpGaborJetSimilarity_Type.tp_doc = Similarity_doc.doc();
 
   // set the functions
-  PyBobIpGaborJetSimilarityType.tp_new = PyType_GenericNew;
-  PyBobIpGaborJetSimilarityType.tp_init = reinterpret_cast<initproc>(PyBobIpGaborJetSimilarity_init);
-  PyBobIpGaborJetSimilarityType.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborJetSimilarity_delete);
-  PyBobIpGaborJetSimilarityType.tp_methods = PyBobIpGaborJetSimilarity_methods;
-  PyBobIpGaborJetSimilarityType.tp_getset = PyBobIpGaborJetSimilarity_getseters;
-  PyBobIpGaborJetSimilarityType.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborJetSimilarity_similarity);
+  PyBobIpGaborJetSimilarity_Type.tp_new = PyType_GenericNew;
+  PyBobIpGaborJetSimilarity_Type.tp_init = reinterpret_cast<initproc>(PyBobIpGaborJetSimilarity_init);
+  PyBobIpGaborJetSimilarity_Type.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborJetSimilarity_delete);
+  PyBobIpGaborJetSimilarity_Type.tp_methods = PyBobIpGaborJetSimilarity_methods;
+  PyBobIpGaborJetSimilarity_Type.tp_getset = PyBobIpGaborJetSimilarity_getseters;
+  PyBobIpGaborJetSimilarity_Type.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborJetSimilarity_similarity);
 
   // check that everyting is fine
-  if (PyType_Ready(&PyBobIpGaborJetSimilarityType) < 0)
+  if (PyType_Ready(&PyBobIpGaborJetSimilarity_Type) < 0)
     return false;
 
   // add the type to the module
-  Py_INCREF(&PyBobIpGaborJetSimilarityType);
-  return PyModule_AddObject(module, "Similarity", (PyObject*)&PyBobIpGaborJetSimilarityType) >= 0;
+  Py_INCREF(&PyBobIpGaborJetSimilarity_Type);
+  return PyModule_AddObject(module, "Similarity", (PyObject*)&PyBobIpGaborJetSimilarity_Type) >= 0;
 }
 

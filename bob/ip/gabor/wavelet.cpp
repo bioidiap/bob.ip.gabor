@@ -78,7 +78,7 @@ static void PyBobIpGaborWavelet_delete(PyBobIpGaborWaveletObject* self) {
 }
 
 int PyBobIpGaborWavelet_Check(PyObject* o) {
-  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborWaveletType));
+  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborWavelet_Type));
 }
 
 
@@ -227,7 +227,7 @@ static PyMethodDef PyBobIpGaborWavelet_methods[] = {
 /******************************************************************/
 
 // Define the Gabor wavelet type struct; will be initialized later
-PyTypeObject PyBobIpGaborWaveletType = {
+PyTypeObject PyBobIpGaborWavelet_Type = {
   PyVarObject_HEAD_INIT(0,0)
   0
 };
@@ -236,25 +236,25 @@ bool init_BobIpGaborWavelet(PyObject* module)
 {
 
   // initialize the Gabor wavelet type struct
-  PyBobIpGaborWaveletType.tp_name = wavelet_doc.name();
-  PyBobIpGaborWaveletType.tp_basicsize = sizeof(PyBobIpGaborWaveletObject);
-  PyBobIpGaborWaveletType.tp_flags = Py_TPFLAGS_DEFAULT;
-  PyBobIpGaborWaveletType.tp_doc = wavelet_doc.doc();
+  PyBobIpGaborWavelet_Type.tp_name = wavelet_doc.name();
+  PyBobIpGaborWavelet_Type.tp_basicsize = sizeof(PyBobIpGaborWaveletObject);
+  PyBobIpGaborWavelet_Type.tp_flags = Py_TPFLAGS_DEFAULT;
+  PyBobIpGaborWavelet_Type.tp_doc = wavelet_doc.doc();
 
   // set the functions
-  PyBobIpGaborWaveletType.tp_new = PyType_GenericNew;
-  PyBobIpGaborWaveletType.tp_init = reinterpret_cast<initproc>(PyBobIpGaborWavelet_init);
-  PyBobIpGaborWaveletType.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborWavelet_delete);
-  PyBobIpGaborWaveletType.tp_methods = PyBobIpGaborWavelet_methods;
-  PyBobIpGaborWaveletType.tp_getset = PyBobIpGaborWavelet_getseters;
-  PyBobIpGaborWaveletType.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborWavelet_transform);
+  PyBobIpGaborWavelet_Type.tp_new = PyType_GenericNew;
+  PyBobIpGaborWavelet_Type.tp_init = reinterpret_cast<initproc>(PyBobIpGaborWavelet_init);
+  PyBobIpGaborWavelet_Type.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborWavelet_delete);
+  PyBobIpGaborWavelet_Type.tp_methods = PyBobIpGaborWavelet_methods;
+  PyBobIpGaborWavelet_Type.tp_getset = PyBobIpGaborWavelet_getseters;
+  PyBobIpGaborWavelet_Type.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborWavelet_transform);
 
   // check that everyting is fine
-  if (PyType_Ready(&PyBobIpGaborWaveletType) < 0)
+  if (PyType_Ready(&PyBobIpGaborWavelet_Type) < 0)
     return false;
 
   // add the type to the module
-  Py_INCREF(&PyBobIpGaborWaveletType);
-  return PyModule_AddObject(module, "Wavelet", (PyObject*)&PyBobIpGaborWaveletType) >= 0;
+  Py_INCREF(&PyBobIpGaborWavelet_Type);
+  return PyModule_AddObject(module, "Wavelet", (PyObject*)&PyBobIpGaborWavelet_Type) >= 0;
 }
 

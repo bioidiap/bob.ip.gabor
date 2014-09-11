@@ -159,7 +159,7 @@ static void PyBobIpGaborGraph_delete(PyBobIpGaborGraphObject* self) {
 }
 
 int PyBobIpGaborGraph_Check(PyObject* o) {
-  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborGraphType));
+  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborGraph_Type));
 }
 
 static PyObject* PyBobIpGaborGraph_RichCompare(PyBobIpGaborGraphObject* self, PyObject* other, int op) {
@@ -322,7 +322,7 @@ static PyObject* PyBobIpGaborGraph_extract(PyBobIpGaborGraphObject* self, PyObje
     jets = PyList_New(self->cxx->numberOfNodes());
     int jet_len = trafo_image->shape[0];
     for (Py_ssize_t i = 0; i < PyList_Size(jets); ++i){
-      PyBobIpGaborJetObject* jet = reinterpret_cast<PyBobIpGaborJetObject*>(PyBobIpGaborJetType.tp_alloc(&PyBobIpGaborJetType, 0));
+      PyBobIpGaborJetObject* jet = reinterpret_cast<PyBobIpGaborJetObject*>(PyBobIpGaborJet_Type.tp_alloc(&PyBobIpGaborJet_Type, 0));
       jet->cxx.reset(new bob::ip::gabor::Jet(jet_len));
       PyList_SET_ITEM(jets, i, Py_BuildValue("N",jet));
     }
@@ -451,7 +451,7 @@ static PyMethodDef PyBobIpGaborGraph_methods[] = {
 /******************************************************************/
 
 // Define the Gabor wavelet type struct; will be initialized later
-PyTypeObject PyBobIpGaborGraphType = {
+PyTypeObject PyBobIpGaborGraph_Type = {
   PyVarObject_HEAD_INIT(0,0)
   0
 };
@@ -460,26 +460,26 @@ bool init_BobIpGaborGraph(PyObject* module)
 {
 
   // initialize the Gabor wavelet type struct
-  PyBobIpGaborGraphType.tp_name = Graph_doc.name();
-  PyBobIpGaborGraphType.tp_basicsize = sizeof(PyBobIpGaborGraphObject);
-  PyBobIpGaborGraphType.tp_flags = Py_TPFLAGS_DEFAULT;
-  PyBobIpGaborGraphType.tp_doc = Graph_doc.doc();
+  PyBobIpGaborGraph_Type.tp_name = Graph_doc.name();
+  PyBobIpGaborGraph_Type.tp_basicsize = sizeof(PyBobIpGaborGraphObject);
+  PyBobIpGaborGraph_Type.tp_flags = Py_TPFLAGS_DEFAULT;
+  PyBobIpGaborGraph_Type.tp_doc = Graph_doc.doc();
 
   // set the functions
-  PyBobIpGaborGraphType.tp_new = PyType_GenericNew;
-  PyBobIpGaborGraphType.tp_init = reinterpret_cast<initproc>(PyBobIpGaborGraph_init);
-  PyBobIpGaborGraphType.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborGraph_delete);
-  PyBobIpGaborGraphType.tp_methods = PyBobIpGaborGraph_methods;
-  PyBobIpGaborGraphType.tp_getset = PyBobIpGaborGraph_getseters;
-  PyBobIpGaborGraphType.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborGraph_extract);
-  PyBobIpGaborGraphType.tp_richcompare = reinterpret_cast<richcmpfunc>(PyBobIpGaborGraph_RichCompare);
+  PyBobIpGaborGraph_Type.tp_new = PyType_GenericNew;
+  PyBobIpGaborGraph_Type.tp_init = reinterpret_cast<initproc>(PyBobIpGaborGraph_init);
+  PyBobIpGaborGraph_Type.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborGraph_delete);
+  PyBobIpGaborGraph_Type.tp_methods = PyBobIpGaborGraph_methods;
+  PyBobIpGaborGraph_Type.tp_getset = PyBobIpGaborGraph_getseters;
+  PyBobIpGaborGraph_Type.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborGraph_extract);
+  PyBobIpGaborGraph_Type.tp_richcompare = reinterpret_cast<richcmpfunc>(PyBobIpGaborGraph_RichCompare);
 
   // check that everyting is fine
-  if (PyType_Ready(&PyBobIpGaborGraphType) < 0)
+  if (PyType_Ready(&PyBobIpGaborGraph_Type) < 0)
     return false;
 
   // add the type to the module
-  Py_INCREF(&PyBobIpGaborGraphType);
-  return PyModule_AddObject(module, "Graph", (PyObject*)&PyBobIpGaborGraphType) >= 0;
+  Py_INCREF(&PyBobIpGaborGraph_Type);
+  return PyModule_AddObject(module, "Graph", (PyObject*)&PyBobIpGaborGraph_Type) >= 0;
 }
 
