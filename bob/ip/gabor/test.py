@@ -287,7 +287,7 @@ def test_disparity():
   # check that the directions that we have set are correct
   # (the other directions are modified as well, but computing those values is more difficult)
   for i in range(0, gwt.number_of_wavelets, 4):
-    assert abs(normalized_jet.phase[i] - test_jet.phase[i]) < 1e-8
+    assert abs(normalized_jet.phase[i] - jet.phase[i]) < 1e-8
 
   # assert that the new disparity is 0
   new_disp = sim.disparity(normalized_jet, jet)
