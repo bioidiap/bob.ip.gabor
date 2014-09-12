@@ -9,6 +9,9 @@ from setuptools import setup, find_packages, dist
 dist.Distribution(dict(setup_requires=['bob.extension', 'bob.blitz'] + bob_packages))
 from bob.blitz.extension import Extension, Library, build_ext
 
+from bob.extension.utils import load_requirements
+build_requires = load_requirements()
+
 packages = ['boost']
 boost_modules = ['system']
 
@@ -31,9 +34,6 @@ setup(
 
     setup_requires = build_requires,
     install_requires = build_requires,
-
-    install_requires=[
-    ],
 
     namespace_packages=[
       "bob",
