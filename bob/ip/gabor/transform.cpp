@@ -98,6 +98,7 @@ static int PyBobIpGaborWaveletTransform_init(PyBobIpGaborWaveletTransformObject*
 }
 
 static void PyBobIpGaborWaveletTransform_delete(PyBobIpGaborWaveletTransformObject* self) {
+  self->cxx.reset();
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
 

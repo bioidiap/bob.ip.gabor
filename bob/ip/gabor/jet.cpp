@@ -273,6 +273,7 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
 }
 
 static void PyBobIpGaborJet_delete(PyBobIpGaborJetObject* self) {
+  self->cxx.reset();
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
 

@@ -155,6 +155,7 @@ static int PyBobIpGaborGraph_init(PyBobIpGaborGraphObject* self, PyObject* args,
 }
 
 static void PyBobIpGaborGraph_delete(PyBobIpGaborGraphObject* self) {
+  self->cxx.reset();
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
 

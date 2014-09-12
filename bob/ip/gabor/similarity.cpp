@@ -100,6 +100,7 @@ static int PyBobIpGaborJetSimilarity_init(PyBobIpGaborJetSimilarityObject* self,
 }
 
 static void PyBobIpGaborJetSimilarity_delete(PyBobIpGaborJetSimilarityObject* self) {
+  self->cxx.reset();
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
