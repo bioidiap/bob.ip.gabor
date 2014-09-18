@@ -120,11 +120,11 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
             // can be complex or trafo image
             if (PyTuple_Size(args) == 2){
               PyObject* v2 = PyTuple_GET_ITEM(args, 1);
-              if (PyTuple_Check(v2)) which = 4;
+              if (PyTuple_Check(v2) || PyList_Check(v2)) which = 4;
               else if (PyBool_Check(v2)) which = 3;
               else{
                 Jet_doc.print_usage();
-                PyErr_Format(PyExc_RuntimeError, "`%s' constructor called  with unknown second parameter", Py_TYPE(self)->tp_name);
+                PyErr_Format(PyExc_RuntimeError, "`%s' constructor called with unknown second parameter", Py_TYPE(self)->tp_name);
                 return -1;
               }
             } else { // args != 2
@@ -190,7 +190,7 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
         return 0;
       }
       case 2:{ // averaging
-        PyObject* jets,* norm;
+        PyObject* jets,* norm = 0;
         if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O!", kwlist2, &jets, &PyBool_Type, &norm)){
           Jet_doc.print_usage();
           return -1;
