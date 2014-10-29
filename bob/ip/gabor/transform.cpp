@@ -47,7 +47,7 @@ static auto Transform_doc = bob::extension::ClassDoc(
   .add_parameter("power_of_k", "float", "[default: 0] The :math:`\\lambda` factor to regularize the Gabor wavelet prefactor to generate comparable results for images, see Appendix C of [Guenther2011]_")
   .add_parameter("dc_free", "bool", "[default: True] Should the Gabor wavelet be without DC factor (i.e. should the integral under the wavelet in spatial domain vanish)?")
   .add_parameter("epsilon", "float", "[default: 1e-10] For speed reasons: all wavelet pixels in frequency domain with an absolute value below this should be considered as 0")
-  .add_parameter("hdf5", ":py:class:`bob.io.base.HD5Ffile`", "An HDF5 file open for reading to load the parametrization of the Gabor wavelet transform from")
+  .add_parameter("hdf5", ":py:class:`bob.io.base.HD5File`", "An HDF5 file open for reading to load the parametrization of the Gabor wavelet transform from")
 );
 
 static int PyBobIpGaborWaveletTransform_init(PyBobIpGaborWaveletTransformObject* self, PyObject* args, PyObject* kwargs) {

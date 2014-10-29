@@ -48,7 +48,7 @@ static auto Graph_doc = bob::extension::ClassDoc(
   .add_parameter("last", "(int, int)", "The position of the last (bottom-right) node that will be placed; depending on the ``step`` parameter, the actual bottom-right node might be before ``last``")
   .add_parameter("step", "(int, int)", "The distance between two each nodes (in vertical and horizontal direction)")
   .add_parameter("nodes", "[(int, int)]", "The node positions that should be stored in the graph")
-  .add_parameter("hdf5", ":py:class:`bob.io.base.HD5Ffile`", "An HDF5 file open for reading to load the nodes of the Gabor graph from")
+  .add_parameter("hdf5", ":py:class:`bob.io.base.HD5File`", "An HDF5 file open for reading to load the nodes of the Gabor graph from")
 );
 
 static int PyBobIpGaborGraph_init(PyBobIpGaborGraphObject* self, PyObject* args, PyObject* kwargs) {
@@ -276,7 +276,7 @@ static auto extract_doc = bob::extension::FunctionDoc(
 .add_prototype("trafo_image", "jets")
 .add_parameter("trafo_image", "array_like (complex, 3D)", "The Gabor wavelet transformed image, e.g., the result of :py:func:`bob.ip.gabor.Transform.transform`")
 .add_parameter("jets", "[:py:class:`bob.ip.gabor.Jet`]", "The list of Gabor jets that will be filled during the extraction process; The number of jets must be identical to :py:attr:`number_of_nodes`, and the jets must have the correct :py:attr:`bob.ip.gabor.Jet.length`.")
-.add_return("jets", "array_like (complex, 3D)", "The transformed image in spatial domain that will contain the transformed image; will have shape (:py:attr:`number_of_wavelets`, input.shape[0], input.shape[1])")
+.add_return("jets", "[:py:class:`bob.ip.gabor.Jet`]", "The list of Gabor jets extracted at the :py:attr:`nodes` from the given ``trafo_image``.")
 ;
 
 static PyObject* PyBobIpGaborGraph_extract(PyBobIpGaborGraphObject* self, PyObject* args, PyObject* kwargs) {

@@ -35,10 +35,12 @@ static auto Jet_doc = bob::extension::ClassDoc(
   bob::extension::FunctionDoc(
     "__init__",
     "Creates a Gabor jet from various sources of data",
-    "The family of Gabor wavelets :math:`\\check\\psi_{\\vec k_j}` is created by considering several center frequencies :math:`\\vec k_j`:\n\n"
-    ".. math::\n"
-    "   \\vec k_j = k_{\\zeta} \\left\\{ \\begin{array}{c} \\cos \\vartheta_{\\nu} \\\\ \\sin \\vartheta_{\\nu} \\end{array}\\right\\}\n\n"
-    "where :math:`k_{\\zeta} = k_{max} \\cdot k_{fac}^{\\zeta}` with :math:`\\zeta = \\{0,\\dots,\\zeta_{max}-1\\}` and :math:`\\vartheta_{\\nu} = \\frac{\\nu \\cdot 2\\pi}{\\nu_{max}}` and :math:`\\nu = \\{0,\\dots,\\nu_{max}-1\\}`",
+    "* The first constructor will create an uninitialized Gabor jet of the desired size\n"
+    "* The second constructor will extract a Gabor jet from the given Gabor transformed image at the specified location\n"
+    "* The third constructor will create a Gabor jet from a list of complex values\n"
+    "* The fourth constructor will average the complex values of the given Gabor jets\n"
+    "* The fifth constructor will load the Gabor jet from the given :py:class:`bob.io.base.HDF5File`\n"
+    "* The last constructor will copy the information stored in the given :py:class:`Jet`\n",
     true
   )
   .add_prototype("[length]", "")
@@ -46,12 +48,12 @@ static auto Jet_doc = bob::extension::ClassDoc(
   .add_prototype("complex, [normalize]", "")
   .add_prototype("to_average, [normalize]", "")
   .add_prototype("hdf5", "")
-  .add_prototype("jet")
+  .add_prototype("jet", "")
   .add_parameter("length", "int", "[default: 0] Creates an empty Gabor jet of the given length")
   .add_parameter("trafo_image", "array_like(complex, 3D)", "The result of the Gabor wavelet transform, i.e., of :py:func:`bob.ip.gabor.Transform.transform`")
   .add_parameter("position", "(int, int)", "The position, where the Gabor jet should be extracted")
   .add_parameter("complex", "array_like(complex, 3D)", "The complex-valued representation of a Gabor jet")
-  .add_parameter("to_average", "[:py:class:`bob.ip.gabor.Jet`]", "Computes the average of the given Gabor jets, see :py:func:`average` for details")
+  .add_parameter("to_average", "[:py:class:`bob.ip.gabor.Jet`]", "Computes the average of the given Gabor jets")
   .add_parameter("normalize", "bool", "[default: True] Should the newly generated Gabor jet be normalized to unit Euclidean length?")
   .add_parameter("hdf5", ":py:class:`bob.io.base.HD5File`", "An HDF5 file open for reading to load the Gabor jet from")
   .add_parameter("jet", ":py:class:`bob.ip.gabor.Jet`", "The Gabor jet to copy-construct")

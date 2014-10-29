@@ -33,7 +33,8 @@ To create a Gabor wavelet of size ``(128, 128)`` with the vertical orientation a
 
    >>> wavelet = bob.ip.gabor.Wavelet(resolution = (128, 128), frequency = (math.pi/2, 0))
 
-To compute the wavelet transform, an image of the same resolution in frequency domain must be present:
+To compute the wavelet transform, an image of the same resolution in frequency domain must be present.
+To generate an image in frequency domain, one can use the :py:func:`bob.sp.fft` function:
 
 .. doctest::
 
@@ -47,7 +48,7 @@ Now, the wavelet transform with the given wavelet can be applied:
 
    >>> transformed_freq_image = wavelet.transform(freq_image)
 
-To get the transformed image in spatial domain, it needs to be transformed back using ``bob.sp.ifft``:
+To get the transformed image in spatial domain, it needs to be transformed back, e.g., using :py:func:`bob.sp.ifft`:
 
 .. doctest::
 
@@ -107,7 +108,7 @@ The first row displays the Gabor wavelet family in frequency domain can be obtai
 Gabor jet and their similarities
 --------------------------------
 
-A Gabor jet is the collection of the (complex valued) responses of all Gabor wavelets of the family **at a certain point in the image**.
+A Gabor jet  :py:class:`bob.ip.gabor.Jet` is the collection of the (complex valued) responses of all Gabor wavelets of the family **at a certain point in the image**.
 The Gabor jet is a local texture descriptor, that can be used for various applications.
 To extract the texture from the right eye landmark from a facial image, one can simply call:
 
@@ -122,7 +123,7 @@ To extract the texture from the right eye landmark from a facial image, one can 
 
 One of these applications is to locate the texture in a given image.
 E.g., one might locate the position of the eye by scanning over the whole image.
-At each position in the image, the similarity between the reference Gabor jet and the Gabor jet at this location is computed.
+At each position in the image, the similarity between the reference Gabor jet and the Gabor jet at this location is computed using a :py:class:`bob.ip.gabor.Similarity`.
 For this computation, both traditional [Wiskott1997]_ and innovative [Guenther2012]_ similarity functions can be used.
 In fact, since the texture descriptor is stable against small shifts, only every 4th pixel will be extracted, and the original offset position is not included:
 
@@ -180,9 +181,5 @@ This graph can be used to extract Gabor jets from a Gabor transformed image:
    136
 
 When graphs are extracted from two facial images, the average similarity of the Gabor jets can be used to define, whether two images contain the the same identities.
-A complete example on the AT&T database can be found in the `xbob.example.faceverify <http://pypi.python.org/pypi/xbob.example.faceverify>`_ package.
-
-.. todo::
-   Adapt http://pypi.python.org/pypi/xbob.example.faceverify so that it actually uses the :py:mod:`bob.ip.gabor` package.
-
+A complete example on the AT&T database can be found in the `bob.example.faceverify <http://pypi.python.org/pypi/bob.example.faceverify>`_ package.
 
