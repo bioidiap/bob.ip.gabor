@@ -62,14 +62,14 @@ bob::ip::gabor::Wavelet::Wavelet(
       // assign wavelet value
       double wavelet_value = exp(- sigma_square * omega_minus_k_squared / (2. * k_square));
 
-      // prefactor the wavelet value with k^(pow_of_k); the default prefactor 1 might not be the best.
-      wavelet_value *= std::pow(k_square, pow_of_k / 2.);
-
       if (dc_free){
         double omega_square = sqr(omega_x) + sqr(omega_y);
 
         wavelet_value -= exp(-sigma_square * (omega_square + k_square) / (2. * k_square));
       } // if ! dc_free
+
+      // prefactor the wavelet value with k^(pow_of_k); the default prefactor 1 might not be the best.
+      wavelet_value *= std::pow(k_square, pow_of_k / 2.);
 
       if (std::abs(wavelet_value) > epsilon){
         m_wavelet_pixel.push_back(std::make_pair(

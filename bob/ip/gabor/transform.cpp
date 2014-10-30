@@ -43,7 +43,7 @@ static auto Transform_doc = bob::extension::ClassDoc(
   .add_parameter("number_of_directions", "int", "[default: 8] The number of directions :math:`\\nu_{max}` of Gabor wavelets that should be created")
   .add_parameter("sigma", "float", "[default: :math:`2\\pi`] The spatial resolution :math:`\\sigma` of the Gabor wavelets")
   .add_parameter("k_max", "float", "[default: :math:`\\pi/2`] The highest frequency (the lowest scale) of Gabor wavelets; the default will resemble to the smallest wavelength of 4 pixels")
-  .add_parameter("k_fac", "float", "[default: :math:`\\sqrt 2`] The (logarithmic) distance between two scales of Gabor wavelets")
+  .add_parameter("k_fac", "float", "[default: :math:`\\sqrt{\\frac12}`] The (logarithmic) distance between two scales of Gabor wavelets")
   .add_parameter("power_of_k", "float", "[default: 0] The :math:`\\lambda` factor to regularize the Gabor wavelet prefactor to generate comparable results for images, see Appendix C of [Guenther2011]_")
   .add_parameter("dc_free", "bool", "[default: True] Should the Gabor wavelet be without DC factor (i.e. should the integral under the wavelet in spatial domain vanish)?")
   .add_parameter("epsilon", "float", "[default: 1e-10] For speed reasons: all wavelet pixels in frequency domain with an absolute value below this should be considered as 0")

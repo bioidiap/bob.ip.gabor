@@ -61,6 +61,24 @@ def test_wavelet():
   assert numpy.allclose(tf, tf2)
 
 
+def test_dcfree():
+  # check that the generated wavelet is DC-free in any case
+  k = [math.pi/2.] * 2
+  sigma = 2.
+  size = 64
+
+  for pow_k in (-1, 0, 1):
+    # get a wavelet
+    wavelet = bob.ip.gabor.Wavelet(resolution = (size,size), frequency = k, sigma = sigma, power_of_k = pow_k, dc_free = True)
+
+    # transform to spatial domain
+    spat_wavelet = bob.sp.ifft(wavelet.wavelet.astype(numpy.complex))
+
+    # check that real an imaginary part sum up to (roughly) 0
+    assert abs(numpy.sum(numpy.real(spat_wavelet))) < 1e-8
+    assert abs(numpy.sum(numpy.imag(spat_wavelet))) < 1e-8
+
+
 def test_transform():
   # check that the Transform class is doing something useful
   d = 8
