@@ -26,7 +26,7 @@ static auto Transform_doc = bob::extension::ClassDoc(
   BOB_EXT_MODULE_PREFIX ".Transform",
   "A class that represents a family of Gabor wavelets that can be used to perform a Gabor wavelet transform",
   "The implementation is according to [Guenther2011]_, where the whole procedure is explained in more detail.\n\n"
-  ".. note:: In opposition to the :py:class:`Wavelet` class, here all input and output images are considered to be in spatial domain."
+  ".. note::\n\n  In opposition to the :py:class:`Wavelet` class, here all input and output images are considered to be in spatial domain."
 ).add_constructor(
   bob::extension::FunctionDoc(
     "__init__",
@@ -230,7 +230,7 @@ static auto wavelets_doc = bob::extension::VariableDoc(
   "wavelets",
   "[:py:class:`Wavelet`]",
   "The list of Gabor wavelets used in this transform",
-  ".. note:: "
+  ".. note::\n\n  "
   "The wavelets will be generated either by a call to :py:func:`generate_wavelets` or by a call to :py:func:`transform`. "
   "Before one of these functions is called, no wavelet will be generated."
 );
@@ -335,7 +335,7 @@ static auto transform_doc = bob::extension::FunctionDoc(
   ".. math::\n\n"
   "   \\forall j \\forall \\vec \\omega : \\mathcal T_{\\vec k_j}(\\vec \\omega) = \\mathcal I(\\vec \\omega) \\cdot \\psi_{\\vec k_j}(\\vec \\omega)\n\n"
   "Both the input image and the output are expected to be in spatial domain, so **don't** perform an FFT on the input image before calling this function.\n\n"
-  ".. note:: The function :py:func:`__call__` is a synonym for this function.",
+  ".. note::\n\n  The function :py:func:`__call__` is a synonym for this function.",
   true
 )
 .add_prototype("input, output")

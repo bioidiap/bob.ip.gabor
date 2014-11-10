@@ -292,7 +292,7 @@ static auto abs_doc = bob::extension::VariableDoc(
   "abs",
   "array(float,1D)",
   "The list of absolute values of the Gabor jet\n\n"
-  ".. note:: These values cannot be modified. Use :py:attr:`jet` instead."
+  ".. note::\n\n  These values cannot be modified. Use :py:attr:`jet` instead."
 );
 PyObject* PyBobIpGaborJet_abs(PyBobIpGaborJetObject* self, void*){
   return PyBlitzArrayCxx_AsConstNumpy(self->cxx->abs());
@@ -302,7 +302,7 @@ static auto phase_doc = bob::extension::VariableDoc(
   "phase",
   "array(float,1D)",
   "The list of phase values of the Gabor jet\n\n"
-  ".. note:: These values cannot be modified. Use :py:attr:`jet` instead."
+  ".. note::\n\n  These values cannot be modified. Use :py:attr:`jet` instead."
 );
 PyObject* PyBobIpGaborJet_phase(PyBobIpGaborJetObject* self, void*){
   return PyBlitzArrayCxx_AsConstNumpy(self->cxx->phase());
@@ -313,7 +313,7 @@ static auto jet_doc = bob::extension::VariableDoc(
   "array(float,2D)",
   "The absolute and phase values of the Gabor jet",
   "The absolute values are stored in the first row ``jet[0,:]``, while the phase values are stored in the second row ``jet[1,:]``\n\n"
-  ".. note:: Use this function to modify the Gabor jet, if required."
+  ".. note::\n\n  Use this function to modify the Gabor jet, if required."
 );
 PyObject* PyBobIpGaborJet_jet(PyBobIpGaborJetObject* self, void*){
   return PyBlitzArrayCxx_AsNumpy(self->cxx->jet());
@@ -323,7 +323,7 @@ static auto complex_doc = bob::extension::VariableDoc(
   "complex",
   "array(complex,1D)",
   "The complex representation of the Gabor jet",
-  ".. note:: The complex representation is generated on the fly and is not stored anywhere in the object."
+  ".. note::\n\n  The complex representation is generated on the fly and is not stored anywhere in the object."
 );
 PyObject* PyBobIpGaborJet_complex(PyBobIpGaborJetObject* self, void*){
   return PyBlitzArrayCxx_AsConstNumpy(self->cxx->complex());
@@ -386,7 +386,7 @@ static PyGetSetDef PyBobIpGaborJet_getseters[] = {
 static auto normalize_doc = bob::extension::FunctionDoc(
   "normalize",
   "Normalizes the Gabor jet to unit Euclidean length and returns its old length",
-  ".. note:: Only the absolute values :py:attr:`abs` are affected by the normalization",
+  ".. note::\n\n  Only the absolute values :py:attr:`abs` are affected by the normalization",
   true
 )
 .add_prototype("", "old_norm")

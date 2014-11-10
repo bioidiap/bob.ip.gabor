@@ -25,7 +25,7 @@ static auto wavelet_doc = bob::extension::ClassDoc(
   BOB_EXT_MODULE_PREFIX ".Wavelet",
   "A class that represents a Gabor wavelet in frequency domain",
   "The implementation is according to [Guenther2011]_, where the whole procedure is explained in more detail.\n\n"
-  ".. note:: In this class, all input and output images are considered to be in frequency domain."
+  ".. note::\n\n  In this class, all input and output images are considered to be in frequency domain."
 ).add_constructor(
   bob::extension::FunctionDoc(
     "__init__",
@@ -125,7 +125,7 @@ static auto wavelet_transform = bob::extension::FunctionDoc(
   "The transform is defined as:\n\n"
   ".. math::\n\n"
   "   \\forall \\vec \\omega : \\mathcal T_{\\vec k}(\\vec \\omega) = \\mathcal I(\\vec \\omega) \\cdot \\psi_{\\vec k}(\\vec \\omega)\n\n"
-  ".. note:: The function :py:func:`__call__` is a synonym for this function.",
+  ".. note::\n\n  The function :py:func:`__call__` is a synonym for this function.",
   true
 )
 .add_prototype("input, output")
