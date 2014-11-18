@@ -8,7 +8,8 @@
  */
 
 #define BOB_IP_GABOR_MODULE
-#include "main.h"
+#include <bob.ip.gabor/api.h>
+
 #include <bob.blitz/cppapi.h>
 #include <bob.blitz/cleanup.h>
 #include <bob.io.base/api.h>

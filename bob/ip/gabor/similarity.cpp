@@ -8,7 +8,8 @@
  */
 
 #define BOB_IP_GABOR_MODULE
-#include "main.h"
+#include <bob.ip.gabor/api.h>
+
 #include <bob.blitz/cppapi.h>
 #include <bob.blitz/cleanup.h>
 #include <bob.io.base/api.h>
@@ -41,7 +42,7 @@ static auto Similarity_doc = bob::extension::ClassDoc(
   .add_parameter("hdf5", ":py:class:`bob.io.base.HD5File`", "An HDF5 file open for reading to load the parametrization of the Gabor wavelet similarity from")
 );
 
-static int PyBobIpGaborJetSimilarity_init(PyBobIpGaborJetSimilarityObject* self, PyObject* args, PyObject* kwargs) {
+static int PyBobIpGaborSimilarity_init(PyBobIpGaborSimilarityObject* self, PyObject* args, PyObject* kwargs) {
 
   char* kwlist1[] = {c("hdf5"), NULL};
   char* kwlist2[] = {c("type"), c("transform"), NULL};
@@ -69,13 +70,13 @@ static int PyBobIpGaborJetSimilarity_init(PyBobIpGaborJetSimilarityObject* self,
     self->cxx.reset(new bob::ip::gabor::Similarity(*hdf5->f));
   } else {
     const char* name = 0;
-    PyBobIpGaborWaveletTransformObject* gwt = 0;
+    PyBobIpGaborTransformObject* gwt = 0;
     if (
       !PyArg_ParseTupleAndKeywords(
         args, kwargs,
         "s|O!", kwlist2,
         &name,
-        &PyBobIpGaborWaveletTransform_Type, &gwt
+        &PyBobIpGaborTransform_Type, &gwt
       )
     ){
       Similarity_doc.print_usage();
@@ -99,13 +100,13 @@ static int PyBobIpGaborJetSimilarity_init(PyBobIpGaborJetSimilarityObject* self,
   return 0;
 }
 
-static void PyBobIpGaborJetSimilarity_delete(PyBobIpGaborJetSimilarityObject* self) {
+static void PyBobIpGaborSimilarity_delete(PyBobIpGaborSimilarityObject* self) {
   self->cxx.reset();
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-int PyBobIpGaborJetSimilarity_Check(PyObject* o) {
-  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborJetSimilarity_Type));
+int PyBobIpGaborSimilarity_Check(PyObject* o) {
+  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborSimilarity_Type));
 }
 
 
@@ -118,7 +119,7 @@ static auto type_doc = bob::extension::VariableDoc(
   "str",
   "The type of the Gabor jet similarity function"
 );
-PyObject* PyBobIpGaborJetSimilarity_type(PyBobIpGaborJetSimilarityObject* self, void*){
+PyObject* PyBobIpGaborSimilarity_type(PyBobIpGaborSimilarityObject* self, void*){
   return Py_BuildValue("s", self->cxx->type().c_str());
 }
 
@@ -127,8 +128,8 @@ static auto transform_doc = bob::extension::VariableDoc(
   ":py:class:`bob.ip.gabor.Transform` or ``None``",
   "The Gabor wavelet transform used in the similarity class; can be ``None`` for similarity functions that do not compute disparities"
 );
-PyObject* PyBobIpGaborJetSimilarity_transform(PyBobIpGaborJetSimilarityObject* self, void*){
-  PyBobIpGaborWaveletTransformObject* transform = (PyBobIpGaborWaveletTransformObject*)PyBobIpGaborWaveletTransform_Type.tp_alloc(&PyBobIpGaborWaveletTransform_Type, 0);
+PyObject* PyBobIpGaborSimilarity_transform(PyBobIpGaborSimilarityObject* self, void*){
+  PyBobIpGaborTransformObject* transform = (PyBobIpGaborTransformObject*)PyBobIpGaborTransform_Type.tp_alloc(&PyBobIpGaborTransform_Type, 0);
   transform->cxx = self->cxx->transform();
   return Py_BuildValue("N", transform);
 }
@@ -138,30 +139,30 @@ static auto lastDisparity_doc = bob::extension::VariableDoc(
   "(float, float)",
   "The disparity that was computed during the last call to :py:func:`similarity` or :py:func:`disparity`."
 );
-PyObject* PyBobIpGaborJetSimilarity_lastDisparity(PyBobIpGaborJetSimilarityObject* self, void*){
+PyObject* PyBobIpGaborSimilarity_lastDisparity(PyBobIpGaborSimilarityObject* self, void*){
   const auto& disp = self->cxx->disparity();
   return Py_BuildValue("(dd)", disp[0], disp[1]);
 }
 
 
-static PyGetSetDef PyBobIpGaborJetSimilarity_getseters[] = {
+static PyGetSetDef PyBobIpGaborSimilarity_getseters[] = {
   {
     type_doc.name(),
-    (getter)PyBobIpGaborJetSimilarity_type,
+    (getter)PyBobIpGaborSimilarity_type,
     0,
     type_doc.doc(),
     0
   },
   {
     transform_doc.name(),
-    (getter)PyBobIpGaborJetSimilarity_transform,
+    (getter)PyBobIpGaborSimilarity_transform,
     0,
     transform_doc.doc(),
     0
   },
   {
     lastDisparity_doc.name(),
-    (getter)PyBobIpGaborJetSimilarity_lastDisparity,
+    (getter)PyBobIpGaborSimilarity_lastDisparity,
     0,
     lastDisparity_doc.doc(),
     0
@@ -187,7 +188,7 @@ static auto similarity_doc = bob::extension::FunctionDoc(
 .add_return("sim", "float", "The similarity between the two Gabor jets; more similar Gabor jets will get higher similarity values")
 ;
 
-static PyObject* PyBobIpGaborJetSimilarity_similarity(PyBobIpGaborJetSimilarityObject* self, PyObject* args, PyObject* kwargs) {
+static PyObject* PyBobIpGaborSimilarity_similarity(PyBobIpGaborSimilarityObject* self, PyObject* args, PyObject* kwargs) {
 
   static char* kwlist[] = {c("jet1"), c("jet2"), 0};
 
@@ -229,7 +230,7 @@ static auto disparity_doc = bob::extension::FunctionDoc(
 .add_return("disparity", "(float, float)", "The disparity vector estimated from the given Gabor jets")
 ;
 
-static PyObject* PyBobIpGaborJetSimilarity_disparity(PyBobIpGaborJetSimilarityObject* self, PyObject* args, PyObject* kwargs) {
+static PyObject* PyBobIpGaborSimilarity_disparity(PyBobIpGaborSimilarityObject* self, PyObject* args, PyObject* kwargs) {
 
   static char* kwlist[] = {c("jet1"), c("jet2"), 0};
 
@@ -273,7 +274,7 @@ static auto shift_phase_doc = bob::extension::FunctionDoc(
 .add_return("shifted", ":py:class:`bob.ip.gabor.Jet`", "A copy of ``jet``, where the phases are shifted towards ``reference``")
 ;
 
-static PyObject* PyBobIpGaborJetSimilarity_shift_phase(PyBobIpGaborJetSimilarityObject* self, PyObject* args, PyObject* kwargs) {
+static PyObject* PyBobIpGaborSimilarity_shift_phase(PyBobIpGaborSimilarityObject* self, PyObject* args, PyObject* kwargs) {
   try {
 
   static char* kwlist[] = {c("jet"), c("reference"), 0};
@@ -321,7 +322,7 @@ static auto load_doc = bob::extension::FunctionDoc(
 .add_parameter("hdf5", ":py:class:`bob.io.base.HDF5File`", "An HDF5 file opened for reading")
 ;
 
-static PyObject* PyBobIpGaborJetSimilarity_load(PyBobIpGaborJetSimilarityObject* self, PyObject* args, PyObject* kwargs) {
+static PyObject* PyBobIpGaborSimilarity_load(PyBobIpGaborSimilarityObject* self, PyObject* args, PyObject* kwargs) {
   // get list of arguments
   char* kwlist[] = {c("hdf5"), NULL};
   PyBobIoHDF5FileObject* file = 0;
@@ -357,7 +358,7 @@ static auto save_doc = bob::extension::FunctionDoc(
 .add_parameter("hdf5", ":py:class:`bob.io.base.HDF5File`", "An HDF5 file open for writing")
 ;
 
-static PyObject* PyBobIpGaborJetSimilarity_save(PyBobIpGaborJetSimilarityObject* self, PyObject* args, PyObject* kwargs) {
+static PyObject* PyBobIpGaborSimilarity_save(PyBobIpGaborSimilarityObject* self, PyObject* args, PyObject* kwargs) {
   // get list of arguments
   char* kwlist[] = {c("hdf5"), NULL};
   PyBobIoHDF5FileObject* file = 0;
@@ -385,34 +386,34 @@ static PyObject* PyBobIpGaborJetSimilarity_save(PyBobIpGaborJetSimilarityObject*
 }
 
 
-static PyMethodDef PyBobIpGaborJetSimilarity_methods[] = {
+static PyMethodDef PyBobIpGaborSimilarity_methods[] = {
   {
     similarity_doc.name(),
-    (PyCFunction)PyBobIpGaborJetSimilarity_similarity,
+    (PyCFunction)PyBobIpGaborSimilarity_similarity,
     METH_VARARGS|METH_KEYWORDS,
     similarity_doc.doc()
   },
   {
     disparity_doc.name(),
-    (PyCFunction)PyBobIpGaborJetSimilarity_disparity,
+    (PyCFunction)PyBobIpGaborSimilarity_disparity,
     METH_VARARGS|METH_KEYWORDS,
     disparity_doc.doc()
   },
   {
     shift_phase_doc.name(),
-    (PyCFunction)PyBobIpGaborJetSimilarity_shift_phase,
+    (PyCFunction)PyBobIpGaborSimilarity_shift_phase,
     METH_VARARGS|METH_KEYWORDS,
     shift_phase_doc.doc()
   },
   {
     load_doc.name(),
-    (PyCFunction)PyBobIpGaborJetSimilarity_load,
+    (PyCFunction)PyBobIpGaborSimilarity_load,
     METH_VARARGS|METH_KEYWORDS,
     load_doc.doc()
   },
   {
     save_doc.name(),
-    (PyCFunction)PyBobIpGaborJetSimilarity_save,
+    (PyCFunction)PyBobIpGaborSimilarity_save,
     METH_VARARGS|METH_KEYWORDS,
     save_doc.doc()
   },
@@ -425,34 +426,34 @@ static PyMethodDef PyBobIpGaborJetSimilarity_methods[] = {
 /******************************************************************/
 
 // Define the Gabor wavelet type struct; will be initialized later
-PyTypeObject PyBobIpGaborJetSimilarity_Type = {
+PyTypeObject PyBobIpGaborSimilarity_Type = {
   PyVarObject_HEAD_INIT(0,0)
   0
 };
 
-bool init_BobIpGaborJetSimilarity(PyObject* module)
+bool init_BobIpGaborSimilarity(PyObject* module)
 {
 
   // initialize the Gabor wavelet type struct
-  PyBobIpGaborJetSimilarity_Type.tp_name = Similarity_doc.name();
-  PyBobIpGaborJetSimilarity_Type.tp_basicsize = sizeof(PyBobIpGaborJetSimilarityObject);
-  PyBobIpGaborJetSimilarity_Type.tp_flags = Py_TPFLAGS_DEFAULT;
-  PyBobIpGaborJetSimilarity_Type.tp_doc = Similarity_doc.doc();
+  PyBobIpGaborSimilarity_Type.tp_name = Similarity_doc.name();
+  PyBobIpGaborSimilarity_Type.tp_basicsize = sizeof(PyBobIpGaborSimilarityObject);
+  PyBobIpGaborSimilarity_Type.tp_flags = Py_TPFLAGS_DEFAULT;
+  PyBobIpGaborSimilarity_Type.tp_doc = Similarity_doc.doc();
 
   // set the functions
-  PyBobIpGaborJetSimilarity_Type.tp_new = PyType_GenericNew;
-  PyBobIpGaborJetSimilarity_Type.tp_init = reinterpret_cast<initproc>(PyBobIpGaborJetSimilarity_init);
-  PyBobIpGaborJetSimilarity_Type.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborJetSimilarity_delete);
-  PyBobIpGaborJetSimilarity_Type.tp_methods = PyBobIpGaborJetSimilarity_methods;
-  PyBobIpGaborJetSimilarity_Type.tp_getset = PyBobIpGaborJetSimilarity_getseters;
-  PyBobIpGaborJetSimilarity_Type.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborJetSimilarity_similarity);
+  PyBobIpGaborSimilarity_Type.tp_new = PyType_GenericNew;
+  PyBobIpGaborSimilarity_Type.tp_init = reinterpret_cast<initproc>(PyBobIpGaborSimilarity_init);
+  PyBobIpGaborSimilarity_Type.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborSimilarity_delete);
+  PyBobIpGaborSimilarity_Type.tp_methods = PyBobIpGaborSimilarity_methods;
+  PyBobIpGaborSimilarity_Type.tp_getset = PyBobIpGaborSimilarity_getseters;
+  PyBobIpGaborSimilarity_Type.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborSimilarity_similarity);
 
   // check that everyting is fine
-  if (PyType_Ready(&PyBobIpGaborJetSimilarity_Type) < 0)
+  if (PyType_Ready(&PyBobIpGaborSimilarity_Type) < 0)
     return false;
 
   // add the type to the module
-  Py_INCREF(&PyBobIpGaborJetSimilarity_Type);
-  return PyModule_AddObject(module, "Similarity", (PyObject*)&PyBobIpGaborJetSimilarity_Type) >= 0;
+  Py_INCREF(&PyBobIpGaborSimilarity_Type);
+  return PyModule_AddObject(module, "Similarity", (PyObject*)&PyBobIpGaborSimilarity_Type) >= 0;
 }
 

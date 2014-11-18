@@ -8,7 +8,8 @@
  */
 
 #define BOB_IP_GABOR_MODULE
-#include "main.h"
+#include <bob.ip.gabor/api.h>
+
 #include <bob.blitz/cppapi.h>
 #include <bob.blitz/cleanup.h>
 #include <bob.io.base/api.h>
@@ -50,7 +51,7 @@ static auto Transform_doc = bob::extension::ClassDoc(
   .add_parameter("hdf5", ":py:class:`bob.io.base.HD5File`", "An HDF5 file open for reading to load the parametrization of the Gabor wavelet transform from")
 );
 
-static int PyBobIpGaborWaveletTransform_init(PyBobIpGaborWaveletTransformObject* self, PyObject* args, PyObject* kwargs) {
+static int PyBobIpGaborTransform_init(PyBobIpGaborTransformObject* self, PyObject* args, PyObject* kwargs) {
 
   char* kwlist1[] = {c("hdf5"), NULL};
   char* kwlist2[] = {c("number_of_scales"), c("number_of_directions"), c("sigma"), c("k_max"), c("k_fac"), c("power_of_k"), c("dc_free"), c("epsilon"), NULL};
@@ -97,22 +98,22 @@ static int PyBobIpGaborWaveletTransform_init(PyBobIpGaborWaveletTransformObject*
   return 0;
 }
 
-static void PyBobIpGaborWaveletTransform_delete(PyBobIpGaborWaveletTransformObject* self) {
+static void PyBobIpGaborTransform_delete(PyBobIpGaborTransformObject* self) {
   self->cxx.reset();
   Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-int PyBobIpGaborWaveletTransform_Check(PyObject* o) {
-  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborWaveletTransform_Type));
+int PyBobIpGaborTransform_Check(PyObject* o) {
+  return PyObject_IsInstance(o, reinterpret_cast<PyObject*>(&PyBobIpGaborTransform_Type));
 }
 
-static PyObject* PyBobIpGaborWaveletTransform_RichCompare(PyBobIpGaborWaveletTransformObject* self, PyObject* other, int op) {
+static PyObject* PyBobIpGaborTransform_RichCompare(PyBobIpGaborTransformObject* self, PyObject* other, int op) {
 
-  if (!PyBobIpGaborWaveletTransform_Check(other)) {
+  if (!PyBobIpGaborTransform_Check(other)) {
     PyErr_Format(PyExc_TypeError, "cannot compare `%s' with `%s'", Py_TYPE(self)->tp_name, Py_TYPE(other)->tp_name);
     return 0;
   }
-  auto other_ = reinterpret_cast<PyBobIpGaborWaveletTransformObject*>(other);
+  auto other_ = reinterpret_cast<PyBobIpGaborTransformObject*>(other);
   try{
     switch (op) {
       case Py_EQ:
@@ -143,7 +144,7 @@ static auto numberOfWavelets_doc = bob::extension::VariableDoc(
   "int",
   "The number of Gabor wavelets (i.e, the number of directions times the number of scales) of this class"
 );
-PyObject* PyBobIpGaborWaveletTransform_numberOfWavelets(PyBobIpGaborWaveletTransformObject* self, void*){
+PyObject* PyBobIpGaborTransform_numberOfWavelets(PyBobIpGaborTransformObject* self, void*){
   return Py_BuildValue("i", self->cxx->numberOfWavelets());
 }
 
@@ -152,7 +153,7 @@ static auto numberOfScales_doc = bob::extension::VariableDoc(
   "int",
   "The number of scales (levels) of Gabor wavelets"
 );
-PyObject* PyBobIpGaborWaveletTransform_numberOfScales(PyBobIpGaborWaveletTransformObject* self, void*){
+PyObject* PyBobIpGaborTransform_numberOfScales(PyBobIpGaborTransformObject* self, void*){
   return Py_BuildValue("i", self->cxx->numberOfScales());
 }
 
@@ -161,7 +162,7 @@ static auto numberOfDirections_doc = bob::extension::VariableDoc(
   "int",
   "The number of directions (orientations) of Gabor wavelets"
 );
-PyObject* PyBobIpGaborWaveletTransform_numberOfDirections(PyBobIpGaborWaveletTransformObject* self, void*){
+PyObject* PyBobIpGaborTransform_numberOfDirections(PyBobIpGaborTransformObject* self, void*){
   return Py_BuildValue("i", self->cxx->numberOfDirections());
 }
 
@@ -170,7 +171,7 @@ static auto sigma_doc = bob::extension::VariableDoc(
   "float",
   "The extend of the Gabor wavelets"
 );
-PyObject* PyBobIpGaborWaveletTransform_sigma(PyBobIpGaborWaveletTransformObject* self, void*){
+PyObject* PyBobIpGaborTransform_sigma(PyBobIpGaborTransformObject* self, void*){
   return Py_BuildValue("d", self->cxx->sigma());
 }
 
@@ -179,7 +180,7 @@ static auto k_max_doc = bob::extension::VariableDoc(
   "float",
   "The highest frequency of Gabor wavelets"
 );
-PyObject* PyBobIpGaborWaveletTransform_k_max(PyBobIpGaborWaveletTransformObject* self, void*){
+PyObject* PyBobIpGaborTransform_k_max(PyBobIpGaborTransformObject* self, void*){
   return Py_BuildValue("d", self->cxx->k_max());
 }
 
@@ -188,7 +189,7 @@ static auto k_fac_doc = bob::extension::VariableDoc(
   "float",
   "The logarithmic distance between two levels of Gabor wavelets"
 );
-PyObject* PyBobIpGaborWaveletTransform_k_fac(PyBobIpGaborWaveletTransformObject* self, void*){
+PyObject* PyBobIpGaborTransform_k_fac(PyBobIpGaborTransformObject* self, void*){
   return Py_BuildValue("d", self->cxx->k_fac());
 }
 
@@ -197,7 +198,7 @@ static auto power_of_k_doc = bob::extension::VariableDoc(
   "float",
   "The adaptation of the Gabor wavelet scales to get homogeneous values"
 );
-PyObject* PyBobIpGaborWaveletTransform_power_of_k(PyBobIpGaborWaveletTransformObject* self, void*){
+PyObject* PyBobIpGaborTransform_power_of_k(PyBobIpGaborTransformObject* self, void*){
   return Py_BuildValue("d", self->cxx->pow_of_k());
 }
 
@@ -206,7 +207,7 @@ static auto dc_free_doc = bob::extension::VariableDoc(
   "bool",
   "Are the Gabor wavelets DC free?"
 );
-PyObject* PyBobIpGaborWaveletTransform_dc_free(PyBobIpGaborWaveletTransformObject* self, void*){
+PyObject* PyBobIpGaborTransform_dc_free(PyBobIpGaborTransformObject* self, void*){
   return Py_BuildValue("O", self->cxx->dc_free() ? Py_True: Py_False);
 }
 
@@ -215,7 +216,7 @@ static auto waveletFrequencies_doc = bob::extension::VariableDoc(
   "[(float, float), ...]",
   "The central frequencies of the Gabor wavelets, in the same order as in :py:attr:`wavelets`"
 );
-PyObject* PyBobIpGaborWaveletTransform_waveletFrequencies(PyBobIpGaborWaveletTransformObject* self, void*){
+PyObject* PyBobIpGaborTransform_waveletFrequencies(PyBobIpGaborTransformObject* self, void*){
   // get the data
   auto data = self->cxx->waveletFrequencies();
   // populate a list
@@ -234,7 +235,7 @@ static auto wavelets_doc = bob::extension::VariableDoc(
   "The wavelets will be generated either by a call to :py:func:`generate_wavelets` or by a call to :py:func:`transform`. "
   "Before one of these functions is called, no wavelet will be generated."
 );
-PyObject* PyBobIpGaborWaveletTransform_wavelets(PyBobIpGaborWaveletTransformObject* self, void*){
+PyObject* PyBobIpGaborTransform_wavelets(PyBobIpGaborTransformObject* self, void*){
   // get the data
   auto wavelets = self->cxx->wavelets();
   // populate a list
@@ -248,73 +249,73 @@ PyObject* PyBobIpGaborWaveletTransform_wavelets(PyBobIpGaborWaveletTransformObje
 }
 
 
-static PyGetSetDef PyBobIpGaborWaveletTransform_getseters[] = {
+static PyGetSetDef PyBobIpGaborTransform_getseters[] = {
   {
     numberOfWavelets_doc.name(),
-    (getter)PyBobIpGaborWaveletTransform_numberOfWavelets,
+    (getter)PyBobIpGaborTransform_numberOfWavelets,
     0,
     numberOfWavelets_doc.doc(),
     0
   },
   {
     numberOfScales_doc.name(),
-    (getter)PyBobIpGaborWaveletTransform_numberOfScales,
+    (getter)PyBobIpGaborTransform_numberOfScales,
     0,
     numberOfScales_doc.doc(),
     0
   },
   {
     numberOfDirections_doc.name(),
-    (getter)PyBobIpGaborWaveletTransform_numberOfDirections,
+    (getter)PyBobIpGaborTransform_numberOfDirections,
     0,
     numberOfDirections_doc.doc(),
     0
   },
   {
     sigma_doc.name(),
-    (getter)PyBobIpGaborWaveletTransform_sigma,
+    (getter)PyBobIpGaborTransform_sigma,
     0,
     sigma_doc.doc(),
     0
   },
   {
     k_max_doc.name(),
-    (getter)PyBobIpGaborWaveletTransform_k_max,
+    (getter)PyBobIpGaborTransform_k_max,
     0,
     k_max_doc.doc(),
     0
   },
   {
     k_fac_doc.name(),
-    (getter)PyBobIpGaborWaveletTransform_k_fac,
+    (getter)PyBobIpGaborTransform_k_fac,
     0,
     k_fac_doc.doc(),
     0
   },
   {
     power_of_k_doc.name(),
-    (getter)PyBobIpGaborWaveletTransform_power_of_k,
+    (getter)PyBobIpGaborTransform_power_of_k,
     0,
     power_of_k_doc.doc(),
     0
   },
   {
     dc_free_doc.name(),
-    (getter)PyBobIpGaborWaveletTransform_dc_free,
+    (getter)PyBobIpGaborTransform_dc_free,
     0,
     dc_free_doc.doc(),
     0
   },
   {
     waveletFrequencies_doc.name(),
-    (getter)PyBobIpGaborWaveletTransform_waveletFrequencies,
+    (getter)PyBobIpGaborTransform_waveletFrequencies,
     0,
     waveletFrequencies_doc.doc(),
     0
   },
   {
     wavelets_doc.name(),
-    (getter)PyBobIpGaborWaveletTransform_wavelets,
+    (getter)PyBobIpGaborTransform_wavelets,
     0,
     wavelets_doc.doc(),
     0
@@ -345,7 +346,7 @@ static auto transform_doc = bob::extension::FunctionDoc(
 .add_return("output", "array_like (complex, 3D)", "The transformed image in spatial domain that will contain the transformed image; will have shape (:py:attr:`number_of_wavelets`, input.shape[0], input.shape[1])")
 ;
 
-static PyObject* PyBobIpGaborWaveletTransform_transform(PyBobIpGaborWaveletTransformObject* self, PyObject* args, PyObject* kwargs) {
+static PyObject* PyBobIpGaborTransform_transform(PyBobIpGaborTransformObject* self, PyObject* args, PyObject* kwargs) {
 
   static char* kwlist[] = {c("input"), c("output"), 0};
 
@@ -442,7 +443,7 @@ static auto generateWavelets_doc = bob::extension::FunctionDoc(
 .add_parameter("width", "int", "The width of the image to generate the wavelets for")
 ;
 
-static PyObject* PyBobIpGaborWaveletTransform_generateWavelets(PyBobIpGaborWaveletTransformObject* self, PyObject* args, PyObject* kwargs) {
+static PyObject* PyBobIpGaborTransform_generateWavelets(PyBobIpGaborTransformObject* self, PyObject* args, PyObject* kwargs) {
 
   static char* kwlist[] = {c("height"), c("width"), 0};
 
@@ -483,7 +484,7 @@ static auto load_doc = bob::extension::FunctionDoc(
 .add_parameter("hdf5", ":py:class:`bob.io.base.HDF5File`", "An HDF5 file opened for reading")
 ;
 
-static PyObject* PyBobIpGaborWaveletTransform_load(PyBobIpGaborWaveletTransformObject* self, PyObject* args, PyObject* kwargs) {
+static PyObject* PyBobIpGaborTransform_load(PyBobIpGaborTransformObject* self, PyObject* args, PyObject* kwargs) {
   // get list of arguments
   char* kwlist[] = {c("hdf5"), NULL};
   PyBobIoHDF5FileObject* file = 0;
@@ -519,7 +520,7 @@ static auto save_doc = bob::extension::FunctionDoc(
 .add_parameter("hdf5", ":py:class:`bob.io.base.HDF5File`", "An HDF5 file open for writing")
 ;
 
-static PyObject* PyBobIpGaborWaveletTransform_save(PyBobIpGaborWaveletTransformObject* self, PyObject* args, PyObject* kwargs) {
+static PyObject* PyBobIpGaborTransform_save(PyBobIpGaborTransformObject* self, PyObject* args, PyObject* kwargs) {
   // get list of arguments
   char* kwlist[] = {c("hdf5"), NULL};
   PyBobIoHDF5FileObject* file = 0;
@@ -547,28 +548,28 @@ static PyObject* PyBobIpGaborWaveletTransform_save(PyBobIpGaborWaveletTransformO
 }
 
 
-static PyMethodDef PyBobIpGaborWaveletTransform_methods[] = {
+static PyMethodDef PyBobIpGaborTransform_methods[] = {
   {
     transform_doc.name(),
-    (PyCFunction)PyBobIpGaborWaveletTransform_transform,
+    (PyCFunction)PyBobIpGaborTransform_transform,
     METH_VARARGS|METH_KEYWORDS,
     transform_doc.doc()
   },
   {
     generateWavelets_doc.name(),
-    (PyCFunction)PyBobIpGaborWaveletTransform_generateWavelets,
+    (PyCFunction)PyBobIpGaborTransform_generateWavelets,
     METH_VARARGS|METH_KEYWORDS,
     generateWavelets_doc.doc()
   },
   {
     load_doc.name(),
-    (PyCFunction)PyBobIpGaborWaveletTransform_load,
+    (PyCFunction)PyBobIpGaborTransform_load,
     METH_VARARGS|METH_KEYWORDS,
     load_doc.doc()
   },
   {
     save_doc.name(),
-    (PyCFunction)PyBobIpGaborWaveletTransform_save,
+    (PyCFunction)PyBobIpGaborTransform_save,
     METH_VARARGS|METH_KEYWORDS,
     save_doc.doc()
   },
@@ -581,35 +582,35 @@ static PyMethodDef PyBobIpGaborWaveletTransform_methods[] = {
 /******************************************************************/
 
 // Define the Gabor wavelet type struct; will be initialized later
-PyTypeObject PyBobIpGaborWaveletTransform_Type = {
+PyTypeObject PyBobIpGaborTransform_Type = {
   PyVarObject_HEAD_INIT(0,0)
   0
 };
 
-bool init_BobIpGaborWaveletTransform(PyObject* module)
+bool init_BobIpGaborTransform(PyObject* module)
 {
 
   // initialize the Gabor wavelet type struct
-  PyBobIpGaborWaveletTransform_Type.tp_name = Transform_doc.name();
-  PyBobIpGaborWaveletTransform_Type.tp_basicsize = sizeof(PyBobIpGaborWaveletTransformObject);
-  PyBobIpGaborWaveletTransform_Type.tp_flags = Py_TPFLAGS_DEFAULT;
-  PyBobIpGaborWaveletTransform_Type.tp_doc = Transform_doc.doc();
+  PyBobIpGaborTransform_Type.tp_name = Transform_doc.name();
+  PyBobIpGaborTransform_Type.tp_basicsize = sizeof(PyBobIpGaborTransformObject);
+  PyBobIpGaborTransform_Type.tp_flags = Py_TPFLAGS_DEFAULT;
+  PyBobIpGaborTransform_Type.tp_doc = Transform_doc.doc();
 
   // set the functions
-  PyBobIpGaborWaveletTransform_Type.tp_new = PyType_GenericNew;
-  PyBobIpGaborWaveletTransform_Type.tp_init = reinterpret_cast<initproc>(PyBobIpGaborWaveletTransform_init);
-  PyBobIpGaborWaveletTransform_Type.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborWaveletTransform_delete);
-  PyBobIpGaborWaveletTransform_Type.tp_methods = PyBobIpGaborWaveletTransform_methods;
-  PyBobIpGaborWaveletTransform_Type.tp_getset = PyBobIpGaborWaveletTransform_getseters;
-  PyBobIpGaborWaveletTransform_Type.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborWaveletTransform_transform);
-  PyBobIpGaborWaveletTransform_Type.tp_richcompare = reinterpret_cast<richcmpfunc>(PyBobIpGaborWaveletTransform_RichCompare);
+  PyBobIpGaborTransform_Type.tp_new = PyType_GenericNew;
+  PyBobIpGaborTransform_Type.tp_init = reinterpret_cast<initproc>(PyBobIpGaborTransform_init);
+  PyBobIpGaborTransform_Type.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborTransform_delete);
+  PyBobIpGaborTransform_Type.tp_methods = PyBobIpGaborTransform_methods;
+  PyBobIpGaborTransform_Type.tp_getset = PyBobIpGaborTransform_getseters;
+  PyBobIpGaborTransform_Type.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborTransform_transform);
+  PyBobIpGaborTransform_Type.tp_richcompare = reinterpret_cast<richcmpfunc>(PyBobIpGaborTransform_RichCompare);
 
   // check that everyting is fine
-  if (PyType_Ready(&PyBobIpGaborWaveletTransform_Type) < 0)
+  if (PyType_Ready(&PyBobIpGaborTransform_Type) < 0)
     return false;
 
   // add the type to the module
-  Py_INCREF(&PyBobIpGaborWaveletTransform_Type);
-  return PyModule_AddObject(module, "Transform", (PyObject*)&PyBobIpGaborWaveletTransform_Type) >= 0;
+  Py_INCREF(&PyBobIpGaborTransform_Type);
+  return PyModule_AddObject(module, "Transform", (PyObject*)&PyBobIpGaborTransform_Type) >= 0;
 }
 

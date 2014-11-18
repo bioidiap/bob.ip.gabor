@@ -22,6 +22,7 @@ Documentation
 
    guide
    py_api
+   c_api
 
 
 References
