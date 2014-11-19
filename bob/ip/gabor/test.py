@@ -181,6 +181,8 @@ def test_jet():
   assert numpy.allclose(jet1.phase, jet2.phase)
   assert jet3.length == gwt.number_of_wavelets
   assert jet4.length == gwt.number_of_wavelets
+  assert len(jet3) == gwt.number_of_wavelets
+  assert len(jet4) == gwt.number_of_wavelets
   assert numpy.allclose(jet1.jet, jet3.jet)
   assert numpy.allclose(jet1.jet, jet4.jet)
 
@@ -258,11 +260,11 @@ def test_similarity():
   jet = bob.ip.gabor.Jet(bob.io.base.HDF5File(bob.io.base.test_utils.datafile("testjet.hdf5", 'bob.ip.gabor')))
   jet.normalize()
 
-  for i, type in enumerate(('ScalarProduct', 'Canberra', 'Disparity', 'PhaseDiff', 'PhaseDiffPlusCanberra')):
+  for i, type in enumerate(('ScalarProduct', 'Canberra', 'AbsPhase', 'Disparity', 'PhaseDiff', 'PhaseDiffPlusCanberra')):
     sim = bob.ip.gabor.Similarity(type=type, transform=gwt)
     assert (sim.similarity(jet,jet) - 1.) < 1e-8
     disp = sim.last_disparity
-    if i < 2:
+    if i < 3:
       assert math.isnan(disp[0])
       assert math.isnan(disp[1])
     else:

@@ -26,7 +26,24 @@ static inline char* c(const char* o){return const_cast<char*>(o);}
 static auto Similarity_doc = bob::extension::ClassDoc(
   BOB_EXT_MODULE_PREFIX ".Similarity",
   "A class that computes different kind of similarity function, i.a., disparity corrected Gabor phase differences.",
-  "The implementation is according to [Guenther2011]_ and [Guenther2012]_, where all similarity functions are explained in more details."
+  "The implementation is according to [Guenther2011]_ and [Guenther2012]_, where all similarity functions are explained in more details. "
+  "There are several types of Gabor jet similarity functions implemented. "
+  "Some of them make use of the absolute values :py:attr:`Jet.abs` of the Gabor jets values, which are coded as :math:`a_j` with :math:`j=1\\dots J` where :math:`J =` :py:attr:`Jet.length` :\n\n"
+  "* ``'ScalarProduct'``\n\n"
+  "  .. math:: S_a(\\mathcal J, \\mathcal J') = \\sum\\limits_j a_j \\cdot a_j'\n"
+  "* ``'Canberra'``\n\n"
+  "  .. math:: S_C(\\mathcal J, \\mathcal J') = \\sum\\limits_j \\frac{a_j - a_j'}{a_j + a_j'}\n\n"
+  "Other similarity funcitons make use of the absolute values :math:`a_j` (:py:attr:`Jet.abs`) and the phase values :math:`\\phi_j` (:py:attr:`Jet.phase`):\n\n"
+  "* ``'AbsPhase'``\n\n"
+  "  .. math:: S_{\\phi}(\\mathcal J, \\mathcal J') = \\sum\\limits_j a_j \\cdot a_j' \\cdot \\cos(\\phi_j - \\phi_j')\n"
+  "* ``'Disparity'``\n\n"
+  "  .. math:: S_D(\\mathcal J, \\mathcal J') = \\sum\\limits_j a_j \\cdot a_j' \\cdot \\cos(\\phi_j - \\phi_j' - \\vec k_j^T\\vec d)\n"
+  "* ``'PhaseDiff'``\n\n"
+  "  .. math:: S_P(\\mathcal J, \\mathcal J') = \\sum\\limits_j \\cos(\\phi_j - \\phi_j' - \\vec k_j^T\\vec d)\n"
+  "* ``'PhaseDiffPlusCanberra'``\n\n"
+  "  .. math:: S_{P+C}(\\mathcal J, \\mathcal J') = \\sum\\limits_j \\left[ \\frac{a_j - a_j'}{a_j + a_j'} + \\cos(\\phi_j - \\phi_j' - \\vec k_j^T\\vec d) \\right]\n\n"
+  "Some of these functions make use of the kernel vector :math:`\\vec k_j` (:py:attr:`Transform.wavelet_frequencies`) and the disparity vector :math:`\\vec d`, which is estimated based on the given two Gabor jets. "
+  "This procedure is described in more detail in Appendix B of [Guenther2011]_."
 ).add_constructor(
   bob::extension::FunctionDoc(
     "__init__",
@@ -37,7 +54,7 @@ static auto Similarity_doc = bob::extension::ClassDoc(
   )
   .add_prototype("type, [transform]", "")
   .add_prototype("hdf5", "")
-  .add_parameter("type", "str", "The type of the Gabor jet similarity function; might be one of (``'ScalarProduct'``, ``'Canberra'``, ``'Disparity'``, ``'PhaseDiff'``, ``'PhaseDiffPlusCanberra'``)")
+  .add_parameter("type", "str", "The type of the Gabor jet similarity function; might be one of (``'ScalarProduct'``, ``'Canberra'``, ``'AbsPhase'``, ``'Disparity'``, ``'PhaseDiff'``, ``'PhaseDiffPlusCanberra'``)")
   .add_parameter("transform", ":py:class:`bob.ip.gabor.Transform`", "The Gabor wavelet transform class that was used to generate the Gabor jets; only required for disparity-based similarity functions ('Disparity', 'PhaseDiff', 'PhaseDiffPlusCanberra')")
   .add_parameter("hdf5", ":py:class:`bob.io.base.HD5File`", "An HDF5 file open for reading to load the parametrization of the Gabor wavelet similarity from")
 );

@@ -333,7 +333,8 @@ PyObject* PyBobIpGaborJet_complex(PyBobIpGaborJetObject* self, void*){
 static auto length_doc = bob::extension::VariableDoc(
   "length",
   "int",
-  "The number of elements in the Gabor jet"
+  "The number of elements in the Gabor jet\n\n"
+  ".. note:: You can also use the `len(jet)` function to get the length of the Gabor jet"
 );
 PyObject* PyBobIpGaborJet_length(PyBobIpGaborJetObject* self, void*){
   return Py_BuildValue("i", self->cxx->length());
@@ -377,6 +378,19 @@ static PyGetSetDef PyBobIpGaborJet_getseters[] = {
     0
   },
   {0}  /* Sentinel */
+};
+
+/******************************************************************/
+/************ Special Members Section *****************************/
+/******************************************************************/
+
+Py_ssize_t PyBobIpGaborJet_len(PyObject* self){
+  return reinterpret_cast<PyBobIpGaborJetObject*>(self)->cxx->length();
+}
+
+static PySequenceMethods PyBobIpGaborJet_sequence_methods = {
+  PyBobIpGaborJet_len,                  /* sq_length */
+  0                                     /* Sentinel */
 };
 
 
@@ -635,6 +649,7 @@ bool init_BobIpGaborJet(PyObject* module)
   PyBobIpGaborJet_Type.tp_dealloc = reinterpret_cast<destructor>(PyBobIpGaborJet_delete);
   PyBobIpGaborJet_Type.tp_methods = PyBobIpGaborJet_methods;
   PyBobIpGaborJet_Type.tp_getset = PyBobIpGaborJet_getseters;
+  PyBobIpGaborJet_Type.tp_as_sequence = &PyBobIpGaborJet_sequence_methods;
 
   // check that everyting is fine
   if (PyType_Ready(&PyBobIpGaborJet_Type) < 0)

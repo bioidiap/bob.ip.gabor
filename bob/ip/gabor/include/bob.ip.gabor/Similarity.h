@@ -30,6 +30,7 @@ namespace bob {
           typedef enum {
             SCALAR_PRODUCT = 1,
             CANBERRA = 3,
+            ABS_PHASE = 8,
             DISPARITY = 16,
             PHASE_DIFF = 22,
             PHASE_DIFF_PLUS_CANBERRA = 30

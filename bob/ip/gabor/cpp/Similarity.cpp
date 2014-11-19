@@ -13,6 +13,7 @@
 static const std::map<bob::ip::gabor::Similarity::SimilarityType, std::string> type_map = {
   {bob::ip::gabor::Similarity::SCALAR_PRODUCT, "ScalarProduct"},
   {bob::ip::gabor::Similarity::CANBERRA, "Canberra"},
+  {bob::ip::gabor::Similarity::ABS_PHASE, "AbsPhase"},
   {bob::ip::gabor::Similarity::DISPARITY, "Disparity"},
   {bob::ip::gabor::Similarity::PHASE_DIFF, "PhaseDiff"},
   {bob::ip::gabor::Similarity::PHASE_DIFF_PLUS_CANBERRA, "PhaseDiffPlusCanberra"}
@@ -74,6 +75,17 @@ double bob::ip::gabor::Similarity::similarity(const Jet& jet1, const Jet& jet2) 
           sim += 1. - std::abs(a1(j) - a2(j)) / (a1(j) + a2(j));
         }
         return sim / size;
+      }
+      case ABS_PHASE:{
+        // similarity with absloute values and cosine of phase differences
+        double sim = 0.;
+        const auto& a1 = jet1.abs(),& a2 = jet2.abs();
+        const auto& p1 = jet1.phase(),& p2 = jet2.phase();
+        int size = jet1.length();
+        for (int j = 0; j < size; ++j){
+          sim += a1(j) * a2(j) * cos(p1(j) - p2(j));
+        }
+        return sim;
       }
       default:
         throw std::runtime_error("This should not have happened. Please assure that newly generated Gabor jet similarity functions are actually implemented!");

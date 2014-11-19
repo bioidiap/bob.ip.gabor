@@ -118,13 +118,14 @@ To extract the texture from the right eye landmark from a facial image, one can 
   >>> gwt = bob.ip.gabor.Transform()
   >>> trafo_image = gwt(image)
   >>> eye_jet = bob.ip.gabor.Jet(trafo_image, (177, 131))
-  >>> eye_jet.length
+  >>> len(eye_jet)
   40
 
 One of these applications is to locate the texture in a given image.
 E.g., one might locate the position of the eye by scanning over the whole image.
 At each position in the image, the similarity between the reference Gabor jet and the Gabor jet at this location is computed using a :py:class:`bob.ip.gabor.Similarity`.
 For this computation, both traditional [Wiskott1997]_ and innovative [Guenther2012]_ similarity functions can be used.
+A more detailed description of implemented Gabor jet similarity functions can be obtained in the documentation of :py:class:`bob.ip.gabor.Similarity`.
 In fact, since the texture descriptor is stable against small shifts, only every 4th pixel will be extracted, and the original offset position is not included:
 
 .. plot:: plot/similarity.py
