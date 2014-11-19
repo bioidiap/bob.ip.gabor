@@ -155,18 +155,19 @@ void bob::ip::gabor::Graph::extract(
   std::vector<boost::shared_ptr<Jet>>& jets,
   bool normalize
 ) const {
-  // check the size of the Jet vector
-  if ((int)jets.size() != numberOfNodes())
-    throw std::runtime_error((boost::format("The list of Gabor jets needs to be of size %i, but is %i") % jets.size() % numberOfNodes()).str());
   // check the positions
   checkNodes(trafo_image.shape()[1], trafo_image.shape()[2]);
+  // assure the size of the Jet vector
+  jets.resize(numberOfNodes());
   // extract Gabor jets
   auto jit = jets.begin();
   auto nit = m_nodes.begin();
   for (; nit != m_nodes.end(); ++jit, ++nit){
     if (*jit){
+      // Gabor jet is existent, avoid re-creation
       (*jit)->extract(trafo_image, *nit, normalize);
     } else {
+      // Gabor jet is not existent, create it
       jit->reset(new Jet(trafo_image, *nit, normalize));
     }
   }

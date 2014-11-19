@@ -49,7 +49,7 @@ namespace bob {
           //! The similarity between two Gabor jets, including absolute values and phases
           double similarity(const Jet& jet1, const Jet& jet2) const;
 
-          //! returns the disparity vector estimated during the last call of similarity; only valid for disparity types
+          //! returns the disparity vector estimated from the given jets
           blitz::TinyVector<double,2> disparity(const Jet& jet1, const Jet& jet2) const;
 
           //! returns the disparity vector estimated during the last call of similarity; only valid for disparity types
@@ -58,7 +58,7 @@ namespace bob {
           //! returns the Gabor wavelet transform that is attached to this class
           boost::shared_ptr<Transform> transform() const {return m_gwt;}
 
-          //! returns the disparity vector estimated during the last call of similarity; only valid for disparity types
+          //! shifts the phases from jet towards the reference and stored the result in shifted
           void shift_phase(const Jet& jet, const Jet& reference, Jet& shifted) const;
 
           //! \brief saves the parameters of this Gabor jet similarity to file

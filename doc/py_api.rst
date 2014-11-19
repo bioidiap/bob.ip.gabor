@@ -2,6 +2,8 @@
 .. Manuel Guenther <manuek.guether@idiap.ch>
 .. Fri Jun 13 09:53:03 CEST 2014
 
+.. _bob.ip.gabor_py_api:
+
 ============
  Python API
 ============

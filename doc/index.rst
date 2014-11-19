@@ -22,7 +22,7 @@ Documentation
 
    guide
    py_api
-   c_api
+   c_cpp_api
 
 
 References
