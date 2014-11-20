@@ -2,8 +2,11 @@ from ._library import Jet
 import bob.io.base
 import numpy
 
-def _name(i):
-  return "Jet_%03d"%(i+1)
+def _name(i, count):
+  digits = len(str(count))
+  name = "Jet_%0" + str(digits) + "d"
+  return name%(i+1)
+
 
 def save_jets(jets, hdf5):
   """save_jets(jets, hdf5) -> None
@@ -18,10 +21,11 @@ def save_jets(jets, hdf5):
     ``jets`` : [:py:class:`bob.ip.gabor.Jet`]
       The list of Gabor jets to write to file
   """
-  hdf5.set("NumberOfJets", len(jets))
+  count = len(jets)
+  hdf5.set("NumberOfJets", count)
   for i in range(len(jets)):
-    hdf5.create_group(_name(i))
-    hdf5.cd(_name(i))
+    hdf5.create_group(_name(i, count))
+    hdf5.cd(_name(i, count))
     jets[i].save(hdf5)
     hdf5.cd("..")
 
@@ -43,7 +47,9 @@ def load_jets(hdf5):
   count = hdf5.read("NumberOfJets")
   jets = []
   for i in range(count):
-    hdf5.cd(_name(i))
+    old_name = _name(i, 100)
+    name = old_name if hdf5.has_group(old_name) else _name(i, count)
+    hdf5.cd(name)
     jets.append(Jet(hdf5))
     hdf5.cd("..")
   return jets
