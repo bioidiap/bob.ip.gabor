@@ -99,7 +99,7 @@ static int PyBobIpGaborJet_init(PyBobIpGaborJetObject* self, PyObject* args, PyO
         } else {
           // called via dict
           PyObject* k[] = {Py_BuildValue("s", kwlist0[0]), Py_BuildValue("s", kwlist1[0]), Py_BuildValue("s", kwlist2[0]), Py_BuildValue("s", kwlist3[0]), Py_BuildValue("s", kwlist5[0])};
-          auto k0_ = make_safe(k[0]), k1_ = make_safe(k[1]), k2_ = make_safe(k[2]), k3_ = make_safe(k[3]);
+          auto k0_ = make_safe(k[0]), k1_ = make_safe(k[1]), k2_ = make_safe(k[2]), k3_ = make_safe(k[3]), k4_ = make_safe(k[4]);
           if (PyDict_Contains(kwargs, k[0])) which = 0;
           else if (PyDict_Contains(kwargs, k[1])) which = 1;
           else if (PyDict_Contains(kwargs, k[2])) which = 2;
@@ -659,4 +659,3 @@ bool init_BobIpGaborJet(PyObject* module)
   Py_INCREF(&PyBobIpGaborJet_Type);
   return PyModule_AddObject(module, "Jet", (PyObject*)&PyBobIpGaborJet_Type) >= 0;
 }
-
