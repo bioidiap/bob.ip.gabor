@@ -49,8 +49,6 @@ static PyObject* create_module (void) {
 
   auto module_ = make_safe(module); ///< protects against early returns
 
-  if (PyModule_AddStringConstant(module, "__version__", BOB_EXT_MODULE_VERSION) < 0) return NULL;
-
   if (!init_BobIpGaborWavelet(module)) return NULL;
   if (!init_BobIpGaborTransform(module)) return NULL;
   if (!init_BobIpGaborJet(module)) return NULL;

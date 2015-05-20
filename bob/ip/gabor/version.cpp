@@ -23,6 +23,7 @@
 #include <bob.core/config.h>
 #include <bob.io.base/config.h>
 #include <bob.sp/config.h>
+#include <bob.ip.gabor/config.h>
 
 static int dict_set(PyObject* d, const char* key, const char* value) {
   PyObject* v = Py_BuildValue("s", value);
@@ -168,8 +169,8 @@ static PyObject* create_module (void) {
   auto m_ = make_safe(m); ///< protects against early returns
 
   /* register version numbers and constants */
-  if (PyModule_AddStringConstant(m, "module", BOB_EXT_MODULE_VERSION) < 0)
-    return 0;
+  if (PyModule_AddIntConstant(m, "api", BOB_IP_GABOR_API_VERSION) < 0) return 0;
+  if (PyModule_AddStringConstant(m, "module", BOB_EXT_MODULE_VERSION) < 0) return 0;
 
   PyObject* externals = build_version_dictionary();
   if (!externals) return 0;
