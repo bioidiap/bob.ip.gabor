@@ -4,7 +4,7 @@ env:
   - secure: lzPxGD45F6DRm108SBxkcsnM+zVH7p59/s34WVc6ZVlRI792xajoTJBC7pE087W01HPiofkVigqjCbsZvgDI9JggPgtOhE9Ugifzpm1vXRTZOlBXDx3fTsH/FxcHfWYRx8M3rnONgdNoyeBvw8mz+TKm6zCtNdZ+0IZEXSIDvhU=
   - secure: ZgUPtwmsOIGnb4aevKHxm2YqTRsKKt+2MAcsgqhG8ClD4OOEUV7nyo2tVZt3RcoURjZGoCaLfWYI4MkzfwD/m1GjA1BcEi5DeLUEYvEIv3N69+eTldZBHCONL3heLbrmNHBLP0tyxHV9eSd2B1qsknn4ndyGXJm6Llu9J8Frv8E=
   - BOB_UPLOAD_WHEEL=1
-mmatrix:
+matrix:
   include:
   - python: 2.6
   - python: 2.7
