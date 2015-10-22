@@ -49,15 +49,15 @@ static auto Graph_doc = bob::extension::ClassDoc(
   .add_parameter("last", "(int, int)", "The position of the last (bottom-right) node that will be placed; depending on the ``step`` parameter, the actual bottom-right node might be before ``last``")
   .add_parameter("step", "(int, int)", "The distance between two each nodes (in vertical and horizontal direction)")
   .add_parameter("nodes", "[(int, int)]", "The node positions that should be stored in the graph")
-  .add_parameter("hdf5", ":py:class:`bob.io.base.HD5File`", "An HDF5 file open for reading to load the nodes of the Gabor graph from")
+  .add_parameter("hdf5", ":py:class:`bob.io.base.HDF5File`", "An HDF5 file open for reading to load the nodes of the Gabor graph from")
 );
 
 static int PyBobIpGaborGraph_init(PyBobIpGaborGraphObject* self, PyObject* args, PyObject* kwargs) {
-
-  char* kwlist1[] = {c("hdf5"), NULL};
-  char* kwlist2[] = {c("nodes"), NULL};
-  char* kwlist3[] = {c("first"), c("last"), c("step"), NULL};
-  char* kwlist4[] = {c("righteye"), c("lefteye"), c("between"), c("along"), c("above"), c("below"), NULL};
+BOB_TRY
+  char** kwlist1 = Graph_doc.kwlist(3);
+  char** kwlist2 = Graph_doc.kwlist(2);
+  char** kwlist3 = Graph_doc.kwlist(1);
+  char** kwlist4 = Graph_doc.kwlist(0);
 
   // get the number of command line arguments
   Py_ssize_t nargs = (args?PyTuple_Size(args):0) + (kwargs?PyDict_Size(kwargs):0);
@@ -72,31 +72,13 @@ static int PyBobIpGaborGraph_init(PyBobIpGaborGraphObject* self, PyObject* args,
         (args && PyBobIoHDF5File_Check(PyTuple_GetItem(args, 0)))
       ){
         PyBobIoHDF5FileObject* hdf5;
-        if (
-          !PyArg_ParseTupleAndKeywords(
-            args, kwargs,
-            "O&", kwlist1,
-            &PyBobIoHDF5File_Converter, &hdf5
-          )
-        ){
-          Graph_doc.print_usage();
-          return -1;
-        }
+        if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&", kwlist1, &PyBobIoHDF5File_Converter, &hdf5)) return -1;
         auto hdf5_ = make_safe(hdf5);
 
         self->cxx.reset(new bob::ip::gabor::Graph(*hdf5->f));
       } else {
         PyListObject* list;
-        if (
-          !PyArg_ParseTupleAndKeywords(
-            args, kwargs,
-            "O!", kwlist2,
-            &PyList_Type, &list
-          )
-        ){
-          Graph_doc.print_usage();
-          return -1;
-        }
+        if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!", kwlist2, &PyList_Type, &list)) return -1;
 
         std::vector<blitz::TinyVector<int,2>> nodes(PyList_GET_SIZE(list));
         Py_ssize_t i = 0;
@@ -114,16 +96,7 @@ static int PyBobIpGaborGraph_init(PyBobIpGaborGraphObject* self, PyObject* args,
 
     case 3:{
       blitz::TinyVector<int,2> first, last, step;
-      if (
-        !PyArg_ParseTupleAndKeywords(
-          args, kwargs,
-          "(ii)(ii)(ii)", kwlist3,
-          &first[0], &first[1], &last[0], &last[1], &step[0], &step[1]
-        )
-      ){
-        Graph_doc.print_usage();
-        return -1;
-      }
+      if (!PyArg_ParseTupleAndKeywords(args, kwargs, "(ii)(ii)(ii)", kwlist3, &first[0], &first[1], &last[0], &last[1], &step[0], &step[1])) return -1;
       self->cxx.reset(new bob::ip::gabor::Graph(first, last, step));
 
     }
@@ -132,27 +105,17 @@ static int PyBobIpGaborGraph_init(PyBobIpGaborGraphObject* self, PyObject* args,
     case 6:{
       blitz::TinyVector<int,2> right, left;
       int between, along, above, below;
-      if (
-        !PyArg_ParseTupleAndKeywords(
-          args, kwargs,
-          "(ii)(ii)iiii", kwlist4,
-          &right[0], &right[1], &left[0], &left[1],
-          &between, &along, &above, &below
-        )
-      ){
-        Graph_doc.print_usage();
-        return -1;
-      }
+      if (!PyArg_ParseTupleAndKeywords(args, kwargs, "(ii)(ii)iiii", kwlist4, &right[0], &right[1], &left[0], &left[1], &between, &along, &above, &below)) return -1;
       self->cxx.reset(new bob::ip::gabor::Graph(right, left,  between, along, above, below));
     }
     break;
 
     default:
-      Graph_doc.print_usage();
       return -1;
   }
 
   return 0;
+BOB_CATCH_MEMBER("Graph constructor", -1)
 }
 
 static void PyBobIpGaborGraph_delete(PyBobIpGaborGraphObject* self) {
@@ -165,30 +128,23 @@ int PyBobIpGaborGraph_Check(PyObject* o) {
 }
 
 static PyObject* PyBobIpGaborGraph_RichCompare(PyBobIpGaborGraphObject* self, PyObject* other, int op) {
-
+BOB_TRY
   if (!PyBobIpGaborGraph_Check(other)) {
     PyErr_Format(PyExc_TypeError, "cannot compare `%s' with `%s'", Py_TYPE(self)->tp_name, Py_TYPE(other)->tp_name);
     return 0;
   }
   auto other_ = reinterpret_cast<PyBobIpGaborGraphObject*>(other);
-  try{
-    switch (op) {
-      case Py_EQ:
-        if (*self->cxx==*other_->cxx) Py_RETURN_TRUE; else Py_RETURN_FALSE;
-      case Py_NE:
-        if (*self->cxx==*other_->cxx) Py_RETURN_FALSE; else Py_RETURN_TRUE;
-      default:
-        Py_INCREF(Py_NotImplemented);
-        return Py_NotImplemented;
-    }
-  }
-  catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-  }
-  catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot compare Graph objects: unknown exception caught", Py_TYPE(self)->tp_name);
+  switch (op) {
+    case Py_EQ:
+      if (*self->cxx==*other_->cxx) Py_RETURN_TRUE; else Py_RETURN_FALSE;
+    case Py_NE:
+      if (*self->cxx==*other_->cxx) Py_RETURN_FALSE; else Py_RETURN_TRUE;
+    default:
+      Py_INCREF(Py_NotImplemented);
+      return Py_NotImplemented;
   }
   return 0;
+BOB_CATCH_MEMBER("RichCompare", 0);
 }
 
 
@@ -202,7 +158,9 @@ static auto numberOfNodes_doc = bob::extension::VariableDoc(
   "The number of nodes that this Graph will extract"
 );
 PyObject* PyBobIpGaborGraph_numberOfNodes(PyBobIpGaborGraphObject* self, void*){
+BOB_TRY
   return Py_BuildValue("i", self->cxx->numberOfNodes());
+BOB_CATCH_MEMBER("number_of_nodes", 0);
 }
 
 static auto nodes_doc = bob::extension::VariableDoc(
@@ -214,6 +172,7 @@ static auto nodes_doc = bob::extension::VariableDoc(
   "   Something like ``graph.nodes[0] = (1,1)`` will **not** have the expected outcome!"
 );
 PyObject* PyBobIpGaborGraph_getNodes(PyBobIpGaborGraphObject* self, void*){
+BOB_TRY
   // get the data
   auto nodes = self->cxx->nodes();
   // populate a list
@@ -222,9 +181,11 @@ PyObject* PyBobIpGaborGraph_getNodes(PyBobIpGaborGraphObject* self, void*){
     PyList_SET_ITEM(list, i, Py_BuildValue("(ii)", nodes[i][0], nodes[i][1]));
   }
   return list;
+BOB_CATCH_MEMBER("nodes", 0);
 }
 
 int PyBobIpGaborGraph_setNodes(PyBobIpGaborGraphObject* self, PyObject* value, void*){
+BOB_TRY
   if (!PyList_Check(value)){
     PyErr_Format(PyExc_TypeError, "%s requires only tuples of two integral positions in the nodes member", Py_TYPE(self)->tp_name);
   }
@@ -240,6 +201,7 @@ int PyBobIpGaborGraph_setNodes(PyBobIpGaborGraphObject* self, PyObject* value, v
   }
   self->cxx->nodes(nodes);
   return 0;
+BOB_CATCH_MEMBER("nodes", 0);
 }
 
 static PyGetSetDef PyBobIpGaborGraph_getseters[] = {
@@ -281,39 +243,28 @@ static auto extract_doc = bob::extension::FunctionDoc(
 ;
 
 static PyObject* PyBobIpGaborGraph_extract(PyBobIpGaborGraphObject* self, PyObject* args, PyObject* kwargs) {
+BOB_TRY
+  char** kwlist = extract_doc.kwlist();
 
-  static char* kwlist[] = {c("trafo_image"), c("jets"), 0};
-
-  PyBlitzArrayObject* trafo_image = 0;
+  PyBlitzArrayObject* trafo_image;
   PyObject* jets = 0;
 
-  if (
-    !PyArg_ParseTupleAndKeywords(args, kwargs, "O&|O!", kwlist,
-      &PyBlitzArray_Converter, &trafo_image,
-      &PyList_Type, &jets
-    )
-  ){
-    extract_doc.print_usage();
-    return 0;
-  }
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&|O!", kwlist, &PyBlitzArray_Converter, &trafo_image, &PyList_Type, &jets)) return 0;
 
   auto trafo_image_ = make_safe(trafo_image);
 
   if (trafo_image->ndim != 3 || trafo_image->type_num != NPY_COMPLEX128) {
-    extract_doc.print_usage();
     PyErr_Format(PyExc_TypeError, "`%s' only accepts 3-dimensional arrays of complex type for `input`", Py_TYPE(self)->tp_name);
     return 0;
   }
 
   if (jets){
     if ((int)PyList_Size(jets) != self->cxx->numberOfNodes()){
-      extract_doc.print_usage();
       PyErr_Format(PyExc_RuntimeError, "`%s' requires the `jets` parameter to be a list of bob.ip.gabor.Jet objects of length %d, but it has length %" PY_FORMAT_SIZE_T "d)", Py_TYPE(self)->tp_name, self->cxx->numberOfNodes(), PyList_Size(jets));
       return 0;
     }
     for (Py_ssize_t i = 0; i < PyList_Size(jets); ++i){
       if (!PyBobIpGaborJet_Check(PyList_GET_ITEM(jets, i))){
-        extract_doc.print_usage();
         PyErr_Format(PyExc_RuntimeError, "`%s' requires all elements of the `jets` parameter to be of type bob.ip.gabor.Jet, but element %" PY_FORMAT_SIZE_T "d isn't", Py_TYPE(self)->tp_name, i);
         return 0;
       }
@@ -335,19 +286,9 @@ static PyObject* PyBobIpGaborGraph_extract(PyBobIpGaborGraphObject* self, PyObje
     output[i] = (reinterpret_cast<PyBobIpGaborJetObject*>(PyList_GET_ITEM(jets,i)))->cxx;
   }
 
-  try {
-    self->cxx->extract(*PyBlitzArrayCxx_AsBlitz<std::complex<double>,3>(trafo_image), output);
-  }
-  catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }
-  catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot transform input: unknown exception caught", Py_TYPE(self)->tp_name);
-    return 0;
-  }
-
+  self->cxx->extract(*PyBlitzArrayCxx_AsBlitz<std::complex<double>,3>(trafo_image), output);
   return jets;
+BOB_CATCH_MEMBER("extract", 0)
 }
 
 
@@ -362,28 +303,16 @@ static auto load_doc = bob::extension::FunctionDoc(
 ;
 
 static PyObject* PyBobIpGaborGraph_load(PyBobIpGaborGraphObject* self, PyObject* args, PyObject* kwargs) {
+BOB_TRY
   // get list of arguments
-  char* kwlist[] = {c("hdf5"), NULL};
-  PyBobIoHDF5FileObject* file = 0;
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-        "O&", kwlist,
-        PyBobIoHDF5File_Converter, &file
-  )){
-    load_doc.print_usage();
-    return NULL;
-  }
+  char** kwlist = load_doc.kwlist();
+  PyBobIoHDF5FileObject* file;
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&", kwlist, PyBobIoHDF5File_Converter, &file)) return 0;
 
   auto file_ = make_safe(file);
-  try{
-    self->cxx->load(*file->f);
-  } catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot load nodes: unknown exception caught", Py_TYPE(self)->tp_name);
-    return 0;
-  }
+  self->cxx->load(*file->f);
   Py_RETURN_NONE;
+BOB_CATCH_MEMBER("load", 0)
 }
 
 
@@ -398,30 +327,16 @@ static auto save_doc = bob::extension::FunctionDoc(
 ;
 
 static PyObject* PyBobIpGaborGraph_save(PyBobIpGaborGraphObject* self, PyObject* args, PyObject* kwargs) {
+BOB_TRY
   // get list of arguments
-  char* kwlist[] = {c("hdf5"), NULL};
-  PyBobIoHDF5FileObject* file = 0;
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-        "O&", kwlist,
-        PyBobIoHDF5File_Converter, &file
-    )
-  ){
-    save_doc.print_usage();
-    return NULL;
-  }
+  char** kwlist = save_doc.kwlist();
+  PyBobIoHDF5FileObject* file;
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&", kwlist, PyBobIoHDF5File_Converter, &file)) return 0;
 
   auto file_ = make_safe(file);
-  try{
-    self->cxx->save(*file->f);
-  } catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot save nodes: unknown exception caught", Py_TYPE(self)->tp_name);
-    return 0;
-  }
-
+  self->cxx->save(*file->f);
   Py_RETURN_NONE;
+BOB_CATCH_MEMBER("save", 0)
 }
 
 
@@ -461,7 +376,7 @@ PyTypeObject PyBobIpGaborGraph_Type = {
 bool init_BobIpGaborGraph(PyObject* module)
 {
 
-  // initialize the Gabor wavelet type struct
+  // initialize the Graph type struct
   PyBobIpGaborGraph_Type.tp_name = Graph_doc.name();
   PyBobIpGaborGraph_Type.tp_basicsize = sizeof(PyBobIpGaborGraphObject);
   PyBobIpGaborGraph_Type.tp_flags = Py_TPFLAGS_DEFAULT;
@@ -477,11 +392,9 @@ bool init_BobIpGaborGraph(PyObject* module)
   PyBobIpGaborGraph_Type.tp_richcompare = reinterpret_cast<richcmpfunc>(PyBobIpGaborGraph_RichCompare);
 
   // check that everyting is fine
-  if (PyType_Ready(&PyBobIpGaborGraph_Type) < 0)
-    return false;
+  if (PyType_Ready(&PyBobIpGaborGraph_Type) < 0) return false;
 
   // add the type to the module
   Py_INCREF(&PyBobIpGaborGraph_Type);
   return PyModule_AddObject(module, "Graph", (PyObject*)&PyBobIpGaborGraph_Type) >= 0;
 }
-

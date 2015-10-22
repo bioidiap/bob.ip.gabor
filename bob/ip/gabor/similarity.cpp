@@ -56,13 +56,13 @@ static auto Similarity_doc = bob::extension::ClassDoc(
   .add_prototype("hdf5", "")
   .add_parameter("type", "str", "The type of the Gabor jet similarity function; might be one of (``'ScalarProduct'``, ``'Canberra'``, ``'AbsPhase'``, ``'Disparity'``, ``'PhaseDiff'``, ``'PhaseDiffPlusCanberra'``)")
   .add_parameter("transform", ":py:class:`bob.ip.gabor.Transform`", "The Gabor wavelet transform class that was used to generate the Gabor jets; only required for disparity-based similarity functions ('Disparity', 'PhaseDiff', 'PhaseDiffPlusCanberra')")
-  .add_parameter("hdf5", ":py:class:`bob.io.base.HD5File`", "An HDF5 file open for reading to load the parametrization of the Gabor wavelet similarity from")
+  .add_parameter("hdf5", ":py:class:`bob.io.base.HDF5File`", "An HDF5 file open for reading to load the parametrization of the Gabor wavelet similarity from")
 );
 
 static int PyBobIpGaborSimilarity_init(PyBobIpGaborSimilarityObject* self, PyObject* args, PyObject* kwargs) {
-
-  char* kwlist1[] = {c("hdf5"), NULL};
-  char* kwlist2[] = {c("type"), c("transform"), NULL};
+BOB_TRY
+  char** kwlist1 = Similarity_doc.kwlist(1);
+  char** kwlist2 = Similarity_doc.kwlist(0);
 
   // two ways to call
   PyObject* k = Py_BuildValue("s", kwlist1[0]);
@@ -72,49 +72,21 @@ static int PyBobIpGaborSimilarity_init(PyBobIpGaborSimilarityObject* self, PyObj
     (args && PyTuple_Size(args) == 1 && PyBobIoHDF5File_Check(PyTuple_GetItem(args, 0)))
   ){
     PyBobIoHDF5FileObject* hdf5;
-    if (
-      !PyArg_ParseTupleAndKeywords(
-        args, kwargs,
-        "O&", kwlist1,
-        &PyBobIoHDF5File_Converter, &hdf5
-      )
-    ){
-      Similarity_doc.print_usage();
-      return -1;
-    }
-    auto hdf5_ = make_safe(hdf5);
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&", kwlist1, &PyBobIoHDF5File_Converter, &hdf5)) return -1;
 
+    auto hdf5_ = make_safe(hdf5);
     self->cxx.reset(new bob::ip::gabor::Similarity(*hdf5->f));
   } else {
     const char* name = 0;
     PyBobIpGaborTransformObject* gwt = 0;
-    if (
-      !PyArg_ParseTupleAndKeywords(
-        args, kwargs,
-        "s|O!", kwlist2,
-        &name,
-        &PyBobIpGaborTransform_Type, &gwt
-      )
-    ){
-      Similarity_doc.print_usage();
-      return -1;
-    }
-    try{
-      if (gwt)
-        self->cxx.reset(new bob::ip::gabor::Similarity(bob::ip::gabor::Similarity::name_to_type(name), gwt->cxx));
-      else
-        self->cxx.reset(new bob::ip::gabor::Similarity(bob::ip::gabor::Similarity::name_to_type(name)));
-    }
-    catch (std::exception& e) {
-      PyErr_SetString(PyExc_RuntimeError, e.what());
-      return -1;
-    }
-    catch (...) {
-      PyErr_Format(PyExc_RuntimeError, "%s cannot create Gabor jet similarity: unknown exception caught", Py_TYPE(self)->tp_name);
-      return -1;
-    }
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O!", kwlist2, &name, &PyBobIpGaborTransform_Type, &gwt)) return -1;
+    if (gwt)
+      self->cxx.reset(new bob::ip::gabor::Similarity(bob::ip::gabor::Similarity::name_to_type(name), gwt->cxx));
+    else
+      self->cxx.reset(new bob::ip::gabor::Similarity(bob::ip::gabor::Similarity::name_to_type(name)));
   }
   return 0;
+BOB_CATCH_MEMBER("Similarity constructor", -1)
 }
 
 static void PyBobIpGaborSimilarity_delete(PyBobIpGaborSimilarityObject* self) {
@@ -137,7 +109,9 @@ static auto type_doc = bob::extension::VariableDoc(
   "The type of the Gabor jet similarity function"
 );
 PyObject* PyBobIpGaborSimilarity_type(PyBobIpGaborSimilarityObject* self, void*){
+BOB_TRY
   return Py_BuildValue("s", self->cxx->type().c_str());
+BOB_CATCH_MEMBER("type", 0)
 }
 
 static auto transform_doc = bob::extension::VariableDoc(
@@ -146,9 +120,11 @@ static auto transform_doc = bob::extension::VariableDoc(
   "The Gabor wavelet transform used in the similarity class; can be ``None`` for similarity functions that do not compute disparities"
 );
 PyObject* PyBobIpGaborSimilarity_transform(PyBobIpGaborSimilarityObject* self, void*){
+BOB_TRY
   PyBobIpGaborTransformObject* transform = (PyBobIpGaborTransformObject*)PyBobIpGaborTransform_Type.tp_alloc(&PyBobIpGaborTransform_Type, 0);
   transform->cxx = self->cxx->transform();
   return Py_BuildValue("N", transform);
+BOB_CATCH_MEMBER("transform", 0)
 }
 
 static auto lastDisparity_doc = bob::extension::VariableDoc(
@@ -157,8 +133,10 @@ static auto lastDisparity_doc = bob::extension::VariableDoc(
   "The disparity that was computed during the last call to :py:func:`similarity` or :py:func:`disparity`."
 );
 PyObject* PyBobIpGaborSimilarity_lastDisparity(PyBobIpGaborSimilarityObject* self, void*){
+BOB_TRY
   const auto& disp = self->cxx->disparity();
   return Py_BuildValue("(dd)", disp[0], disp[1]);
+BOB_CATCH_MEMBER("last_disparity", 0)
 }
 
 
@@ -206,33 +184,15 @@ static auto similarity_doc = bob::extension::FunctionDoc(
 ;
 
 static PyObject* PyBobIpGaborSimilarity_similarity(PyBobIpGaborSimilarityObject* self, PyObject* args, PyObject* kwargs) {
+BOB_TRY
+  char** kwlist = similarity_doc.kwlist();
 
-  static char* kwlist[] = {c("jet1"), c("jet2"), 0};
+  PyBobIpGaborJetObject* jet1,* jet2;
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!O!", kwlist, &PyBobIpGaborJet_Type, &jet1, &PyBobIpGaborJet_Type, &jet2)) return 0;
 
-  PyBobIpGaborJetObject* jet1 = 0,* jet2 = 0;
-
-  if (
-    !PyArg_ParseTupleAndKeywords(args, kwargs, "O!O!", kwlist,
-      &PyBobIpGaborJet_Type, &jet1,
-      &PyBobIpGaborJet_Type, &jet2
-    )
-  ){
-    similarity_doc.print_usage();
-    return 0;
-  }
-
-  try {
-    double sim = self->cxx->similarity(*jet1->cxx, *jet2->cxx);
-    return Py_BuildValue("d", sim);
-  }
-  catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }
-  catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot compute Gabor jet similarity: unknown exception caught", Py_TYPE(self)->tp_name);
-    return 0;
-  }
+  double sim = self->cxx->similarity(*jet1->cxx, *jet2->cxx);
+  return Py_BuildValue("d", sim);
+BOB_CATCH_MEMBER("similarity", 0)
 }
 
 
@@ -248,33 +208,16 @@ static auto disparity_doc = bob::extension::FunctionDoc(
 ;
 
 static PyObject* PyBobIpGaborSimilarity_disparity(PyBobIpGaborSimilarityObject* self, PyObject* args, PyObject* kwargs) {
+BOB_TRY
+  char** kwlist = disparity_doc.kwlist();
 
-  static char* kwlist[] = {c("jet1"), c("jet2"), 0};
+  PyBobIpGaborJetObject* jet1,* jet2;
 
-  PyBobIpGaborJetObject* jet1 = 0,* jet2 = 0;;
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!O!", kwlist, &PyBobIpGaborJet_Type, &jet1, &PyBobIpGaborJet_Type, &jet2)) return 0;
 
-  if (
-    !PyArg_ParseTupleAndKeywords(args, kwargs, "O!O!", kwlist,
-      &PyBobIpGaborJet_Type, &jet1,
-      &PyBobIpGaborJet_Type, &jet2
-    )
-  ){
-    similarity_doc.print_usage();
-    return 0;
-  }
-
-  try {
-    const auto& disp = self->cxx->disparity(*jet1->cxx, *jet2->cxx);
-    return Py_BuildValue("(dd)", disp[0], disp[1]);
-  }
-  catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }
-  catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot compute Gabor jet similarity: unknown exception caught", Py_TYPE(self)->tp_name);
-    return 0;
-  }
+  const auto& disp = self->cxx->disparity(*jet1->cxx, *jet2->cxx);
+  return Py_BuildValue("(dd)", disp[0], disp[1]);
+BOB_CATCH_MEMBER("disparity", 0)
 }
 
 
@@ -292,21 +235,12 @@ static auto shift_phase_doc = bob::extension::FunctionDoc(
 ;
 
 static PyObject* PyBobIpGaborSimilarity_shift_phase(PyBobIpGaborSimilarityObject* self, PyObject* args, PyObject* kwargs) {
-  try {
+BOB_TRY
+  char** kwlist = shift_phase_doc.kwlist();
 
-  static char* kwlist[] = {c("jet"), c("reference"), 0};
+  PyBobIpGaborJetObject* jet,* reference;
 
-  PyBobIpGaborJetObject* jet = 0,* reference = 0;;
-
-  if (
-    !PyArg_ParseTupleAndKeywords(args, kwargs, "O!O!", kwlist,
-      &PyBobIpGaborJet_Type, &jet,
-      &PyBobIpGaborJet_Type, &reference
-    )
-  ){
-    shift_phase_doc.print_usage();
-    return 0;
-  }
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!O!", kwlist, &PyBobIpGaborJet_Type, &jet, &PyBobIpGaborJet_Type, &reference)) return 0;
 
   // create new jet
   PyBobIpGaborJetObject* shifted = reinterpret_cast<PyBobIpGaborJetObject*>(PyBobIpGaborJet_Type.tp_alloc(&PyBobIpGaborJet_Type, 0));
@@ -317,15 +251,7 @@ static PyObject* PyBobIpGaborSimilarity_shift_phase(PyBobIpGaborSimilarityObject
 
   // return it
   return Py_BuildValue("N", shifted);
-
-  }catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }
-  catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot compute Gabor jet similarity: unknown exception caught", Py_TYPE(self)->tp_name);
-    return 0;
-  }
+BOB_CATCH_MEMBER("shift_phase", 0)
 }
 
 
@@ -340,28 +266,16 @@ static auto load_doc = bob::extension::FunctionDoc(
 ;
 
 static PyObject* PyBobIpGaborSimilarity_load(PyBobIpGaborSimilarityObject* self, PyObject* args, PyObject* kwargs) {
+BOB_TRY
   // get list of arguments
-  char* kwlist[] = {c("hdf5"), NULL};
-  PyBobIoHDF5FileObject* file = 0;
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-        "O&", kwlist,
-        PyBobIoHDF5File_Converter, &file
-  )){
-    load_doc.print_usage();
-    return NULL;
-  }
+  char** kwlist = load_doc.kwlist();
+  PyBobIoHDF5FileObject* file;
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&", kwlist, PyBobIoHDF5File_Converter, &file)) return 0;
 
   auto file_ = make_safe(file);
-  try{
-    self->cxx->load(*file->f);
-  } catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot load parametrization: unknown exception caught", Py_TYPE(self)->tp_name);
-    return 0;
-  }
+  self->cxx->load(*file->f);
   Py_RETURN_NONE;
+BOB_CATCH_MEMBER("load", 0)
 }
 
 
@@ -376,30 +290,16 @@ static auto save_doc = bob::extension::FunctionDoc(
 ;
 
 static PyObject* PyBobIpGaborSimilarity_save(PyBobIpGaborSimilarityObject* self, PyObject* args, PyObject* kwargs) {
+BOB_TRY
   // get list of arguments
-  char* kwlist[] = {c("hdf5"), NULL};
-  PyBobIoHDF5FileObject* file = 0;
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-        "O&", kwlist,
-        PyBobIoHDF5File_Converter, &file
-    )
-  ){
-    save_doc.print_usage();
-    return NULL;
-  }
+  char** kwlist = save_doc.kwlist();
+  PyBobIoHDF5FileObject* file;
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&", kwlist, PyBobIoHDF5File_Converter, &file)) return 0;
 
   auto file_ = make_safe(file);
-  try{
-    self->cxx->save(*file->f);
-  } catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot save parametrization: unknown exception caught", Py_TYPE(self)->tp_name);
-    return 0;
-  }
-
+  self->cxx->save(*file->f);
   Py_RETURN_NONE;
+BOB_CATCH_MEMBER("save", 0)
 }
 
 
@@ -451,7 +351,7 @@ PyTypeObject PyBobIpGaborSimilarity_Type = {
 bool init_BobIpGaborSimilarity(PyObject* module)
 {
 
-  // initialize the Gabor wavelet type struct
+  // initialize the Similarity type struct
   PyBobIpGaborSimilarity_Type.tp_name = Similarity_doc.name();
   PyBobIpGaborSimilarity_Type.tp_basicsize = sizeof(PyBobIpGaborSimilarityObject);
   PyBobIpGaborSimilarity_Type.tp_flags = Py_TPFLAGS_DEFAULT;
@@ -466,11 +366,9 @@ bool init_BobIpGaborSimilarity(PyObject* module)
   PyBobIpGaborSimilarity_Type.tp_call = reinterpret_cast<ternaryfunc>(PyBobIpGaborSimilarity_similarity);
 
   // check that everyting is fine
-  if (PyType_Ready(&PyBobIpGaborSimilarity_Type) < 0)
-    return false;
+  if (PyType_Ready(&PyBobIpGaborSimilarity_Type) < 0) return false;
 
   // add the type to the module
   Py_INCREF(&PyBobIpGaborSimilarity_Type);
   return PyModule_AddObject(module, "Similarity", (PyObject*)&PyBobIpGaborSimilarity_Type) >= 0;
 }
-

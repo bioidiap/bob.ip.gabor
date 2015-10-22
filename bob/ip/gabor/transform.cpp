@@ -48,13 +48,13 @@ static auto Transform_doc = bob::extension::ClassDoc(
   .add_parameter("power_of_k", "float", "[default: 0] The :math:`\\lambda` factor to regularize the Gabor wavelet prefactor to generate comparable results for images, see Appendix C of [Guenther2011]_")
   .add_parameter("dc_free", "bool", "[default: True] Should the Gabor wavelet be without DC factor (i.e. should the integral under the wavelet in spatial domain vanish)?")
   .add_parameter("epsilon", "float", "[default: 1e-10] For speed reasons: all wavelet pixels in frequency domain with an absolute value below this should be considered as 0")
-  .add_parameter("hdf5", ":py:class:`bob.io.base.HD5File`", "An HDF5 file open for reading to load the parametrization of the Gabor wavelet transform from")
+  .add_parameter("hdf5", ":py:class:`bob.io.base.HDF5File`", "An HDF5 file open for reading to load the parametrization of the Gabor wavelet transform from")
 );
 
 static int PyBobIpGaborTransform_init(PyBobIpGaborTransformObject* self, PyObject* args, PyObject* kwargs) {
-
-  char* kwlist1[] = {c("hdf5"), NULL};
-  char* kwlist2[] = {c("number_of_scales"), c("number_of_directions"), c("sigma"), c("k_max"), c("k_fac"), c("power_of_k"), c("dc_free"), c("epsilon"), NULL};
+BOB_TRY
+  char** kwlist1 = Transform_doc.kwlist(1);
+  char** kwlist2 = Transform_doc.kwlist(0);
 
   // two ways to call
   PyObject* k = Py_BuildValue("s", kwlist1[0]);
@@ -64,16 +64,7 @@ static int PyBobIpGaborTransform_init(PyBobIpGaborTransformObject* self, PyObjec
     (args && PyTuple_Size(args) == 1 && PyBobIoHDF5File_Check(PyTuple_GetItem(args, 0)))
   ){
     PyBobIoHDF5FileObject* hdf5;
-    if (
-      !PyArg_ParseTupleAndKeywords(
-        args, kwargs,
-        "O&", kwlist1,
-        &PyBobIoHDF5File_Converter, &hdf5
-      )
-    ){
-      Transform_doc.print_usage();
-      return -1;
-    }
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&", kwlist1, &PyBobIoHDF5File_Converter, &hdf5)) return -1;
     auto hdf5_ = make_safe(hdf5);
 
     self->cxx.reset(new bob::ip::gabor::Transform(*hdf5->f));
@@ -81,21 +72,11 @@ static int PyBobIpGaborTransform_init(PyBobIpGaborTransformObject* self, PyObjec
     int scales = 5, directions = 8;
     double sigma = 2.*M_PI, k_max = M_PI/2., k_fac = sqrt(.5), pow_k = 0., eps=1e-10;
     PyObject* dc = 0;
-    if (
-      !PyArg_ParseTupleAndKeywords(
-        args, kwargs,
-        "|iiddddO!d", kwlist2,
-        &scales, &directions, &sigma, &k_max, &k_fac, &pow_k,
-        &PyBool_Type, &dc,
-        &eps
-      )
-    ){
-      Transform_doc.print_usage();
-      return -1;
-    }
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|iiddddO!d", kwlist2, &scales, &directions, &sigma, &k_max, &k_fac, &pow_k, &PyBool_Type, &dc, &eps)) return -1;
     self->cxx.reset(new bob::ip::gabor::Transform(scales, directions, sigma, k_max, k_fac, pow_k, !dc || PyObject_IsTrue(dc), eps));
   }
   return 0;
+BOB_CATCH_MEMBER("Transform constructor", -1)
 }
 
 static void PyBobIpGaborTransform_delete(PyBobIpGaborTransformObject* self) {
@@ -108,30 +89,23 @@ int PyBobIpGaborTransform_Check(PyObject* o) {
 }
 
 static PyObject* PyBobIpGaborTransform_RichCompare(PyBobIpGaborTransformObject* self, PyObject* other, int op) {
-
+BOB_TRY
   if (!PyBobIpGaborTransform_Check(other)) {
     PyErr_Format(PyExc_TypeError, "cannot compare `%s' with `%s'", Py_TYPE(self)->tp_name, Py_TYPE(other)->tp_name);
     return 0;
   }
   auto other_ = reinterpret_cast<PyBobIpGaborTransformObject*>(other);
-  try{
-    switch (op) {
-      case Py_EQ:
-        if (*self->cxx==*other_->cxx) Py_RETURN_TRUE; else Py_RETURN_FALSE;
-      case Py_NE:
-        if (*self->cxx==*other_->cxx) Py_RETURN_FALSE; else Py_RETURN_TRUE;
-      default:
-        Py_INCREF(Py_NotImplemented);
-        return Py_NotImplemented;
-    }
-  }
-  catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-  }
-  catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot compare Transform objects: unknown exception caught", Py_TYPE(self)->tp_name);
+  switch (op) {
+    case Py_EQ:
+      if (*self->cxx==*other_->cxx) Py_RETURN_TRUE; else Py_RETURN_FALSE;
+    case Py_NE:
+      if (*self->cxx==*other_->cxx) Py_RETURN_FALSE; else Py_RETURN_TRUE;
+    default:
+      Py_INCREF(Py_NotImplemented);
+      return Py_NotImplemented;
   }
   return 0;
+BOB_CATCH_MEMBER("RichCompare", 0)
 }
 
 
@@ -145,7 +119,9 @@ static auto numberOfWavelets_doc = bob::extension::VariableDoc(
   "The number of Gabor wavelets (i.e, the number of directions times the number of scales) of this class"
 );
 PyObject* PyBobIpGaborTransform_numberOfWavelets(PyBobIpGaborTransformObject* self, void*){
+BOB_TRY
   return Py_BuildValue("i", self->cxx->numberOfWavelets());
+BOB_CATCH_MEMBER("abs", 0)
 }
 
 static auto numberOfScales_doc = bob::extension::VariableDoc(
@@ -154,7 +130,9 @@ static auto numberOfScales_doc = bob::extension::VariableDoc(
   "The number of scales (levels) of Gabor wavelets"
 );
 PyObject* PyBobIpGaborTransform_numberOfScales(PyBobIpGaborTransformObject* self, void*){
+BOB_TRY
   return Py_BuildValue("i", self->cxx->numberOfScales());
+BOB_CATCH_MEMBER("number_of_scales", 0)
 }
 
 static auto numberOfDirections_doc = bob::extension::VariableDoc(
@@ -163,7 +141,9 @@ static auto numberOfDirections_doc = bob::extension::VariableDoc(
   "The number of directions (orientations) of Gabor wavelets"
 );
 PyObject* PyBobIpGaborTransform_numberOfDirections(PyBobIpGaborTransformObject* self, void*){
+BOB_TRY
   return Py_BuildValue("i", self->cxx->numberOfDirections());
+BOB_CATCH_MEMBER("number_of_directions", 0)
 }
 
 static auto sigma_doc = bob::extension::VariableDoc(
@@ -172,7 +152,9 @@ static auto sigma_doc = bob::extension::VariableDoc(
   "The extend of the Gabor wavelets"
 );
 PyObject* PyBobIpGaborTransform_sigma(PyBobIpGaborTransformObject* self, void*){
+BOB_TRY
   return Py_BuildValue("d", self->cxx->sigma());
+BOB_CATCH_MEMBER("sigma", 0)
 }
 
 static auto k_max_doc = bob::extension::VariableDoc(
@@ -181,7 +163,9 @@ static auto k_max_doc = bob::extension::VariableDoc(
   "The highest frequency of Gabor wavelets"
 );
 PyObject* PyBobIpGaborTransform_k_max(PyBobIpGaborTransformObject* self, void*){
+BOB_TRY
   return Py_BuildValue("d", self->cxx->k_max());
+BOB_CATCH_MEMBER("k_max", 0)
 }
 
 static auto k_fac_doc = bob::extension::VariableDoc(
@@ -190,7 +174,9 @@ static auto k_fac_doc = bob::extension::VariableDoc(
   "The logarithmic distance between two levels of Gabor wavelets"
 );
 PyObject* PyBobIpGaborTransform_k_fac(PyBobIpGaborTransformObject* self, void*){
+BOB_TRY
   return Py_BuildValue("d", self->cxx->k_fac());
+BOB_CATCH_MEMBER("k_fac", 0)
 }
 
 static auto power_of_k_doc = bob::extension::VariableDoc(
@@ -199,7 +185,9 @@ static auto power_of_k_doc = bob::extension::VariableDoc(
   "The adaptation of the Gabor wavelet scales to get homogeneous values"
 );
 PyObject* PyBobIpGaborTransform_power_of_k(PyBobIpGaborTransformObject* self, void*){
+BOB_TRY
   return Py_BuildValue("d", self->cxx->pow_of_k());
+BOB_CATCH_MEMBER("power_of_k", 0)
 }
 
 static auto dc_free_doc = bob::extension::VariableDoc(
@@ -208,7 +196,9 @@ static auto dc_free_doc = bob::extension::VariableDoc(
   "Are the Gabor wavelets DC free?"
 );
 PyObject* PyBobIpGaborTransform_dc_free(PyBobIpGaborTransformObject* self, void*){
+BOB_TRY
   return Py_BuildValue("O", self->cxx->dc_free() ? Py_True: Py_False);
+BOB_CATCH_MEMBER("dc_free", 0)
 }
 
 static auto waveletFrequencies_doc = bob::extension::VariableDoc(
@@ -217,6 +207,7 @@ static auto waveletFrequencies_doc = bob::extension::VariableDoc(
   "The central frequencies of the Gabor wavelets, in the same order as in :py:attr:`wavelets`"
 );
 PyObject* PyBobIpGaborTransform_waveletFrequencies(PyBobIpGaborTransformObject* self, void*){
+BOB_TRY
   // get the data
   auto data = self->cxx->waveletFrequencies();
   // populate a list
@@ -225,6 +216,7 @@ PyObject* PyBobIpGaborTransform_waveletFrequencies(PyBobIpGaborTransformObject* 
     PyList_SET_ITEM(list, i, Py_BuildValue("(dd)", data[i][0], data[i][1]));
   }
   return list;
+BOB_CATCH_MEMBER("wavelet_frequencies", 0)
 }
 
 static auto wavelets_doc = bob::extension::VariableDoc(
@@ -236,6 +228,7 @@ static auto wavelets_doc = bob::extension::VariableDoc(
   "Before one of these functions is called, no wavelet will be generated."
 );
 PyObject* PyBobIpGaborTransform_wavelets(PyBobIpGaborTransformObject* self, void*){
+BOB_TRY
   // get the data
   auto wavelets = self->cxx->wavelets();
   // populate a list
@@ -246,6 +239,7 @@ PyObject* PyBobIpGaborTransform_wavelets(PyBobIpGaborTransformObject* self, void
     PyList_SET_ITEM(list, i, Py_BuildValue("N", wavelet));
   }
   return list;
+BOB_CATCH_MEMBER("wavelets", 0)
 }
 
 
@@ -339,53 +333,40 @@ static auto transform_doc = bob::extension::FunctionDoc(
   ".. note::\n\n  The function :py:func:`__call__` is a synonym for this function.",
   true
 )
-.add_prototype("input, output")
-.add_prototype("input", "output")
+.add_prototype("input, [output]", "output")
 .add_parameter("input", "array_like (2D)", "The image in spatial domain that should be transformed")
-.add_parameter("output", "array_like (complex, 3D)", "The transformed image in spatial domain that should contain the transformed image; must have shape (:py:attr:`number_of_wavelets`, input.shape[0], input.shape[1])")
-.add_return("output", "array_like (complex, 3D)", "The transformed image in spatial domain that will contain the transformed image; will have shape (:py:attr:`number_of_wavelets`, input.shape[0], input.shape[1])")
+.add_parameter("output", "array_like (complex, 3D)", "The transformed image in spatial domain that should contain the transformed image; if given, must have shape (:py:attr:`number_of_wavelets`, input.shape[0], input.shape[1])")
+.add_return("output", "array_like (complex, 3D)", "The transformed image in spatial domain that will contain the transformed image; will have shape (:py:attr:`number_of_wavelets`, input.shape[0], input.shape[1]); identical to the ``output`` parameter, if given")
 ;
 
 static PyObject* PyBobIpGaborTransform_transform(PyBobIpGaborTransformObject* self, PyObject* args, PyObject* kwargs) {
-
-  static char* kwlist[] = {c("input"), c("output"), 0};
+BOB_TRY
+  char** kwlist = transform_doc.kwlist();
 
   PyBlitzArrayObject* input = 0;
   PyBlitzArrayObject* output = 0;
 
-  if (
-    !PyArg_ParseTupleAndKeywords(args, kwargs, "O&|O&", kwlist,
-      &PyBlitzArray_Converter, &input,
-      &PyBlitzArray_OutputConverter, &output
-    )
-  ){
-    transform_doc.print_usage();
-    return 0;
-  }
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&|O&", kwlist, &PyBlitzArray_Converter, &input, &PyBlitzArray_OutputConverter, &output)) return 0;
 
   auto input_ = make_safe(input);
   auto output_ = make_xsafe(output);
 
   if (output && output->type_num != NPY_COMPLEX128) {
-    transform_doc.print_usage();
     PyErr_Format(PyExc_TypeError, "`%s' only supports 128-bit complex arrays for output array `output'", Py_TYPE(self)->tp_name);
     return 0;
   }
 
   if (input->ndim != 2) {
-    transform_doc.print_usage();
     PyErr_Format(PyExc_TypeError, "`%s' only accepts 2-dimensional arrays (not %" PY_FORMAT_SIZE_T "dD arrays)", Py_TYPE(self)->tp_name, input->ndim);
     return 0;
   }
 
   if (output){
     if (output->ndim != 3) {
-      transform_doc.print_usage();
       PyErr_Format(PyExc_RuntimeError, "`%s' only accepts 2-dimensional arrays (not %" PY_FORMAT_SIZE_T "dD arrays)", Py_TYPE(self)->tp_name, output->ndim);
       return 0;
     }
     if (output->shape[0] != self->cxx->numberOfWavelets() || output->shape[1] != input->shape[0] || output->shape[2] != input->shape[1]){
-      transform_doc.print_usage();
       PyErr_Format(PyExc_RuntimeError, "The shape of the output image should be (%d,%" PY_FORMAT_SIZE_T "d,%" PY_FORMAT_SIZE_T "d), but is (%" PY_FORMAT_SIZE_T "d,%" PY_FORMAT_SIZE_T "d,%" PY_FORMAT_SIZE_T "d)", self->cxx->numberOfWavelets(), input->shape[0], input->shape[0], output->shape[0], output->shape[1], output->shape[2]);
       return 0;
     }
@@ -398,37 +379,25 @@ static PyObject* PyBobIpGaborTransform_transform(PyBobIpGaborTransformObject* se
     output_ = make_safe(output);
   }
 
-  try {
-    switch (input->type_num){
-      case NPY_UINT8:
-        self->cxx->transform(*PyBlitzArrayCxx_AsBlitz<uint8_t,2>(input),
-            *PyBlitzArrayCxx_AsBlitz<std::complex<double>,3>(output));
-        break;
-      case NPY_FLOAT64:
-        self->cxx->transform(*PyBlitzArrayCxx_AsBlitz<double,2>(input),
-            *PyBlitzArrayCxx_AsBlitz<std::complex<double>,3>(output));
-        break;
-      case NPY_COMPLEX128:
-        self->cxx->transform(*PyBlitzArrayCxx_AsBlitz<std::complex<double>,2>(input),
-            *PyBlitzArrayCxx_AsBlitz<std::complex<double>,3>(output));
-        break;
-      default:
-        transform_doc.print_usage();
-        PyErr_Format(PyExc_RuntimeError, "`%s' only supports arrays of type uint8, float and complex for array `input'", Py_TYPE(self)->tp_name);
-        return 0;
-    }
+  switch (input->type_num){
+    case NPY_UINT8:
+      self->cxx->transform(*PyBlitzArrayCxx_AsBlitz<uint8_t,2>(input),
+          *PyBlitzArrayCxx_AsBlitz<std::complex<double>,3>(output));
+      break;
+    case NPY_FLOAT64:
+      self->cxx->transform(*PyBlitzArrayCxx_AsBlitz<double,2>(input),
+          *PyBlitzArrayCxx_AsBlitz<std::complex<double>,3>(output));
+      break;
+    case NPY_COMPLEX128:
+      self->cxx->transform(*PyBlitzArrayCxx_AsBlitz<std::complex<double>,2>(input),
+          *PyBlitzArrayCxx_AsBlitz<std::complex<double>,3>(output));
+      break;
+    default:
+      PyErr_Format(PyExc_RuntimeError, "`%s' only supports arrays of type uint8, float and complex for array `input'", Py_TYPE(self)->tp_name);
+      return 0;
   }
-  catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }
-  catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot transform input: unknown exception caught", Py_TYPE(self)->tp_name);
-    return 0;
-  }
-
-  Py_INCREF(output);
-  return PyBlitzArray_NUMPY_WRAP(reinterpret_cast<PyObject*>(output));
+  return PyBlitzArray_AsNumpyArray(output, 0);
+BOB_CATCH_MEMBER("transform", 0)
 }
 
 
@@ -444,33 +413,14 @@ static auto generateWavelets_doc = bob::extension::FunctionDoc(
 ;
 
 static PyObject* PyBobIpGaborTransform_generateWavelets(PyBobIpGaborTransformObject* self, PyObject* args, PyObject* kwargs) {
-
-  static char* kwlist[] = {c("height"), c("width"), 0};
+BOB_TRY
+  char** kwlist = generateWavelets_doc.kwlist();
 
   int height, width;
-
-  if (
-    !PyArg_ParseTupleAndKeywords(args, kwargs, "ii", kwlist,
-      &height, &width
-    )
-  ){
-    generateWavelets_doc.print_usage();
-    return 0;
-  }
-
-  try{
-    self->cxx->generateWavelets(height, width);
-  }
-  catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }
-  catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot transform input: unknown exception caught", Py_TYPE(self)->tp_name);
-    return 0;
-  }
-
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ii", kwlist, &height, &width)) return 0;
+  self->cxx->generateWavelets(height, width);
   Py_RETURN_NONE;
+BOB_CATCH_MEMBER("generate_wavelets", 0)
 }
 
 
@@ -485,28 +435,16 @@ static auto load_doc = bob::extension::FunctionDoc(
 ;
 
 static PyObject* PyBobIpGaborTransform_load(PyBobIpGaborTransformObject* self, PyObject* args, PyObject* kwargs) {
+BOB_TRY
   // get list of arguments
-  char* kwlist[] = {c("hdf5"), NULL};
-  PyBobIoHDF5FileObject* file = 0;
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-        "O&", kwlist,
-        PyBobIoHDF5File_Converter, &file
-  )){
-    load_doc.print_usage();
-    return NULL;
-  }
+  char** kwlist = load_doc.kwlist();
+  PyBobIoHDF5FileObject* file;
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&", kwlist, PyBobIoHDF5File_Converter, &file)) return 0;
 
   auto file_ = make_safe(file);
-  try{
-    self->cxx->load(*file->f);
-  } catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot load parametrization: unknown exception caught", Py_TYPE(self)->tp_name);
-    return 0;
-  }
+  self->cxx->load(*file->f);
   Py_RETURN_NONE;
+BOB_CATCH_MEMBER("load", 0)
 }
 
 
@@ -521,30 +459,16 @@ static auto save_doc = bob::extension::FunctionDoc(
 ;
 
 static PyObject* PyBobIpGaborTransform_save(PyBobIpGaborTransformObject* self, PyObject* args, PyObject* kwargs) {
+BOB_TRY
   // get list of arguments
-  char* kwlist[] = {c("hdf5"), NULL};
-  PyBobIoHDF5FileObject* file = 0;
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-        "O&", kwlist,
-        PyBobIoHDF5File_Converter, &file
-    )
-  ){
-    save_doc.print_usage();
-    return NULL;
-  }
+  char** kwlist = save_doc.kwlist();
+  PyBobIoHDF5FileObject* file;
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&", kwlist, PyBobIoHDF5File_Converter, &file)) return 0;
 
   auto file_ = make_safe(file);
-  try{
-    self->cxx->save(*file->f);
-  } catch (std::exception& e) {
-    PyErr_SetString(PyExc_RuntimeError, e.what());
-    return 0;
-  }catch (...) {
-    PyErr_Format(PyExc_RuntimeError, "%s cannot save parametrization: unknown exception caught", Py_TYPE(self)->tp_name);
-    return 0;
-  }
-
+  self->cxx->save(*file->f);
   Py_RETURN_NONE;
+BOB_CATCH_MEMBER("save", 0)
 }
 
 
@@ -590,7 +514,7 @@ PyTypeObject PyBobIpGaborTransform_Type = {
 bool init_BobIpGaborTransform(PyObject* module)
 {
 
-  // initialize the Gabor wavelet type struct
+  // initialize the Transform type struct
   PyBobIpGaborTransform_Type.tp_name = Transform_doc.name();
   PyBobIpGaborTransform_Type.tp_basicsize = sizeof(PyBobIpGaborTransformObject);
   PyBobIpGaborTransform_Type.tp_flags = Py_TPFLAGS_DEFAULT;
@@ -606,11 +530,9 @@ bool init_BobIpGaborTransform(PyObject* module)
   PyBobIpGaborTransform_Type.tp_richcompare = reinterpret_cast<richcmpfunc>(PyBobIpGaborTransform_RichCompare);
 
   // check that everyting is fine
-  if (PyType_Ready(&PyBobIpGaborTransform_Type) < 0)
-    return false;
+  if (PyType_Ready(&PyBobIpGaborTransform_Type) < 0) return false;
 
   // add the type to the module
   Py_INCREF(&PyBobIpGaborTransform_Type);
   return PyModule_AddObject(module, "Transform", (PyObject*)&PyBobIpGaborTransform_Type) >= 0;
 }
-

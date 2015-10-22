@@ -12,7 +12,6 @@ trafo_image = gwt(image)
 pos = (177, 131)
 eye_jet = bob.ip.gabor.Jet(trafo_image, pos)
 
-print (image.shape)
 # compute similarity field over the whole image
 cos_sim = bob.ip.gabor.Similarity("ScalarProduct")
 disp_sim = bob.ip.gabor.Similarity("Disparity", gwt)
@@ -45,4 +44,3 @@ pyplot.imshow(disp_image, cmap='jet')
 pyplot.title("Similarities (disparity)")
 
 pyplot.show()
-
