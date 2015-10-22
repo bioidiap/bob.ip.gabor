@@ -21,6 +21,7 @@
 #include <bob.ip.gabor/Jet.h>
 #include <bob.ip.gabor/Similarity.h>
 #include <bob.ip.gabor/Graph.h>
+#include <bob.ip.gabor/JetStatistics.h>
 
 #include <boost/shared_ptr.hpp>
 
@@ -46,6 +47,9 @@ enum _PyBobIpGabor_ENUM{
   // Bindings for bob.ip.gabor.Graph
   PyBobIpGaborGraph_Type_NUM,
   PyBobIpGaborGraph_Check_NUM,
+  // Bindings for bob.ip.gabor.JetStatistics
+  PyBobIpGaborJetStatistics_Type_NUM,
+  PyBobIpGaborJetStatistics_Check_NUM,
   // Total number of C API pointers
   PyBobIpGabor_API_pointers
 };
@@ -84,6 +88,11 @@ typedef struct {
   boost::shared_ptr<bob::ip::gabor::Graph> cxx;
 } PyBobIpGaborGraphObject;
 
+// Gabor jet statistics
+typedef struct {
+  PyObject_HEAD
+  boost::shared_ptr<bob::ip::gabor::JetStatistics> cxx;
+} PyBobIpGaborJetStatisticsObject;
 
 
 #ifdef BOB_IP_GABOR_MODULE
@@ -105,6 +114,7 @@ typedef struct {
   extern PyTypeObject PyBobIpGaborJet_Type;
   extern PyTypeObject PyBobIpGaborSimilarity_Type;
   extern PyTypeObject PyBobIpGaborGraph_Type;
+  extern PyTypeObject PyBobIpGaborJetStatistics_Type;
 
   /*******************
    * Check functions *
@@ -115,6 +125,7 @@ typedef struct {
   int PyBobIpGaborJet_Check(PyObject* o);
   int PyBobIpGaborSimilarity_Check(PyObject* o);
   int PyBobIpGaborGraph_Check(PyObject* o);
+  int PyBobIpGaborJetStatistics_Check(PyObject* o);
 
 #else
 
@@ -146,6 +157,7 @@ typedef struct {
 #define PyBobIpGaborJet_Type (*(PyTypeObject *)PyBobIpGabor_API[PyBobIpGaborJet_Type_NUM])
 #define PyBobIpGaborSimilarity_Type (*(PyTypeObject *)PyBobIpGabor_API[PyBobIpGaborSimilarity_Type_NUM])
 #define PyBobIpGaborTransform_Type (*(PyTypeObject *)PyBobIpGabor_API[PyBobIpGaborTransform_Type_NUM])
+#define PyBobIpGaborJetStatistics_Type (*(PyTypeObject *)PyBobIpGabor_API[PyBobIpGaborJetStatistics_Type_NUM])
 
 
   /*******************
@@ -156,6 +168,7 @@ typedef struct {
 #define PyBobIpGaborJet_Check (*(int (*)(PyObject*)) PyBobIpGabor_API[PyBobIpGaborJet_Check_NUM])
 #define PyBobIpGaPyBobIpGaborSimilarity_Check (*(int (*)(PyObject*)) PyBobIpGabor_API[PyBobIpGaborSimilarity_Check_NUM])
 #define PyBobIpGaborGraph_Check (*(int (*)(PyObject*)) PyBobIpGabor_API[PyBobIpGaborGraph_Check_NUM])
+#define PyBobIpGaborJetStatistics_Check (*(int (*)(PyObject*)) PyBobIpGabor_API[PyBobIpGaborJetStatistics_Check_NUM])
 
 
 # if !defined(NO_IMPORT_ARRAY)

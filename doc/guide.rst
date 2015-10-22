@@ -135,7 +135,12 @@ As can be clearly seen, **both** eye regions have high similarities with both si
 The difference is in the other regions of the face.
 While the traditional cosine similarity (aka. ``'ScalarProduct'``) has high similarity values all over the image, the novel ``'Disparity'`` similarity highlights specifically the eye regions.
 
+
+Gabor jet disparities
+---------------------
+
 The disparity similarity function has even another use case.
+Given a reference Gabor jet extracted at a reference location, the spatial offset of a given other Gabor jet can be computed using the :py:meth:`bob.ip.gabor.Similarity.disparity` function.
 It can estimate the disparity (difference in spatial position) between two Gabor jets, as long as they stem from a similar region:
 
 .. doctest::
@@ -148,12 +153,25 @@ It can estimate the disparity (difference in spatial position) between two Gabor
    >>> print ("%1.3f, %1.3f" % tuple(disp_sim.disparity(jet1, jet2)))
    4.816, 5.683
 
-In this small example we have used Gabor jets from the same image to compute the disparity.
-However, it has also been shown in [Guenther2011]_ that also a Gabor jet from one image can be found in another image, even of a different person.
 Hence, this function can be used to localize landmarks.
+In the following example, we use the Gabor jet at the nose tip as a reference, and we compute the disparity from Gabor jets extracted from around that offset position.
+We plot these disparities as arrows:
 
-.. note::
-  The area, where useful disparities can be computed, can be increased by using a different parametrization of the Gabor wavelet transform, e.g., by increasing the ``number_of_scales`` in the :py:class:`bob.ip.gabor.Transform` constructor.
+.. plot:: plot/disparity.py
+   :include-source: True
+
+As you can see, inside a certain region, all arrows point (more or less) to the right location, and the similarity value is quite high (color red).
+Closer to the offset point, the disparities point more precisely to the right location.
+Outside of that region, disparities are more or less random, and also the similarity values are low.
+Theoretically, the size of the region can be increased, e.g., using the :py:attr:`bob.ip.gabor.Transform.number_of_scales` or :py:attr:`bob.ip.gabor.Transform.k_max` parameters.\
+Anyways, after a certain size is passed, the disparities become imprecise.
+
+In this small example, we used the reference and target Gabor jets from the same image, but there is no real need for that.
+When you extract the reference Gabor jet from one image, and compute the disparity to a Gabor jet from another image, you can get a good estimation of the correct location of the underlying image texture.
+This can be used for precise landmark localization, e.g., when trying to locate the facial landmarks in a novel image.
+An implementation of that technique was used in the Elastic Bunch Graph Matching (EBGM) [Wiskott1997]_.
+A statistical extension of the EBGM, which was used in [Guenther2011]_, uses the statistics of Gabor jets instead of computing the disparity for all jets individually.
+The Gabor jet statistics are implemented in the :py:class:`bob.ip.gabor.JetStatistics` class, which also provides a function :py:meth:`bob.ip.gabor.JetStatistics.disparity` to compute the disparity.
 
 
 Gabor graphs
@@ -181,6 +199,5 @@ This graph can be used to extract Gabor jets from a Gabor transformed image:
    >>> len(jets)
    136
 
-When graphs are extracted from two facial images, the average similarity of the Gabor jets can be used to define, whether two images contain the the same identities.
+When graphs are extracted from two facial images, the average similarity of the Gabor jets can be used to define, whether two images contain the same identities.
 A complete example on the AT&T database can be found in the `bob.example.faceverify <http://pypi.python.org/pypi/bob.example.faceverify>`_ package.
-

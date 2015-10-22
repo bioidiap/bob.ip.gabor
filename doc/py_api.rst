@@ -18,6 +18,7 @@ List of Classes and Functions
    bob.ip.gabor.Wavelet
    bob.ip.gabor.Transform
    bob.ip.gabor.Jet
+   bob.ip.gabor.JetStatistics
    bob.ip.gabor.Similarity
    bob.ip.gabor.Graph
    bob.ip.gabor.load_jets
@@ -27,5 +28,3 @@ Detailed Information
 --------------------
 
 .. automodule:: bob.ip.gabor
-
-

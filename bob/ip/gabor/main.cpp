@@ -36,6 +36,7 @@ extern bool init_BobIpGaborTransform(PyObject* module);
 extern bool init_BobIpGaborJet(PyObject* module);
 extern bool init_BobIpGaborSimilarity(PyObject* module);
 extern bool init_BobIpGaborGraph(PyObject* module);
+extern bool init_BobIpGaborJetStatistics(PyObject* module);
 
 int PyBobIpGabor_APIVersion = BOB_IP_GABOR_API_VERSION;
 
@@ -56,6 +57,7 @@ static PyObject* create_module (void) {
   if (!init_BobIpGaborJet(module)) return NULL;
   if (!init_BobIpGaborSimilarity(module)) return NULL;
   if (!init_BobIpGaborGraph(module)) return NULL;
+  if (!init_BobIpGaborJetStatistics(module)) return NULL;
 
   // C-API bindings
 
@@ -76,6 +78,7 @@ static PyObject* create_module (void) {
   PyBobIpGabor_API[PyBobIpGaborJet_Type_NUM] = (void *)&PyBobIpGaborJet_Type;
   PyBobIpGabor_API[PyBobIpGaborSimilarity_Type_NUM] = (void *)&PyBobIpGaborSimilarity_Type;
   PyBobIpGabor_API[PyBobIpGaborTransform_Type_NUM] = (void *)&PyBobIpGaborTransform_Type;
+  PyBobIpGabor_API[PyBobIpGaborJetStatistics_Type_NUM] = (void *)&PyBobIpGaborJetStatistics_Type;
 
   /*******************
    * Check functions *
@@ -86,7 +89,7 @@ static PyObject* create_module (void) {
   PyBobIpGabor_API[PyBobIpGaborJet_Check_NUM] = (void *)&PyBobIpGaborJet_Check;
   PyBobIpGabor_API[PyBobIpGaborSimilarity_Check_NUM] = (void *)&PyBobIpGaborSimilarity_Check;
   PyBobIpGabor_API[PyBobIpGaborTransform_Check_NUM] = (void *)&PyBobIpGaborTransform_Check;
-
+  PyBobIpGabor_API[PyBobIpGaborJetStatistics_Check_NUM] = (void *)&PyBobIpGaborJetStatistics_Check;
 
 #if PY_VERSION_HEX >= 0x02070000
 

@@ -11,7 +11,7 @@
 import numpy
 import nose.tools
 import math, cmath
-import tempfile
+import os
 
 import bob.io.base
 import bob.sp
@@ -233,13 +233,9 @@ def test_graph():
   gwt = bob.ip.gabor.Transform()
   trafo_image = gwt(image)
 
-  def empty():
-    graph.extract(trafo_image, [])
-  nose.tools.assert_raises(RuntimeError, empty)
+  nose.tools.assert_raises(RuntimeError, lambda : graph.extract(trafo_image, []))
 
-  def wrong():
-    graph.extract(trafo_image, [(1,2)]*graph.number_of_nodes)
-  nose.tools.assert_raises(RuntimeError, wrong)
+  nose.tools.assert_raises(RuntimeError, lambda : graph.extract(trafo_image, [(1,2)]*graph.number_of_nodes))
 
   jets = [bob.ip.gabor.Jet() for i in range(graph.number_of_nodes)]
   graph.extract(trafo_image, jets)
@@ -315,8 +311,49 @@ def test_disparity():
   assert abs(new_disp[1]) < 1e-8
 
 
+def test_statistics():
+  numpy.random.seed(10222015)
+  # generate several Gabor jets
+  gwt = bob.ip.gabor.Transform(number_of_scales=4, number_of_directions = 5)
+  jets = []
+  for i in range(100):
+    jet_data = numpy.ndarray((gwt.number_of_wavelets,), dtype=numpy.complex)
+    jet_data.real = numpy.random.randn(gwt.number_of_wavelets)
+    jet_data.imag = numpy.random.randn(gwt.number_of_wavelets)
+    jets.append(bob.ip.gabor.Jet(complex=jet_data))
 
-if __name__ == '__main__':
-  test_graph()
+  # compute statistics
+  stats = bob.ip.gabor.JetStatistics(jets)
+  assert stats.gwt is None
 
+  nose.tools.assert_raises(RuntimeError, lambda : stats.disparity(jets[0]))
+  stats.gwt = gwt
+  assert stats.gwt == gwt
+  disparity = stats.disparity(jets[0])
+  assert numpy.allclose(disparity, (2.12029, -3.76835)), disparity
+  abs_sim = stats(jets[0], False)
+  phase_sim = stats(jets[0], True)
+  assert numpy.allclose((abs_sim, phase_sim), (-1.097344, -5.451094)), str((abs_sim, phase_sim))
 
+  stats.gwt = None
+  assert stats.gwt is None
+
+  # check data using statistics IO
+  temp_file = bob.io.base.test_utils.temporary_filename()
+  try:
+    hdf5 = bob.io.base.HDF5File(temp_file, 'w')
+    stats.save(hdf5)
+    hdf5.close()
+
+    hdf5 = bob.io.base.HDF5File(temp_file)
+    new_stats = bob.ip.gabor.JetStatistics(hdf5)
+    assert new_stats == stats
+    assert numpy.allclose(stats.mean_abs, new_stats.mean_abs)
+    assert numpy.allclose(stats.var_abs, new_stats.var_abs)
+    assert numpy.allclose(stats.mean_phase, new_stats.mean_phase)
+    assert numpy.allclose(stats.var_phase, new_stats.var_phase)
+    assert stats.gwt == new_stats.gwt
+
+  finally:
+    if os.path.exists(temp_file):
+      os.remove(temp_file)
