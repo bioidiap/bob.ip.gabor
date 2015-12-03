@@ -47,7 +47,7 @@ static PyObject* create_module (void) {
   auto module_ = make_xsafe(module);
   const char* ret = "O";
 # else
-  PyObject* module = Py_InitModule3(BOB_EXT_MODULE_NAME, module_methods, module_docstr);
+  PyObject* module = Py_InitModule3(BOB_EXT_MODULE_NAME, 0, module_docstr);
   const char* ret = "N";
 # endif
   if (!module) return 0;
