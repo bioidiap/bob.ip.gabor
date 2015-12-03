@@ -44,13 +44,13 @@ static PyObject* create_module (void) {
 
 # if PY_VERSION_HEX >= 0x03000000
   PyObject* module = PyModule_Create(&module_definition);
+  auto module_ = make_xsafe(module);
+  const char* ret = "O";
 # else
-  PyObject* module = Py_InitModule3(BOB_EXT_MODULE_NAME, NULL, module_docstr);
+  PyObject* module = Py_InitModule3(BOB_EXT_MODULE_NAME, module_methods, module_docstr);
+  const char* ret = "N";
 # endif
-
-  if (!module) return NULL;
-
-  auto module_ = make_safe(module); ///< protects against early returns
+  if (!module) return 0;
 
   if (!init_BobIpGaborWavelet(module)) return NULL;
   if (!init_BobIpGaborTransform(module)) return NULL;
@@ -115,7 +115,7 @@ static PyObject* create_module (void) {
   if (import_bob_sp() < 0) return 0;
 
   // module was initialized successfully
-  return Py_BuildValue("O", module);
+  return Py_BuildValue(ret, module);
 }
 
 PyMODINIT_FUNC BOB_EXT_ENTRY_NAME (void) {
