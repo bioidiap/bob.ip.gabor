@@ -22,8 +22,8 @@ setup(
 
     name='bob.ip.gabor',
     version=version,
-    description='C++ code and Python bindings for Bob\'s Gabor wavelet analysis tools',
-    url='http://github.com/bioidiap/bob.ip.gabor',
+    description="Gabor wavelet analysis tools for Bob",
+    url='http://gitlab.idiap.ch/bob/bob.ip.gabor',
     license='BSD',
     author='Manuel Guenther',
     author_email='manuel.guenther@idiap.ch',
