@@ -330,7 +330,7 @@ static auto transform_doc = bob::extension::FunctionDoc(
   ".. math::\n\n"
   "   \\forall j \\forall \\vec \\omega : \\mathcal T_{\\vec k_j}(\\vec \\omega) = \\mathcal I(\\vec \\omega) \\cdot \\psi_{\\vec k_j}(\\vec \\omega)\n\n"
   "Both the input image and the output are expected to be in spatial domain, so **don't** perform an FFT on the input image before calling this function.\n\n"
-  ".. note::\n\n  The function :py:func:`__call__` is a synonym for this function.",
+  ".. note::\n\n  The function `__call__` is a synonym for this function.",
   true
 )
 .add_prototype("input, [output]", "output")

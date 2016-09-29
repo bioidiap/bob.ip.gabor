@@ -39,7 +39,7 @@ Gabor wavelet
 
       \check\psi_{\vec k}(\vec \omega) = k^{\lambda} \left\{ e^{-\frac{\sigma^2(\vec \omega - \vec k)^2}{2\vec k^2}} - {e^{-\frac{\sigma^2(\vec \omega^2 + \vec k^2)}{2\vec k^2}}}\right\}
 
-   .. cpp:function:: Wavelet(\
+   .. function:: Wavelet(\
         const blitz::TinyVector<int,2>& resolution,\
         const blitz::TinyVector<double,2>& wavelet_frequency,\
         const double sigma = 2. * M_PI,\
@@ -52,11 +52,11 @@ Gabor wavelet
       When ``dct_free`` is set to ``false``, the second part of :eq:`wavelet` will not be added.
       For efficiency reasons, the Gabor wavelet is not implemented as an image, but wavelet values that are lower than the given ``epsilon`` are discarded.
 
-   .. cpp:function:: blitz::Array<double,2> waveletImage() const
+   .. function:: blitz::Array<double,2> waveletImage() const
 
       Computes and returns an image containing the Gabor wavelet in frequency domain.
 
-   .. cpp:function:: transform(\
+   .. function:: transform(\
         const blitz::Array<std::complex<double>,2>& frequency_domain_image,\
         blitz::Array<std::complex<double>,2>& transformed_frequency_domain_image\
       ) const
@@ -85,7 +85,7 @@ Gabor wavelet family
       k_{\zeta} = k_{max} \cdot k_{fac}^{\zeta} \qquad \zeta = \{0,\dots,\zeta_{max}-1\} \qquad \vartheta_{\nu} = \frac{\nu \cdot 2\pi}{\nu_{max}}` \qquad \nu = \{0,\dots,\nu_{max}-1\}
 
 
-   .. cpp:function:: Transform(\
+   .. function:: Transform(\
         int number_of_scales = 5,\
         int number_of_directions = 8,\
         double sigma = 2. * M_PI,\
@@ -101,43 +101,43 @@ Gabor wavelet family
 
       .. note::
          The Gabor wavelets are not generated in this constructor since the image resolution is not known at construction time.
-         The wavelets will only be generated during a call to :cpp:func:`transform` or to :cpp:func:`generateWavelets`.
+         The wavelets will only be generated during a call to `transform` or to `generateWavelets`.
 
 
-   .. cpp:function:: void transform(const blitz::Array<T,2>& gray_image, blitz::Array<std::complex<double>,3>& trafo_image)
+   .. function:: void transform(const blitz::Array<T,2>& gray_image, blitz::Array<std::complex<double>,3>& trafo_image)
 
       Computes a Gabor wavelet transform on the given image, which can be of various types ``T``.
-      If needed, this function will automatically call :cpp:func:`generateWavelets` with the current image resolution.
-      The resulting ``trafo_image`` must have the shape (:cpp:func:`numberOfWavelets`, ``grap_image.extent(0)``, ``grap_image.extent(1)``).
+      If needed, this function will automatically call `generateWavelets` with the current image resolution.
+      The resulting ``trafo_image`` must have the shape (`numberOfWavelets`, ``grap_image.extent(0)``, ``grap_image.extent(1)``).
 
-   .. cpp:function:: void generateWavelets(int y_resoultion, int x_resolution)
+   .. function:: void generateWavelets(int y_resoultion, int x_resolution)
 
       Generates the family of Gabor wavelets for the given image resolution.
 
-   .. cpp:function:: std::vector<blitz::TinyVector<double,2> >& waveletFrequencies() const
+   .. :function:: std::vector<blitz::TinyVector<double,2> >& waveletFrequencies() const
 
       Returns the list of frequencies :math:`\vec k_j` as defined in :eq:`family` for all wavelets stored in this family.
 
-   .. cpp:function:: std::vector<boost::shared_ptr<bob::ip::gabor::Wavelet>>& wavelets() const
+   .. function:: std::vector<boost::shared_ptr<bob::ip::gabor::Wavelet>>& wavelets() const
 
       Provides the list of :cpp:class:`Wavelet`\s which are stored in this class.
 
       .. note::
-         This list will be empty until either of  :cpp:func:`transform` or :cpp:func:`generateWavelets` is called.
+         This list will be empty until either of  `transform` or `generateWavelets` is called.
 
-   .. cpp:function:: int numberOfWavelets() const
+   .. function:: int numberOfWavelets() const
 
       Returns the number of wavelets of this Gabor wavelet family, i.e., :math:`\zeta_{max} \cdot \nu_{max}`.
 
-   .. cpp:function:: void load(bob::io::base::HDF5File& file)
+   .. function:: void load(bob::io::base::HDF5File& file)
 
-      Loads the configuration of this Gabor wavelet family from the given :cpp:class:`bob::io::base::HDF5File`.
+      Loads the configuration of this Gabor wavelet family from the given `bob::io::base::HDF5File`.
 
       .. note:: No wavelets are created in after loading the configuration.
 
-   .. cpp:function:: void save(bob::io::base::HDF5File& file) const
+   .. function:: void save(bob::io::base::HDF5File& file) const
 
-      Saves the configuration of this Gabor wavelet family to the given :cpp:class:`bob::io::base::HDF5File`.
+      Saves the configuration of this Gabor wavelet family to the given `bob::io::base::HDF5File`.
 
 Gabor jet
 +++++++++
@@ -145,56 +145,56 @@ Gabor jet
 .. cpp:class:: bob::ip::gabor::Jet
 
    An implementation of a Gabor jet, which is a local texture descriptor by collecting all wavelet responses of a given :cpp:class:`Transform` object.
-   Gabor jets store the wavelet responses in polar form, i.e., storing the absolute values :cpp:func:`abs` and the phases :cpp:func:`phase`.
+   Gabor jets store the wavelet responses in polar form, i.e., storing the absolute values `abs` and the phases `phase`.
    In this implementation, the Gabor phases are **always** extracted, and by default, the vector of absolute values of the Gabor jets is normalized to unit Euclidean length.
 
-   .. cpp:function:: Jet(int length = 0)
+   .. function:: Jet(int length = 0)
 
       Default constructor that generates an uninitialized Gabor jet of the given length
 
-   .. cpp:function:: Jet(const blitz::Array<std::complex<double>,3>& trafo_image, const blitz::TinyVector<int,2>& position, bool normalize = true)
+   .. function:: Jet(const blitz::Array<std::complex<double>,3>& trafo_image, const blitz::TinyVector<int,2>& position, bool normalize = true)
 
-      Extracts a Gabor jet at the given ``location`` from the ``trafo_image``, which usually is a result of the :cpp:func:`Transform::transform` function.
+      Extracts a Gabor jet at the given ``location`` from the ``trafo_image``, which usually is a result of the `Transform::transform` function.
 
-   .. cpp:function:: Jet(const blitz::Array<std::complex<double>,1>& data, bool normalize = true)
+   .. function:: Jet(const blitz::Array<std::complex<double>,1>& data, bool normalize = true)
 
       Creates a Gabor jet from the given vector of complex-valued data.
 
-   .. cpp:function:: Jet(const std::vector<boost::shared_ptr<bob::ip::gabor::Jet>>& jets, bool normalize = true)
+   .. function:: Jet(const std::vector<boost::shared_ptr<bob::ip::gabor::Jet>>& jets, bool normalize = true)
 
       Creates a Gabor jet by averaging the given Gabor jets, which need to be of the same length.
 
-   .. cpp:function:: double normalize()
+   .. function:: double normalize()
 
       Normalizes the absolute values of the Gabor jet to unit Euclidean length and return its old Euclidean length.
 
-   .. cpp:function:: blitz::Array<double,2>& jet()
+   .. function:: blitz::Array<double,2>& jet()
 
       Returns the absolute and phase values of this Gabor jet, where ``jet()(0,.)`` contains the absolute values, while ``jet()(1,.)`` comprises the phases.
 
-   .. cpp:function:: const blitz::Array<double,1>& abs()
+   .. function:: const blitz::Array<double,1>& abs()
 
-      Returns the absolute values of this Gabor jet, i.e., :cpp:func:`jet` ``(0)``.
+      Returns the absolute values of this Gabor jet, i.e., `jet` ``(0)``.
 
-   .. cpp:function:: const blitz::Array<double,1>& phase()
+   .. function:: const blitz::Array<double,1>& phase()
 
-      Returns the phase values of this Gabor jet, i.e., :cpp:func:`jet` ``(1)``.
+      Returns the phase values of this Gabor jet, i.e., `jet` ``(1)``.
 
-   .. cpp:function:: const blitz::Array<std::complex<double>,1> complex() const
+   .. function:: const blitz::Array<std::complex<double>,1> complex() const
 
       Returns a complex-valued representation of the Gabor jet, which is computed on the fly.
 
-   .. cpp:function:: int length() const
+   .. function:: int length() const
 
-      Returns the length of this Gabor jet, which is usually the number of wavelets :cpp:func:`Transform::numberOfWavelets`, i.e., :math:`\zeta_{max} \cdot \nu_{max}`.
+      Returns the length of this Gabor jet, which is usually the number of wavelets `Transform::numberOfWavelets`, i.e., :math:`\zeta_{max} \cdot \nu_{max}`.
 
-   .. cpp:function:: void load(bob::io::base::HDF5File& file)
+   .. function:: void load(bob::io::base::HDF5File& file)
 
-      Loads the Gabor jet from the given :cpp:class:`bob::io::base::HDF5File`.
+      Loads the Gabor jet from the given `bob::io::base::HDF5File`.
 
-   .. cpp:function:: void save(bob::io::base::HDF5File& file) const
+   .. function:: void save(bob::io::base::HDF5File& file) const
 
-      Saves the Gabor jet to the given :cpp:class:`bob::io::base::HDF5File`.
+      Saves the Gabor jet to the given `bob::io::base::HDF5File`.
 
 
 Gabor jet similarity
@@ -209,39 +209,39 @@ Gabor jet similarity
 
       Enumeration to define the type of the similarity function to be computed.
 
-   .. cpp:function:: Similarity(SimilarityType type, boost::shared_ptr<Transform> gwt = boost::shared_ptr<Transform>())
+   .. function:: Similarity(SimilarityType type, boost::shared_ptr<Transform> gwt = boost::shared_ptr<Transform>())
 
       Constructor to create a Gabor jet similarity function of the given :cpp:class:`SimilarityType`.
       Some types of similarity functions require the :cpp:class:`Transform` with which the :cpp:class:`Jet`\s are extracted.
 
-   .. cpp:function:: double similarity(const Jet& jet1, const Jet& jet2) const
+   .. function:: double similarity(const Jet& jet1, const Jet& jet2) const
 
       Computes the similarity of the two Gabor jets using.
 
-   .. cpp:function:: blitz::TinyVector<double,2> disparity(const Jet& jet1, const Jet& jet2) const
+   .. function:: blitz::TinyVector<double,2> disparity(const Jet& jet1, const Jet& jet2) const
 
       Estimates the disparity vector between the given two Gabor jets.
-      For some similarity functions, the :cpp:func:`disparity` is computed and stored.
+      For some similarity functions, the `disparity` is computed and stored.
 
-   .. cpp:function:: blitz::TinyVector<double,2> disparity() const
+   .. function:: blitz::TinyVector<double,2> disparity() const
 
-      Returns the disparity vector estimated in the last call to :cpp:func:`similarity`.
+      Returns the disparity vector estimated in the last call to `similarity`.
 
       .. note::
          Not all similarity function compute the disparity.
          Hence, the returned values might be ``NaN``.
 
-   .. cpp:function:: shift_phase(const Jet& jet, const Jet& reference, Jet& shifted) const
+   .. function:: shift_phase(const Jet& jet, const Jet& reference, Jet& shifted) const
 
-      Shifts the :cpp:func:`Jet::phase` values of the ``jet`` towards the ``reference`` such that the ``disparity(shifted, reference) == (0., 0.)``.
+      Shifts the `Jet::phase` values of the ``jet`` towards the ``reference`` such that the ``disparity(shifted, reference) == (0., 0.)``.
 
-   .. cpp:function:: void load(bob::io::base::HDF5File& file)
+   .. function:: void load(bob::io::base::HDF5File& file)
 
-      Loads the configuration of this Gabor jet similarity from the given :cpp:class:`bob::io::base::HDF5File`.
+      Loads the configuration of this Gabor jet similarity from the given `bob::io::base::HDF5File`.
 
-   .. cpp:function:: void save(bob::io::base::HDF5File& file) const
+   .. function:: void save(bob::io::base::HDF5File& file) const
 
-      Saves the configuration of this Gabor jet similarity to the given :cpp:class:`bob::io::base::HDF5File`.
+      Saves the configuration of this Gabor jet similarity to the given `bob::io::base::HDF5File`.
 
 Gabor graph
 +++++++++++
@@ -250,7 +250,7 @@ Gabor graph
 
    Extracts several Gabor jets from a given image using a fixed set of locations, which usually form a grid.
 
-   .. cpp:function:: Graph(\
+   .. function:: Graph(\
         blitz::TinyVector<int,2> righteye,\
         blitz::TinyVector<int,2> lefteye,\
         int between,\
@@ -264,35 +264,35 @@ Gabor graph
       In the graph, there will be ``between`` nodes placed in between the eye positions, ``along`` nodes to the left and to the right of the eyes, ``above`` nodes above the eyes and ``below`` nodes below the eyes.
       Hence, in total ``(2*along + between + 2) X (above + below + 1)`` nodes will be created.
 
-   .. cpp:function:: Graph(blitz::TinyVector<int,2> first, blitz::TinyVector<int,2> last, blitz::TinyVector<int,2> step)
+   .. function:: Graph(blitz::TinyVector<int,2> first, blitz::TinyVector<int,2> last, blitz::TinyVector<int,2> step)
 
       Generates a grid graph extractor which will extract regular grid graphs.
       The first node is extracted at the given ``first`` position, the next nodes will be placed ``step`` pixels further (where horizontal and vertical steps are handled independently), and the last node is placed at **or before** the given ``last`` node.
 
-   .. cpp:function:: Graph(const std::vector<blitz::TinyVector<int,2>>& nodes)
+   .. function:: Graph(const std::vector<blitz::TinyVector<int,2>>& nodes)
 
       Constructs a graph extractor using the given nodes.
 
-   .. cpp:function:: void extract(const blitz::Array<std::complex<double>,3> trafo_image, std::vector<boost::shared_ptr<Jet>>& jets, bool normalize = true) const
+   .. function:: void extract(const blitz::Array<std::complex<double>,3> trafo_image, std::vector<boost::shared_ptr<Jet>>& jets, bool normalize = true) const
 
-      Extracts Gabor jets from the given ``trafo_image`` (which is usually the result of a call to :cpp:func:`Transform::transform`.
+      Extracts Gabor jets from the given ``trafo_image`` (which is usually the result of a call to `Transform::transform`.
       The extracted Gabor jets will be placed into the given ``jets`` vector, which might be empty or contain Gabor jets, which will be updated.
 
-   .. cpp:function:: nodes(const std::vector<blitz::TinyVector<int,2>>& nodes)
+   .. function:: nodes(const std::vector<blitz::TinyVector<int,2>>& nodes)
 
       Replaces the nodes of this graph with the given ones.
 
-   .. cpp:function:: const std::vector<blitz::TinyVector<int,2>>& nodes() const
+   .. function:: const std::vector<blitz::TinyVector<int,2>>& nodes() const
 
       Returns the node positions of this graph.
 
-   .. cpp:function:: void load(bob::io::base::HDF5File& file)
+   .. function:: void load(bob::io::base::HDF5File& file)
 
-      Loads the configuration of this graph extractor from the given :cpp:class:`bob::io::base::HDF5File`.
+      Loads the configuration of this graph extractor from the given `bob::io::base::HDF5File`.
 
-   .. cpp:function:: void save(bob::io::base::HDF5File& file) const
+   .. function:: void save(bob::io::base::HDF5File& file) const
 
-      Saves the configuration of this graph extractor to the given :cpp:class:`bob::io::base::HDF5File`.
+      Saves the configuration of this graph extractor to the given `bob::io::base::HDF5File`.
 
 
 C API
@@ -352,13 +352,13 @@ Gabor wavelet
 
 .. c:type:: PyBobIpGaborWaveletObject
 
-   .. c:member:: boost::shared_ptr<bob::ip::gabor::Wavelet> cxx
+   .. function:: boost::shared_ptr<bob::ip::gabor::Wavelet> cxx
 
-      The shared pointer to object of the underlying :cpp:class:`bob::ip::gabor::Wavelet` class.
+      The shared pointer to object of the underlying `bob::ip::gabor::Wavelet` class.
 
 .. c:var:: PyTypeObject PyBobIpGaborWavelet_Type
 
-   The :c:type:`PyTypeObject` that defines the :cpp:class:`bob::ip::gabor::Wavelet` class.
+   The :c:type:`PyTypeObject` that defines the `bob::ip::gabor::Wavelet` class.
 
 .. c:function:: int PyBobIpGaborWavelet_Check(PyObject* o)
 
@@ -371,13 +371,13 @@ Gabor wavelet family
 
 .. c:type:: PyBobIpGaborTransformObject
 
-   .. c:member:: boost::shared_ptr<bob::ip::gabor::Transform> cxx
+   .. function:: boost::shared_ptr<bob::ip::gabor::Transform> cxx
 
-      The shared pointer to object of the underlying :cpp:class:`bob::ip::gabor::Transform` class.
+      The shared pointer to object of the underlying `bob::ip::gabor::Transform` class.
 
 .. c:var:: PyTypeObject PyBobIpGaborTransform_Type
 
-   The :c:type:`PyTypeObject` that defines the :cpp:class:`bob::ip::gabor::Transform` class.
+   The :c:type:`PyTypeObject` that defines the `bob::ip::gabor::Transform` class.
 
 .. c:function:: int PyBobIpGaborTransform_Check(PyObject* o)
 
@@ -390,13 +390,13 @@ Gabor jet
 
 .. c:type:: PyBobIpGaborJetObject
 
-   .. c:member:: boost::shared_ptr<bob::ip::gabor::Jet> cxx
+   .. function:: boost::shared_ptr<bob::ip::gabor::Jet> cxx
 
-      The shared pointer to object of the underlying :cpp:class:`bob::ip::gabor::Jet` class.
+      The shared pointer to object of the underlying `bob::ip::gabor::Jet` class.
 
 .. c:var:: PyTypeObject PyBobIpGaborJet_Type
 
-   The :c:type:`PyTypeObject` that defines the :cpp:class:`bob::ip::gabor::Jet` class.
+   The :c:type:`PyTypeObject` that defines the `bob::ip::gabor::Jet` class.
 
 .. c:function:: int PyBobIpGaborJet_Check(PyObject* o)
 
@@ -409,13 +409,13 @@ Gabor jet similarity
 
 .. c:type:: PyBobIpGaborSimilarityObject
 
-   .. c:member:: boost::shared_ptr<bob::ip::gabor::Similarity> cxx
+   .. function:: boost::shared_ptr<bob::ip::gabor::Similarity> cxx
 
-      The shared pointer to object of the underlying :cpp:class:`bob::ip::gabor::Similarity` class.
+      The shared pointer to object of the underlying `bob::ip::gabor::Similarity` class.
 
 .. c:var:: PyTypeObject PyBobIpGaborSimilarity_Type
 
-   The :c:type:`PyTypeObject` that defines the :cpp:class:`bob::ip::gabor::Similarity` class.
+   The :c:type:`PyTypeObject` that defines the `bob::ip::gabor::Similarity` class.
 
 .. c:function:: int PyBobIpGaborSimilarity_Check(PyObject* o)
 
@@ -428,13 +428,13 @@ Gabor graph
 
 .. c:type:: PyBobIpGaborGraphObject
 
-   .. c:member:: boost::shared_ptr<bob::ip::gabor::Graph> cxx
+   .. function:: boost::shared_ptr<bob::ip::gabor::Graph> cxx
 
-      The shared pointer to object of the underlying :cpp:class:`bob::ip::gabor::Graph` class.
+      The shared pointer to object of the underlying `bob::ip::gabor::Graph` class.
 
 .. c:var:: PyTypeObject PyBobIpGaborGraph_Type
 
-   The :c:type:`PyTypeObject` that defines the :cpp:class:`bob::ip::gabor::Graph` class.
+   The :c:type:`PyTypeObject` that defines the `bob::ip::gabor::Graph` class.
 
 .. c:function:: int PyBobIpGaborGraph_Check(PyObject* o)
 

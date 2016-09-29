@@ -115,7 +115,7 @@ static auto wavelet_transform = bob::extension::FunctionDoc(
   "The transform is defined as:\n\n"
   ".. math::\n\n"
   "   \\forall \\vec \\omega : \\mathcal T_{\\vec k}(\\vec \\omega) = \\mathcal I(\\vec \\omega) \\cdot \\psi_{\\vec k}(\\vec \\omega)\n\n"
-  ".. note::\n\n  The function :py:func:`__call__` is a synonym for this function.",
+  ".. note::\n\n  The function `__call__` is a synonym for this function.",
   true
 )
 .add_prototype("input, [output]", "output")

@@ -301,7 +301,7 @@ static auto logLikelihood_doc = bob::extension::FunctionDoc(
   "When the Gabor jet should have been extracted with sub-pixel accuracy (which obviously isn't possible), you can set this offset here, so that it is removed from the disparity estimate. "
   "In fact, you can directly pass the sub-pixel location of the Gabor jet, and the offset will be estimated automatically. "
   "This value can be left out, when not required.\n\n"
-  ".. note::\n\n  The function :py:func:`__call__` is a synonym for this function."
+  ".. note::\n\n  The function `__call__` is a synonym for this function."
   ,
   true
 )

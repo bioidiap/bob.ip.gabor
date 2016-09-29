@@ -175,7 +175,7 @@ static auto similarity_doc = bob::extension::FunctionDoc(
   "This function computes the similarity between the two given Gabor jets",
   "Depending on the :py:attr:`type`, different kinds of similarities are computed (see [Guenther2011]_ for details). "
   "Some of them will also compute the disparity from the first to the second Gabor jet, which can be retrieved by :py:attr:`last_disparity`.\n\n"
-  ".. note::\n\n  The function :py:func:`__call__` is a synonym for this function.",
+  ".. note::\n\n  The function `__call__` is a synonym for this function.",
   true
 )
 .add_prototype("jet1, jet2", "sim")

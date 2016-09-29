@@ -232,7 +232,7 @@ static auto extract_doc = bob::extension::FunctionDoc(
   "This function extracts all Gabor jets from the given trafo image for all nodes of the graph",
   "The trafo image should have been created by a call to :py:func:`bob.ip.gabor.Transform.transform`. "
   "It must be assured that all nodes of the graph are inside the image boundaries of the trafo image.\n\n"
-  ".. note::\n\n  The function :py:func:`__call__` is a synonym for this function.",
+  ".. note::\n\n  The function `__call__` is a synonym for this function.",
   true
 )
 .add_prototype("trafo_image, jets")
