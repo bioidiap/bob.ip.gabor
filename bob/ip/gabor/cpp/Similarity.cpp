@@ -8,16 +8,17 @@
  */
 
 #include <bob.ip.gabor/Similarity.h>
+#include <boost/assign.hpp>
 
 
-static const std::map<bob::ip::gabor::Similarity::SimilarityType, std::string> type_map = {
-  {bob::ip::gabor::Similarity::SCALAR_PRODUCT, "ScalarProduct"},
-  {bob::ip::gabor::Similarity::CANBERRA, "Canberra"},
-  {bob::ip::gabor::Similarity::ABS_PHASE, "AbsPhase"},
-  {bob::ip::gabor::Similarity::DISPARITY, "Disparity"},
-  {bob::ip::gabor::Similarity::PHASE_DIFF, "PhaseDiff"},
-  {bob::ip::gabor::Similarity::PHASE_DIFF_PLUS_CANBERRA, "PhaseDiffPlusCanberra"}
-};
+static const std::map<bob::ip::gabor::Similarity::SimilarityType, std::string> type_map = boost::assign::map_list_of
+  (bob::ip::gabor::Similarity::SCALAR_PRODUCT, "ScalarProduct")
+  (bob::ip::gabor::Similarity::CANBERRA, "Canberra")
+  (bob::ip::gabor::Similarity::ABS_PHASE, "AbsPhase")
+  (bob::ip::gabor::Similarity::DISPARITY, "Disparity")
+  (bob::ip::gabor::Similarity::PHASE_DIFF, "PhaseDiff")
+  (bob::ip::gabor::Similarity::PHASE_DIFF_PLUS_CANBERRA, "PhaseDiffPlusCanberra")
+  ;
 
 const std::string& bob::ip::gabor::Similarity::type_to_name(bob::ip::gabor::Similarity::SimilarityType type){
   return type_map.find(type)->second;
