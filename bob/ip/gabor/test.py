@@ -209,11 +209,25 @@ def test_graph():
   assert graph.number_of_nodes == 30
   assert graph.nodes[0] == (10,10)
   assert graph.nodes[-1] == (90,60)
-  # set graph nodes
+ 
+ # set graph nodes
   graph.nodes = [(0,0), (1,1)]
   assert graph.number_of_nodes == 2
   assert graph.nodes[0] == (0,0)
   assert graph.nodes[1] == (1,1)
+
+  # Create graph with kwargs
+  graph = bob.ip.gabor.Graph(nodes=[(0,0), (1,1)])
+  assert graph.number_of_nodes == 2
+  assert graph.nodes[0] == (0,0)
+  assert graph.nodes[1] == (1,1)
+
+  # Create graph with args
+  graph = bob.ip.gabor.Graph([(0,0), (1,1)])
+  assert graph.number_of_nodes == 2
+  assert graph.nodes[0] == (0,0)
+  assert graph.nodes[1] == (1,1)
+
 
   # create graph
   graph = bob.ip.gabor.Graph((177,148), (191,142), between=3, above=1, along=1, below=4)
