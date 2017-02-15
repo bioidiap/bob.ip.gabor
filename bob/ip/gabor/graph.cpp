@@ -69,7 +69,7 @@ BOB_TRY
       auto k_ = make_safe(k);
       if (
         (kwargs && PyDict_Contains(kwargs, k)) ||
-        (args && PyBobIoHDF5File_Check(PyTuple_GetItem(args, 0)))
+        (PyTuple_Size(args)>0 && PyBobIoHDF5File_Check(PyTuple_GetItem(args, 0)))
       ){
         PyBobIoHDF5FileObject* hdf5;
         if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O&", kwlist1, &PyBobIoHDF5File_Converter, &hdf5)) return -1;
