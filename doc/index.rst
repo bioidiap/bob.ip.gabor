@@ -14,7 +14,7 @@
 
 This module contains the C++ source code and the Python bindings for classes that handle the Gabor wavelet transform and Gabor jet similarities.
 
-If you use parts of this code, please cite:
+If you use parts of this code in a scientific publication, please cite:
 
 .. code-block:: tex
 

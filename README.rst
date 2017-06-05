@@ -27,7 +27,7 @@ Processing tools concerning Gabor wavelets, the Gabor wavelet transform, Gabor
 jet extraction in a grid graph structure and Gabor jet similarity functions
 including a Gabor jet disparity estimation.
 
-If you use parts of this code, please cite::
+If you use parts of this code in a scientific publication, please cite::
 
   @inproceedings{guenther2012disparity,
     title = {Face Recognition with Disparity Corrected {G}abor Phase Differences},
