@@ -14,6 +14,25 @@
 
 This module contains the C++ source code and the Python bindings for classes that handle the Gabor wavelet transform and Gabor jet similarities.
 
+If you use parts of this code in a scientific publication, please cite:
+
+.. code-block:: tex
+
+  @inproceedings{guenther2012disparity,
+    title = {Face Recognition with Disparity Corrected {G}abor Phase Differences},
+    author = {G\"unther, Manuel and Haufe, Dennis and W\"urtz, Rolf P.},
+    editor = {Villa, Alessandro E. P. and Duch, W{\l}odzis{\l}aw and \'Erdi, P\'eter and Masulli, Francesco and Palm, G\"unther},
+    booktitle = {Artificial Neural Networks and Machine Learning},
+    series = {Lecture Notes in Computer Science},
+    volume = {7552},
+    year = {2012},
+    month = sep,
+    pages = {411-418},
+    publisher = {Springer},
+    pdf = {http://publications.idiap.ch/downloads/papers/2012/Gunther_ICANN2012_2012.pdf}
+  }
+
+
 Documentation
 -------------
 
