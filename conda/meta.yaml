@@ -1,0 +1,66 @@
+{% set name = 'bob.ip.gabor' %}
+{% set project_dir = environ.get('RECIPE_DIR') + '/..' %}
+
+package:
+  name: {{ name }}
+  version: {{ environ.get('BOB_PACKAGE_VERSION', '0.0.1') }}
+
+build:
+  number: {{ environ.get('BOB_BUILD_NUMBER', 0) }}
+  script:
+    - cd {{ project_dir }}
+    {% if environ.get('BUILD_EGG') %}
+    - python setup.py sdist --formats=zip
+    {% endif %}
+    - pip install --verbose .
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - toolchain {{ toolchain }}
+    - matplotlib
+    - bob.extension
+    - bob.blitz
+    - bob.core
+    - bob.io.base
+    - bob.sp
+    - cmake
+    - pkg-config
+    - libblitz {{ libblitz }}
+    - boost {{ boost }}
+    - numpy {{ numpy }}
+    - gcc {{ gcc }}  # [linux]
+    - libgcc {{ libgcc }}  # [linux]
+  run:
+    - python
+    - setuptools
+    - matplotlib
+    - bob.extension
+    - bob.blitz
+    - bob.core
+    - bob.io.base
+    - bob.sp
+    - libblitz
+    - boost
+    - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x.x') }}
+    - libgcc  # [linux]
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - nosetests --with-coverage --cover-package={{ name }} -sv {{ name }}
+    - sphinx-build -W {{ project_dir }}/doc {{ project_dir }}/sphinx
+    - sphinx-build -b doctest {{ project_dir }}/doc sphinx
+  requires:
+    - nose
+    - coverage
+    - sphinx
+    - sphinx_rtd_theme
+
+about:
+  home: https://www.idiap.ch/software/bob/
+  license: BSD 3-Clause
+  summary: C++ code and Python bindings for Bob's Gabor wavelet analysis tools
+  license_family: BSD
