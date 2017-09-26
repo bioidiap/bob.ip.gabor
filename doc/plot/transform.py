@@ -23,7 +23,6 @@ aligned_wavelets_image = numpy.roll(numpy.roll(wavelets_image, 64, 0), 64, 1)
 
 # create figure
 import matplotlib
-matplotlib.rc('text', usetex=True)
 # plot wavelets image
 from matplotlib import pyplot
 pyplot.figure(figsize=(20,10))
