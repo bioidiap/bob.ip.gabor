@@ -101,6 +101,8 @@ namespace bob {
           //! The vector of absolute and phase values
           blitz::Array<double,2>& jet() {return m_jet;}
 
+          void setJet(const blitz::Array<double,2>& jets);
+
           //! The vector of complex values
           const blitz::Array<std::complex<double>,1> complex() const;
 

@@ -161,3 +161,15 @@ double bob::ip::gabor::Jet::normalize(){
   return norm;
 }
 
+  void bob::ip::gabor::Jet::setJet (const blitz::Array<double,2>& jets) {
+
+    if (jets.extent(0) != 2) { //checks 1st dimension
+      boost::format m("mismatch on the jets shape (number of rows): expected a jets matrix with 2 row(s), but you input one with %d row(s) instead");
+      m % jets.extent(0);
+      throw std::runtime_error(m.str());
+    }
+    m_jet.reference(bob::core::array::ccopy(jets));
+
+  }
+
+
