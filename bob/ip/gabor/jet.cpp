@@ -273,6 +273,7 @@ BOB_TRY
 BOB_CATCH_MEMBER("abs", 0)
 }
 
+
 static auto phase_doc = bob::extension::VariableDoc(
   "phase",
   "array(float,1D)",
@@ -295,6 +296,25 @@ static auto jet_doc = bob::extension::VariableDoc(
 PyObject* PyBobIpGaborJet_jet(PyBobIpGaborJetObject* self, void*){
   return PyBlitzArrayCxx_AsNumpy(self->cxx->jet());
 }
+
+static int PyBobIpGaborJet_Setjet (PyBobIpGaborJetObject* self,
+    PyObject* o, void* /*closure*/) {
+BOB_TRY
+  PyBlitzArrayObject* jet = 0;
+  if (!PyBlitzArray_Converter(o, &jet)) return -1;
+  auto jet_ = make_safe(jet);
+
+  if (jet->type_num != NPY_FLOAT64 || jet->ndim != 2) {
+    PyErr_Format(PyExc_TypeError, "`%s' only supports 64-bit floats 2D arrays for property array `jet'", Py_TYPE(self)->tp_name);
+    return -1;
+  }
+  
+  self->cxx->setJet(*PyBlitzArrayCxx_AsBlitz<double,2>(jet));
+  return 0;
+BOB_CATCH_MEMBER("jet", -1)
+}
+
+
 
 static auto complex_doc = bob::extension::VariableDoc(
   "complex",
@@ -339,7 +359,7 @@ static PyGetSetDef PyBobIpGaborJet_getseters[] = {
   {
     jet_doc.name(),
     (getter)PyBobIpGaborJet_jet,
-    0,
+    (setter)PyBobIpGaborJet_Setjet,
     jet_doc.doc(),
     0
   },
@@ -556,7 +576,7 @@ bool init_BobIpGaborJet(PyObject* module)
   // initialize the Jet type struct
   PyBobIpGaborJet_Type.tp_name = Jet_doc.name();
   PyBobIpGaborJet_Type.tp_basicsize = sizeof(PyBobIpGaborJetObject);
-  PyBobIpGaborJet_Type.tp_flags = Py_TPFLAGS_DEFAULT;
+  PyBobIpGaborJet_Type.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
   PyBobIpGaborJet_Type.tp_doc = Jet_doc.doc();
 
   // set the functions
