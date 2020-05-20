@@ -142,7 +142,7 @@ double bob::ip::gabor::JetStatistics::logLikelihood(const boost::shared_ptr<bob:
     auto kernels = m_gwt->waveletFrequencies();
     auto abs = jet->abs(), phase = jet->phase();
     for (int j = jet->length(); j--;){
-      q_phase += sqr(adjust_phase(phase(j) + kernels[j][0] * disp[0] + kernels[j][1] * disp[1] - m_meanPhase(j))) / m_varPhase(j) * abs(j) / m_varAbs(j);
+      q_phase += sqr(adjust_phase(phase(j) + kernels[j][0] * disp[0] + kernels[j][1] * disp[1] - m_meanPhase(j))) / m_varPhase(j);// * abs(j) / m_meanAbs(j);
     }
 //    q_phase *= blitz::sum(m_varPhase);
     factor = 2.;
