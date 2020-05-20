@@ -347,7 +347,7 @@ def test_statistics():
   assert numpy.allclose(disparity, (2.12029, -3.76835)), disparity
   abs_sim = stats(jets[0], False)
   phase_sim = stats(jets[0], True)
-  assert numpy.allclose((abs_sim, phase_sim), (-1.097344, -5.451094)), str((abs_sim, phase_sim))
+  assert numpy.allclose((abs_sim, phase_sim), (-1.097344, -0.880858)), str((abs_sim, phase_sim))
 
   stats.gwt = None
   assert stats.gwt is None
