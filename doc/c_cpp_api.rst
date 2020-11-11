@@ -153,14 +153,17 @@ Gabor jet
       Default constructor that generates an uninitialized Gabor jet of the given length
 
    .. function:: Jet(const blitz::Array<std::complex<double>,3>& trafo_image, const blitz::TinyVector<int,2>& position, bool normalize = true)
+      :noindex:
 
       Extracts a Gabor jet at the given ``location`` from the ``trafo_image``, which usually is a result of the `Transform::transform` function.
 
    .. function:: Jet(const blitz::Array<std::complex<double>,1>& data, bool normalize = true)
+      :noindex:
 
       Creates a Gabor jet from the given vector of complex-valued data.
 
    .. function:: Jet(const std::vector<boost::shared_ptr<bob::ip::gabor::Jet>>& jets, bool normalize = true)
+      :noindex:
 
       Creates a Gabor jet by averaging the given Gabor jets, which need to be of the same length.
 
@@ -265,11 +268,13 @@ Gabor graph
       Hence, in total ``(2*along + between + 2) X (above + below + 1)`` nodes will be created.
 
    .. function:: Graph(blitz::TinyVector<int,2> first, blitz::TinyVector<int,2> last, blitz::TinyVector<int,2> step)
+      :noindex:
 
       Generates a grid graph extractor which will extract regular grid graphs.
       The first node is extracted at the given ``first`` position, the next nodes will be placed ``step`` pixels further (where horizontal and vertical steps are handled independently), and the last node is placed at **or before** the given ``last`` node.
 
    .. function:: Graph(const std::vector<blitz::TinyVector<int,2>>& nodes)
+      :noindex:
 
       Constructs a graph extractor using the given nodes.
 

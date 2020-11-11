@@ -36,7 +36,7 @@ pyplot.gca().invert_yaxis()
 # plot the results of the transform for some wavelets
 for scale in (0,2,4):
   for direction in (0,2,4):
-    pyplot.subplot(3,6,4+scale*3+direction/2)
+    pyplot.subplot(3,6,4+scale*3+direction//2)
     pyplot.imshow(numpy.real(trafo_image[scale*gwt.number_of_directions+direction]), cmap='gray')
     pyplot.title("Scale %d, direction %d" % (scale, direction))
     pyplot.gca().invert_yaxis()
